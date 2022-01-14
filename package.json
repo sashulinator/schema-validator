@@ -6,7 +6,7 @@
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/savchenko91/schema-validator"
+    "url": "git+https://github.com/savchenko91/schema-validator.git"
   },
   "author": "Alexander Savchenko <savchenkoalexander91@gmail.com>",
   "license": "MIT",
@@ -45,5 +45,22 @@
     "ts-jest": "26.4.4",
     "ts-pnp": "1.2.0",
     "typescript": "4.5.4"
-  }
+  },
+  "description": "![code size](https://img.shields.io/github/languages/code-size/savchenko91/rc-redux-api-mw) [![code size](https://img.shields.io/github/v/release/savchenko91/rc-redux-api-mw)](https://github.com/savchenko91/rc-redux-api-mw/releases)",
+  "bugs": {
+    "url": "https://github.com/savchenko91/schema-validator/issues"
+  },
+  "homepage": "https://github.com/savchenko91/schema-validator#readme",
+  "keywords": [
+    "validator",
+    "server",
+    "front",
+    "client",
+    "backend",
+    "frontend",
+    "ajv",
+    "validate",
+    "form",
+    "api"
+  ]
 }
