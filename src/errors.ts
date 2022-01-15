@@ -19,7 +19,10 @@ export class BaseError extends Error {
     super(props.message)
     this._code = props.code
     this._message = props.message
-    this._errors = props.errors
+
+    if (props.errors) {
+      this._errors = props.errors
+    }
   }
 }
 
