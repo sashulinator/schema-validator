@@ -22,10 +22,9 @@ export function createStructureValidator(
 
     for (let index = 0; index < schemaKeys.length; index += 1) {
       const key = schemaKeys[index]
-
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      emitStructureValidator[key] = schema[key]
+      Object.defineProperty(test, key, { value: schema[key], writable: true })
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

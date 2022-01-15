@@ -9,14 +9,14 @@ describe(`${only.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        username: validate([assertString]),
+        name: validate([assertString]),
       },
     }
 
     const onlySchema = only(schema)
 
     return expectMatchError(
-      () => onlySchema.user.username(77),
+      () => onlySchema.user.name(77),
       new ValidationError({
         key: 'test',
         value: 77,
@@ -31,14 +31,14 @@ describe(`${requiredOnly.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        username: validate([assertString]),
+        name: validate([assertString]),
       },
     }
 
     const onlySchema = requiredOnly(schema)
 
     return expectMatchError(
-      () => onlySchema.user.username(77),
+      () => onlySchema.user.name(77),
       new ValidationError({
         key: 'test',
         value: 77,
