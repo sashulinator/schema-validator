@@ -1,6 +1,6 @@
 import { processOrEmit, ProcessResult } from './process'
 import { ValidationError } from './errors'
-import { EmitTreeValidation, ErrorTree, Schema, Structure } from './types'
+import { ErrorTree, Schema, Structure } from './types'
 
 type StructureValidatorCbParams = ProcessResult & {
   structure: Structure
@@ -13,10 +13,24 @@ export function createStructureValidator(
   cb: (processResult: StructureValidatorCbParams) => ErrorTree,
   initialKey?: string,
 ) {
-  return (schema: Schema): EmitTreeValidation => {
-    return (structure, key = initialKey, isThrowError) => {
+  return <SC extends Schema>(schema: SC): SC => {
+    function emitStructureValidator(structure: Structure, key = initialKey, isThrowError: boolean) {
       return cb({ ...processOrEmit(schema, structure, key), structure, schema, isThrowError, key })
     }
+
+    const schemaKeys = Object.keys(schema)
+
+    for (let index = 0; index < schemaKeys.length; index += 1) {
+      const key = schemaKeys[index]
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      emitStructureValidator[key] = schema[key]
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return emitStructureValidator
   }
 }
 
@@ -50,4 +64,4 @@ export const required = createStructureValidator(({ errorTree, unusedSchemaKeys,
   return errorTree
 })
 
-export const requiredOnly = (schema: Schema): EmitTreeValidation => only(required(schema))
+export const requiredOnly = <S extends Schema>(schema: S): S => only(required(schema))
