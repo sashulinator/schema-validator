@@ -1,16 +1,16 @@
 import { ValidationError } from './errors'
 
 export type Schema =
-  | { [fieldName: string]: Schema | EmitAssertValidation | EmitTreeValidation }
-  | (Schema | EmitAssertValidation | EmitTreeValidation)[]
+  | { [fieldName: string]: Schema | EmitAssertValidation | EmitStructureValidation }
+  | (Schema | EmitAssertValidation | EmitStructureValidation)[]
   | EmitAssertValidation
-  | EmitTreeValidation
+  | EmitStructureValidation
 
 export type StructureSchema = ArrayStructureSchema | ObjectStructureSchema
 
-export type ArrayStructureSchema = (Schema | EmitAssertValidation | EmitTreeValidation)[]
+export type ArrayStructureSchema = (Schema | EmitAssertValidation | EmitStructureValidation)[]
 
-export type ObjectStructureSchema = { [fieldName: string]: Schema | EmitAssertValidation | EmitTreeValidation }
+export type ObjectStructureSchema = { [fieldName: string]: Schema | EmitAssertValidation | EmitStructureValidation }
 
 export type Structure = ArrayStructure | ObjectStructure
 
@@ -22,10 +22,10 @@ export type ErrorTree = Record<string, ValidationError> | ValidationError | unde
 
 export type Assertion = (value: any) => void
 
-export type ComparingAssertion = (value: any, comparingValue: any) => void
+export type ComparingAssertion = (value: any, comparisonValue: any) => void
 
 export type AssertionItem = Assertion | [ComparingAssertion, any, string?]
 
 export type EmitAssertValidation = (value: any, key?: string, isThrowError?: boolean) => ValidationError | undefined
 
-export type EmitTreeValidation = (input: Structure, key?: string, isThrowError?: boolean) => ErrorTree
+export type EmitStructureValidation = (input: Structure, key?: string, isThrowError?: boolean) => ErrorTree
