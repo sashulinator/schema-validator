@@ -26,6 +26,6 @@ export type ComparingAssertion = (value: any, comparisonValue: any) => void
 
 export type AssertionItem = Assertion | [ComparingAssertion, any, string?]
 
-export type EmitAssertValidation = (value: any, key?: string, isThrowError?: boolean) => ValidationError | undefined
+export type EmitAssertValidation = (value: any, key?: string) => ValidationError | undefined
 
-export type EmitStructureValidation = (input: Structure, key?: string, isThrowError?: boolean) => ErrorTree
+export type EmitStructureValidation = (input: Structure, key?: string) => ErrorTree

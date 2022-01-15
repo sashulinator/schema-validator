@@ -21,7 +21,7 @@ type Process<SC extends StructureSchema, ST extends Structure> = (schema: SC, st
 export function processOrEmit(schema: Schema, structure: Structure, key?: string): ProcessResult {
   if (typeof schema === 'function') {
     return {
-      errorTree: schema(structure, key, false),
+      errorTree: schema(structure, key),
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
     }

@@ -34,11 +34,11 @@ export function validateIf(
   cbOrBoolean: ((value: any) => boolean) | boolean,
   assertionItems: AssertionItem[],
 ): EmitAssertValidation {
-  return function emitAssertValidation(value, key, isThrowError = true) {
+  return function emitAssertValidation(value, key) {
     const cbResult = typeof cbOrBoolean === 'function' && cbOrBoolean(value)
 
     if (cbResult || cbOrBoolean === true) {
-      return validate(assertionItems)(value, key, isThrowError)
+      return validate(assertionItems)(value, key)
     }
   }
 }
