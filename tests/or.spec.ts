@@ -39,7 +39,7 @@ describe(`${or.name}`, () => {
     )
   })
 
-  it.only('"assertion" error', () => {
+  it('"assertion" error', () => {
     const schema = or(
       {
         user: {
@@ -59,10 +59,10 @@ describe(`${or.name}`, () => {
           user: { name: true },
         }),
       new ValidationError({
-        key: 'test',
-        value: ['user'],
-        code: 'requiredKeys',
-        message: 'some keys are required',
+        key: 'name',
+        value: true,
+        code: 'assertStringifiedNumber',
+        message: 'is not a string',
       }),
     )
   })

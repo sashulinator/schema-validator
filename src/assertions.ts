@@ -54,9 +54,8 @@ export function assertNotMoreThan(input: unknown, num: number): void {
 }
 
 export function assertStringifiedNumber(input: unknown): void {
-  assertString(input)
-
   try {
+    assertString(input)
     assertNotNaN(parseInt(input, 10))
   } catch (e) {
     throw Error(`is not a stringified number`)
