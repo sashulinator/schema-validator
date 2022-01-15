@@ -5,7 +5,6 @@ import { ErrorTree, Schema, Structure } from './types'
 type StructureValidatorCbParams = ProcessResult & {
   structure: Structure
   schema: Schema
-  isThrowError: boolean
   key: string
 }
 
@@ -14,8 +13,8 @@ export function createStructureValidator(
   initialKey?: string,
 ) {
   return <SC extends Schema>(schema: SC): SC => {
-    function emitStructureValidator(structure: Structure, key = initialKey, isThrowError: boolean) {
-      return cb({ ...processOrEmit(schema, structure, key), structure, schema, isThrowError, key })
+    function emitStructureValidator(structure: Structure, key = initialKey) {
+      return cb({ ...processOrEmit(schema, structure, key), structure, schema, key })
     }
 
     const schemaKeys = Object.keys(schema)
