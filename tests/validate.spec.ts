@@ -5,20 +5,6 @@ import expectMatchError from '../src/expect-match-error'
 import { validate, validateIf } from '../src/validate'
 
 describe(`${validate.name}`, () => {
-  it('throws error', () => {
-    const emitValidation = validate([assertNumber])
-
-    return expectMatchError(
-      () => emitValidation('string', 'test'),
-      new ValidationError({
-        key: 'test',
-        value: 'string',
-        code: 'assertNumber',
-        message: 'is not a number',
-      }),
-    )
-  })
-
   it('returns error', () => {
     const emitValidation = validate([assertNumber])
 
@@ -33,27 +19,11 @@ describe(`${validate.name}`, () => {
     )
   })
 
-  it('throws error for ComparingAssertion', () => {
-    const emitValidation = validate([[assertMatchPattern, /test/, 'pattern']])
-
-    return expectMatchError(
-      () => emitValidation('string', 'test'),
-      new ValidationError({
-        key: 'test',
-        value: 'string',
-        key2: 'pattern',
-        value2: '/test/',
-        code: 'assertMatchPattern',
-        message: 'does not match the pattern',
-      }),
-    )
-  })
-
   it('returns error for ComparingAssertion', () => {
     const emitValidation = validate([[assertMatchPattern, /test/, 'pattern']])
 
     return expectMatchError(
-      () => emitValidation('string', 'test', false),
+      () => emitValidation('string', 'test'),
       new ValidationError({
         key: 'test',
         value: 'string',
@@ -75,7 +45,7 @@ describe(`${validateIf.name}`, () => {
     expect(validateIf(() => false, [[assertMatchPattern, /test/, 'pattern']])('test')).toBeUndefined()
   })
 
-  it('throw error if true', () => {
+  it('return error if true', () => {
     const emitValidation = validateIf(true, [[assertMatchPattern, /test/, 'pattern']])
 
     return expectMatchError(
@@ -91,7 +61,7 @@ describe(`${validateIf.name}`, () => {
     )
   })
 
-  it('throw error if true', () => {
+  it('return error if true function', () => {
     const emitValidation = validateIf(() => true, [[assertMatchPattern, /test/, 'pattern']])
 
     return expectMatchError(

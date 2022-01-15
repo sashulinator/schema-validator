@@ -20,12 +20,12 @@ export type ObjectStructure = Record<string, any>
 
 export type ErrorTree = Record<string, ValidationError> | ValidationError | undefined | Record<string, any>
 
-export type Assertion = (value: any) => void
+export type Assertion = (value: any, structure: any) => void
 
-export type ComparingAssertion = (value: any, comparisonValue: any) => void
+export type ComparingAssertion = (value: any, comparisonValue: any, structure: any) => void
 
 export type AssertionItem = Assertion | [ComparingAssertion, any, string?]
 
-export type EmitAssertValidation = (value: any, key?: string) => ValidationError | undefined
+export type EmitAssertValidation = (value: any, key?: string, structure?: any) => ValidationError | undefined
 
-export type EmitStructureValidation = (input: Structure, key?: string) => ErrorTree
+export type EmitStructureValidation = (input: Structure, key?: string, structure?: any) => ErrorTree

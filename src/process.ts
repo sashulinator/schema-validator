@@ -18,10 +18,15 @@ export type ProcessResult = {
 
 type Process<SC extends StructureSchema, ST extends Structure> = (schema: SC, structure: ST) => ProcessResult
 
-export function processOrEmit(schema: Schema, structure: Structure, key?: string): ProcessResult {
+export function processOrEmit(
+  schema: Schema,
+  structure: Structure,
+  key?: string,
+  parentStructure?: Structure,
+): ProcessResult {
   if (typeof schema === 'function') {
     return {
-      errorTree: schema(structure, key),
+      errorTree: schema(structure, key, parentStructure),
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
     }
@@ -51,7 +56,7 @@ const processArray: Process<ArrayStructureSchema, ArrayStructure> = (schema, arr
 
   for (let index = 0; index < arrayStructure.length; index += 1) {
     const key = index.toString()
-    const { errorTree } = processOrEmit(schema[0], arrayStructure?.[index], key)
+    const { errorTree } = processOrEmit(schema[0], arrayStructure?.[index], key, arrayStructure)
     localErrorTree[key] = errorTree
   }
 
@@ -78,7 +83,7 @@ const processObject: Process<ObjectStructureSchema, ObjectStructure> = (schema, 
       unusedSchemaKeys.push(objKey)
     }
 
-    const { errorTree } = processOrEmit(schemaValue, objValue, objKey)
+    const { errorTree } = processOrEmit(schemaValue, objValue, objKey, objectStructure)
     localErrorTree[objKey] = errorTree
   }
 

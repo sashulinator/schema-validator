@@ -1,9 +1,10 @@
 import { processOrEmit, ProcessResult } from './process'
 import { ValidationError } from './errors'
-import { ErrorTree, Schema, Structure } from './types'
+import { EmitStructureValidation, ErrorTree, Schema, Structure } from './types'
 
 type StructureValidatorCbParams = ProcessResult & {
   structure: Structure
+  parentStructure?: Structure
   schema: Schema
   key: string
 }
@@ -12,9 +13,9 @@ export function createStructureValidator(
   cb: (processResult: StructureValidatorCbParams) => ErrorTree,
   initialKey?: string,
 ) {
-  return <SC extends Schema>(schema: SC): SC => {
-    function emitStructureValidator(structure: Structure, key = initialKey) {
-      return cb({ ...processOrEmit(schema, structure, key), structure, schema, key })
+  return <SC extends Schema>(schema: SC): SC & EmitStructureValidation => {
+    function emitStructureValidator(structure: Structure, key = initialKey, parentStructure?: Structure) {
+      return cb({ ...processOrEmit(schema, structure, key, parentStructure), structure, schema, key, parentStructure })
     }
 
     const schemaKeys = Object.keys(schema)

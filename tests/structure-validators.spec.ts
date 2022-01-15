@@ -47,4 +47,24 @@ describe(`${requiredOnly.name}`, () => {
       }),
     )
   })
+
+  it.only('structure got passed as a third argument', () => {
+    const schema = {
+      user: {
+        name: validate([
+          assertString,
+          (value: unknown, structure?: unknown) => {
+            expect(structure).toEqual({ name: 'string', test: 77 })
+          },
+        ]),
+      },
+    }
+
+    return only(schema)({
+      user: {
+        name: 'string',
+        test: 77,
+      },
+    })
+  })
 })

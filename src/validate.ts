@@ -1,8 +1,8 @@
 import { ValidationError } from './errors'
-import { AssertionItem, EmitAssertValidation } from './types'
+import { Assertion, AssertionItem, EmitAssertValidation } from './types'
 
 export function validate(assertionItems: AssertionItem[]): EmitAssertValidation {
-  return function emitAssertValidation(value, key) {
+  return function emitAssertValidation(value, key, structure) {
     for (let index = 0; index < assertionItems.length; index += 1) {
       const assertionItem = assertionItems[index]
       const isArray = Array.isArray(assertionItem)
@@ -11,7 +11,11 @@ export function validate(assertionItems: AssertionItem[]): EmitAssertValidation 
       const key2 = isArray ? assertionItem[2] : undefined
 
       try {
-        assertion?.(value, value2)
+        if (isArray) {
+          assertion?.(value, value2, structure)
+        } else {
+          ;(assertion as Assertion)?.(value, structure)
+        }
       } catch (error) {
         if (error instanceof Error) {
           return new ValidationError({
