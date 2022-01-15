@@ -18,7 +18,7 @@ export type ProcessResult = {
 
 type Process<SC extends StructureSchema, ST extends Structure> = (schema: SC, structure: ST) => ProcessResult
 
-export function processOrEmit(schema: Schema, structure: Structure, key: string): ProcessResult {
+export function processOrEmit(schema: Schema, structure: Structure, key?: string): ProcessResult {
   if (typeof schema === 'function') {
     return {
       errorTree: schema(structure, key, false),
@@ -36,7 +36,7 @@ export function processOrEmit(schema: Schema, structure: Structure, key: string)
   }
 }
 
-function removeErrorTreeIfEmpty(errorTree: ErrorTree): ErrorTree {
+export function removeErrorTreeIfEmpty(errorTree: ErrorTree): ErrorTree {
   return Object.values(errorTree).find(Boolean) ? errorTree : undefined
 }
 
