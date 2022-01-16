@@ -1,6 +1,7 @@
 export * from './assertions'
 export * from './errors'
 export * from './is'
+export * from './omit-if-comparison-has-no-value'
 export * from './or'
 export * from './process'
 export * from './structure-validators'

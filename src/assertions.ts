@@ -76,6 +76,10 @@ export function assertStringifiedNumber(input: unknown): void {
 }
 
 export function assertRegExp(input: unknown): asserts input is RegExp {
+  if (!isString(input) && !(input instanceof RegExp)) {
+    throw Error(`is not a regular expression`)
+  }
+
   try {
     RegExp(input as string)
   } catch (e) {
