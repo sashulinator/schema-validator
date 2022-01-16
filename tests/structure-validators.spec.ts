@@ -2,7 +2,7 @@
 import { assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
-import { validate } from '../src/validate'
+import { validate, validateIf } from '../src/validate'
 import { only, requiredOnly } from '../src/structure-validators'
 
 describe(`${only.name}`, () => {
@@ -63,5 +63,39 @@ describe(`${requiredOnly.name}`, () => {
         test: 77,
       },
     })
+  })
+
+  it('no excessive keys in ErrorTree', () => {
+    const errorTree = only({
+      user: {
+        name: validateIf(true)(assertString),
+        test: validateIf(true)(assertString),
+      },
+    })({
+      user: {
+        name: true,
+        test: '77',
+      },
+    })
+
+    // @ts-ignore
+    expect(errorTree.test).toBeUndefined()
+  })
+
+  it('ErrorTree = undefined', () => {
+    const errorTree = only({
+      user: {
+        name: validateIf(true)(assertString),
+        test: validateIf(true)(assertString),
+      },
+    })({
+      user: {
+        name: 'name',
+        test: 'test',
+      },
+    })
+
+    // @ts-ignore
+    expect(errorTree).toBeUndefined()
   })
 })

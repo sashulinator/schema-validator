@@ -36,11 +36,11 @@ export function validate(...assertionItems: AssertionItem[]): EmitAssertValidati
 
 export function validateIf(cbOrBoolean: ((value: any) => boolean) | boolean) {
   return (...assertionItems: AssertionItem[]): EmitAssertValidation => {
-    return function emitAssertValidation(value, key) {
+    return function emitAssertValidation(value, key, structure) {
       const cbResult = typeof cbOrBoolean === 'function' && cbOrBoolean(value)
 
       if (cbResult || cbOrBoolean === true) {
-        return validate(...assertionItems)(value, key)
+        return validate(...assertionItems)(value, key, structure)
       }
     }
   }
