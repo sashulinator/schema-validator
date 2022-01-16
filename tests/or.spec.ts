@@ -1,9 +1,5 @@
-import { assertString, assertStringifiedNumber } from '../src/assertions'
-import { ValidationError } from '../src/errors'
-import expectMatchError from '../src/expect-match-error'
-import { or } from '../src/or'
-import { required } from '../src/structure-validators'
-import { validate } from '../src/validate'
+import { validate, required, or, ValidationError, assertString, assertStringifiedNumber } from '../src'
+import expectMatchError from './expect-match-error'
 
 describe(`${or.name}`, () => {
   it('"required" error', () => {
@@ -58,12 +54,16 @@ describe(`${or.name}`, () => {
         schema({
           user: { name: true },
         }),
-      new ValidationError({
-        key: 'name',
-        value: true,
-        code: 'assertStringifiedNumber',
-        message: 'is not a string',
-      }),
+      {
+        user: {
+          name: new ValidationError({
+            key: 'name',
+            value: true,
+            code: 'assertStringifiedNumber',
+            message: 'is not a stringified number',
+          }),
+        },
+      },
     )
   })
 

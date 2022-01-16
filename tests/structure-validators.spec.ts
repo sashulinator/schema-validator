@@ -1,7 +1,7 @@
 /* eslint-disable jest/expect-expect */
 import { assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
-import expectMatchError from '../src/expect-match-error'
+import expectMatchError from './expect-match-error'
 import { validate } from '../src/validate'
 import { only, requiredOnly } from '../src/structure-validators'
 
@@ -48,7 +48,7 @@ describe(`${requiredOnly.name}`, () => {
     )
   })
 
-  it.only('structure got passed as a third argument', () => {
+  it('structure got passed as a third argument', () => {
     const schema = {
       user: {
         name: validate([

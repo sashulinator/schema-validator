@@ -1,7 +1,7 @@
 /* eslint-disable jest/expect-expect */
 import { assertMatchPattern, assertNumber } from '../src/assertions'
 import { ValidationError } from '../src/errors'
-import expectMatchError from '../src/expect-match-error'
+import expectMatchError from './expect-match-error'
 import { validate, validateIf } from '../src/validate'
 
 describe(`${validate.name}`, () => {

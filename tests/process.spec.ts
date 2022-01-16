@@ -2,7 +2,7 @@
 import { assertString } from '../src/assertions'
 import { process } from '../src/process'
 import { ValidationError } from '../src/errors'
-import expectMatchError from '../src/expect-match-error'
+import expectMatchError from './expect-match-error'
 import { validate } from '../src/validate'
 
 describe(`${process.name}`, () => {
