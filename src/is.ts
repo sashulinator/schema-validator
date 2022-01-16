@@ -1,20 +1,20 @@
-export function isNotEmptyString(value: unknown): boolean {
+export function isNotEmptyString<T>(value: T | ''): value is T {
   return value !== ''
 }
 
-export function isNotNil(value: unknown): boolean {
+export function isNotNil<T>(value: T | undefined | null): value is T {
   return value !== null && value !== undefined
 }
 
-export function isNotNull(value: unknown): boolean {
+export function isNotNull<T>(value: T | null): value is T {
   return value !== null
 }
 
-export function isNotUndefined(value: unknown): boolean {
+export function isNotUndefined<T>(value: T | undefined): value is T {
   return value !== undefined
 }
 
-export function isNotZero(value: unknown): boolean {
+export function isNotZero<T>(value: T | 0): value is T {
   return value !== 0
 }
 
@@ -30,4 +30,8 @@ export function isString(input: unknown): input is string {
     return true
   }
   return false
+}
+
+export function isBoolean(input: unknown): input is boolean {
+  return input === true || input === false
 }

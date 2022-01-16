@@ -1,4 +1,4 @@
-import { isNumber, isString } from './is'
+import { isNumber, isString, isBoolean } from './is'
 
 export function assertNumber(input: unknown): asserts input is number {
   if (isNumber(input)) {
@@ -8,26 +8,34 @@ export function assertNumber(input: unknown): asserts input is number {
   throw Error('is not a number')
 }
 
-export function assertNotUndefined(input: unknown): asserts input is number {
-  if (typeof input === 'undefined') {
-    throw Error('cannot be undefined')
-  }
-}
-
-export function assertNotNaN(input: unknown): asserts input is number {
-  assertNumber(input)
-
-  if (Number.isNaN(input)) {
-    throw Error('is not a number')
-  }
-}
-
 export function assertString(input: unknown): asserts input is string {
   if (isString(input)) {
     return
   }
 
   throw Error('is not a string')
+}
+
+export function assertBoolean(input: unknown): asserts input is boolean {
+  if (isBoolean(input)) {
+    return
+  }
+
+  throw Error('is not a boolean')
+}
+
+export function assertNotUndefined<T>(input: unknown | undefined): asserts input is T {
+  if (typeof input === 'undefined') {
+    throw Error('cannot be undefined')
+  }
+}
+
+export function assertNotNaN(input: unknown): void {
+  assertNumber(input)
+
+  if (Number.isNaN(input)) {
+    throw Error('is not a number')
+  }
 }
 
 export function assertNotMoreThan(input: unknown, num: number): void {
