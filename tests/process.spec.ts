@@ -9,7 +9,7 @@ describe(`${process.name}`, () => {
   it('return errorTree', () => {
     const schema = {
       user: {
-        username: validate([assertString]),
+        username: validate(assertString),
       },
     }
 
@@ -31,7 +31,7 @@ describe(`${process.name}`, () => {
     const schema = {
       users: [
         {
-          username: validate([assertString]),
+          username: validate(assertString),
         },
       ],
     }

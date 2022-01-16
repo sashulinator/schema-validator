@@ -6,17 +6,17 @@ describe(`${or.name}`, () => {
     const schema = or(
       required({
         user: {
-          name: validate([assertString]),
+          name: validate(assertString),
         },
       }),
       required({
         user: {
-          username: validate([assertString]),
+          username: validate(assertString),
         },
       }),
       required({
         user: {
-          email: validate([assertString]),
+          email: validate(assertString),
         },
       }),
     )
@@ -39,12 +39,12 @@ describe(`${or.name}`, () => {
     const schema = or(
       {
         user: {
-          name: validate([assertString]),
+          name: validate(assertString),
         },
       },
       {
         user: {
-          name: validate([assertStringifiedNumber]),
+          name: validate(assertStringifiedNumber),
         },
       },
     )
@@ -71,17 +71,17 @@ describe(`${or.name}`, () => {
     const schema = or(
       required({
         user: {
-          name: validate([assertString]),
+          name: validate(assertString),
         },
       }),
       required({
         user: {
-          username: validate([assertString]),
+          username: validate(assertString),
         },
       }),
       {
         user: {
-          email: validate([assertString]),
+          email: validate(assertString),
         },
       },
     )

@@ -1,7 +1,7 @@
 import { ValidationError } from './errors'
 import { Assertion, AssertionItem, EmitAssertValidation } from './types'
 
-export function validate(assertionItems: AssertionItem[]): EmitAssertValidation {
+export function validate(...assertionItems: AssertionItem[]): EmitAssertValidation {
   return function emitAssertValidation(value, key, structure) {
     for (let index = 0; index < assertionItems.length; index += 1) {
       const assertionItem = assertionItems[index]
@@ -34,15 +34,14 @@ export function validate(assertionItems: AssertionItem[]): EmitAssertValidation 
   }
 }
 
-export function validateIf(
-  cbOrBoolean: ((value: any) => boolean) | boolean,
-  assertionItems: AssertionItem[],
-): EmitAssertValidation {
-  return function emitAssertValidation(value, key) {
-    const cbResult = typeof cbOrBoolean === 'function' && cbOrBoolean(value)
+export function validateIf(cbOrBoolean: ((value: any) => boolean) | boolean) {
+  return (...assertionItems: AssertionItem[]): EmitAssertValidation => {
+    return function emitAssertValidation(value, key) {
+      const cbResult = typeof cbOrBoolean === 'function' && cbOrBoolean(value)
 
-    if (cbResult || cbOrBoolean === true) {
-      return validate(assertionItems)(value, key)
+      if (cbResult || cbOrBoolean === true) {
+        return validate(...assertionItems)(value, key)
+      }
     }
   }
 }

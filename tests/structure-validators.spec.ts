@@ -9,7 +9,7 @@ describe(`${only.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        name: validate([assertString]),
+        name: validate(assertString),
       },
     }
 
@@ -31,7 +31,7 @@ describe(`${requiredOnly.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        name: validate([assertString]),
+        name: validate(assertString),
       },
     }
 
@@ -51,12 +51,9 @@ describe(`${requiredOnly.name}`, () => {
   it('structure got passed as a third argument', () => {
     const schema = {
       user: {
-        name: validate([
-          assertString,
-          (value: unknown, structure?: unknown) => {
-            expect(structure).toEqual({ name: 'string', test: 77 })
-          },
-        ]),
+        name: validate(assertString, (value: unknown, structure?: unknown) => {
+          expect(structure).toEqual({ name: 'string', test: 77 })
+        }),
       },
     }
 

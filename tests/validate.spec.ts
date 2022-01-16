@@ -6,7 +6,7 @@ import { validate, validateIf } from '../src/validate'
 
 describe(`${validate.name}`, () => {
   it('returns error', () => {
-    const emitValidation = validate([assertNumber])
+    const emitValidation = validate(assertNumber)
 
     return expectMatchError(
       () => emitValidation('string', 'test'),
@@ -20,7 +20,7 @@ describe(`${validate.name}`, () => {
   })
 
   it('returns error for ComparingAssertion', () => {
-    const emitValidation = validate([[assertMatchPattern, /test/, 'pattern']])
+    const emitValidation = validate([assertMatchPattern, /test/, 'pattern'])
 
     return expectMatchError(
       () => emitValidation('string', 'test'),
@@ -38,15 +38,15 @@ describe(`${validate.name}`, () => {
 
 describe(`${validateIf.name}`, () => {
   it('pass if false', () => {
-    expect(validateIf(false, [[assertMatchPattern, /test/, 'pattern']])('test')).toBeUndefined()
+    expect(validateIf(false)([assertMatchPattern, /test/, 'pattern'])('test')).toBeUndefined()
   })
 
   it('pass if false function', () => {
-    expect(validateIf(() => false, [[assertMatchPattern, /test/, 'pattern']])('test')).toBeUndefined()
+    expect(validateIf(() => false)([assertMatchPattern, /test/, 'pattern'])('test')).toBeUndefined()
   })
 
   it('return error if true', () => {
-    const emitValidation = validateIf(true, [[assertMatchPattern, /test/, 'pattern']])
+    const emitValidation = validateIf(true)([assertMatchPattern, /test/, 'pattern'])
 
     return expectMatchError(
       () => emitValidation('string', 'test'),
@@ -62,7 +62,7 @@ describe(`${validateIf.name}`, () => {
   })
 
   it('return error if true function', () => {
-    const emitValidation = validateIf(() => true, [[assertMatchPattern, /test/, 'pattern']])
+    const emitValidation = validateIf(() => true)([assertMatchPattern, /test/, 'pattern'])
 
     return expectMatchError(
       () => emitValidation('string', 'test'),
