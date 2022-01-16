@@ -1,9 +1,16 @@
 /* eslint-disable jest/expect-expect */
-import { assertString } from '../src/assertions'
+import {
+  assertBoolean,
+  assertMatchPattern,
+  assertRegExp,
+  assertString,
+  assertStringifiedNumber,
+} from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
 import { validate, validateIf } from '../src/validate'
 import { only, requiredOnly } from '../src/structure-validators'
+import { isNotEmptyString } from '../src/is'
 
 describe(`${only.name}`, () => {
   it('nessted properties are reachable', () => {
@@ -96,6 +103,48 @@ describe(`${requiredOnly.name}`, () => {
     })
 
     // @ts-ignore
+    expect(errorTree).toBeUndefined()
+  })
+
+  it.only('array in schema', () => {
+    type Text = {
+      defaultValue: string
+      pattern: string
+      hints: string[]
+    }
+
+    function assertMatchPatternFromStructure(v: unknown, key?: string, obj?: Text) {
+      expect(obj).toMatchObject({
+        defaultValue: 'testDefaultValue',
+        pattern: 'test',
+        hints: ['test'],
+      })
+
+      if (obj?.pattern) {
+        assertMatchPattern(v, obj.pattern)
+      }
+    }
+
+    const textSchema = {
+      testNesting: {
+        anotherOne: {
+          defaultValue: validateIf(isNotEmptyString)(assertMatchPatternFromStructure),
+          pattern: validateIf(isNotEmptyString)(assertRegExp),
+          hints: [validateIf(isNotEmptyString)(assertMatchPatternFromStructure)],
+        },
+      },
+    }
+
+    const errorTree = only(textSchema)({
+      testNesting: {
+        anotherOne: {
+          defaultValue: 'testDefaultValue',
+          pattern: 'test',
+          hints: ['test'],
+        },
+      },
+    })
+
     expect(errorTree).toBeUndefined()
   })
 })

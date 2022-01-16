@@ -18,6 +18,11 @@ export type ProcessResult = {
 
 type Process<SC extends StructureSchema, ST extends Structure> = (schema: SC, structure: ST) => ProcessResult
 
+// we always keep previous object structure
+// because we dont want to have
+// an array as third argument in assertions
+let parentObjectStructure: Structure
+
 export function processOrEmit(
   schema: Schema,
   structure: Structure,
@@ -25,8 +30,16 @@ export function processOrEmit(
   parentStructure?: Structure,
 ): ProcessResult {
   if (typeof schema === 'function') {
+    let errorTree
+
+    if (Array.isArray(parentStructure)) {
+      errorTree = schema(structure, key, parentObjectStructure)
+    } else {
+      errorTree = schema(structure, key, parentStructure)
+    }
+
     return {
-      errorTree: schema(structure, key, parentStructure),
+      errorTree,
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
     }
@@ -37,6 +50,9 @@ export function processOrEmit(
       unusedSchemaKeys: [],
     }
   } else {
+    if (!Array.isArray(structure)) {
+      parentObjectStructure = structure
+    }
     return process(schema, structure)
   }
 }
