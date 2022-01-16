@@ -3,7 +3,7 @@ import { assertMatchPattern, assertNumber, assertString } from '../src/assertion
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
 import { validate, validateIf } from '../src/validate'
-import { only } from '../src/structure-validators'
+import { only, compareWith } from '../src'
 
 describe(`${validate.name}`, () => {
   it('returns error', () => {
@@ -20,7 +20,7 @@ describe(`${validate.name}`, () => {
     )
   })
 
-  it('get comparing value from object', () => {
+  it.only('get comparing value from object', () => {
     function testComparingAssertion(value: unknown, value2: string) {
       expect(value2).toBe('qwerty')
     }
@@ -34,10 +34,22 @@ describe(`${validate.name}`, () => {
       user: validate([testComparingAssertion, getPasswordValue, 'password']),
     })
 
+    const validateTest2 = only({
+      password: validate(assertString),
+      user: validate(compareWith('password', assertMatchPattern)),
+    })
+
     expect(
       validateTest({
         password: 'qwerty',
         user: 'vasya',
+      }),
+    ).toBeUndefined()
+
+    expect(
+      validateTest2({
+        password: 'qwerty',
+        user: 'qwerty',
       }),
     ).toBeUndefined()
   })
