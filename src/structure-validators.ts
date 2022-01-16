@@ -43,6 +43,24 @@ export function createStructureValidator(
   }
 }
 
+export const notEmpty = createStructureValidator(({ errorTree, structure, key }) => {
+  const isEmpty = Array.isArray(structure) ? structure.length === 0 : Object.keys(structure).length === 0
+
+  if (isEmpty) {
+    const type = Array.isArray(structure) ? 'array' : 'object'
+
+    const excessiveKeysError = new ValidationError({
+      key,
+      code: `${type}Empty`,
+      message: `${type} cannot be empty`,
+    })
+
+    errorTree = { ...excessiveKeysError, ...errorTree }
+  }
+
+  return errorTree
+})
+
 export const only = createStructureValidator(({ errorTree, unusedObjectKeys, key }) => {
   if (unusedObjectKeys.length) {
     const excessiveKeysError = new ValidationError({

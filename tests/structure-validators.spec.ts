@@ -9,7 +9,7 @@ import {
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
 import { validate, validateIf } from '../src/validate'
-import { only, requiredOnly } from '../src/structure-validators'
+import { notEmpty, only, requiredOnly } from '../src/structure-validators'
 import { isNotEmptyString } from '../src/is'
 
 describe(`${only.name}`, () => {
@@ -102,7 +102,6 @@ describe(`${requiredOnly.name}`, () => {
       },
     })
 
-    // @ts-ignore
     expect(errorTree).toBeUndefined()
   })
 
@@ -146,5 +145,49 @@ describe(`${requiredOnly.name}`, () => {
     })
 
     expect(errorTree).toBeUndefined()
+  })
+})
+
+describe(`${notEmpty.name}`, () => {
+  it('no error', () => {
+    const errorTree = notEmpty({
+      user: {
+        name: validateIf(true)(assertString),
+      },
+    })({
+      user: {
+        name: 'name',
+      },
+    })
+
+    expect(errorTree).toBeUndefined()
+  })
+
+  it('error with object', () => {
+    const errorTree = notEmpty({
+      user: {
+        name: validateIf(true)(assertString),
+      },
+    })({}, 'testObject')
+
+    expect(errorTree).toMatchObject({
+      _code: 'objectEmpty',
+      _message: 'object cannot be empty',
+      _key: 'testObject',
+    })
+  })
+
+  it('error with array', () => {
+    const errorTree = notEmpty([
+      {
+        name: validateIf(true)(assertString),
+      },
+    ])([], 'testArray')
+
+    expect(errorTree).toMatchObject({
+      _code: 'arrayEmpty',
+      _message: 'array cannot be empty',
+      _key: 'testArray',
+    })
   })
 })
