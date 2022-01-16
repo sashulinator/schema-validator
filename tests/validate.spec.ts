@@ -20,7 +20,7 @@ describe(`${validate.name}`, () => {
     )
   })
 
-  it.only('get comparing value from object', () => {
+  it('get comparing value from object', () => {
     function testComparingAssertion(value: unknown, value2: string) {
       expect(value2).toBe('qwerty')
     }
