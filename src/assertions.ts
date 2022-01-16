@@ -38,7 +38,7 @@ export function assertNotNaN(input: unknown): void {
   }
 }
 
-export function assertNotMoreThan(input: unknown, num: number): void {
+export function assertNotMoreThan(input: unknown, num: unknown): void {
   if (!isNumber(input) && !isString(input)) {
     throw Error(`must be a string or number`)
   }
@@ -58,6 +58,12 @@ export function assertNotMoreThan(input: unknown, num: number): void {
   }
 
   throw Error(`more than ${num}`)
+}
+
+export function assertStringMaxLimit(input: unknown, num: unknown): void {
+  assertString(input)
+
+  assertNotMoreThan(input.length, num)
 }
 
 export function assertStringifiedNumber(input: unknown): void {
