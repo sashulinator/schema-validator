@@ -22,13 +22,9 @@ export type ErrorTree = Record<string, ValidationError> | ValidationError | unde
 
 export type Assertion = (value: any, key?: string, structure?: any) => void
 
-export type ComparingAssertion = (
-  value: any,
-  comparisonValue: any,
-  key?: string,
-  key2?: string,
-  structure?: any,
-) => void
+export type ComparingAssertionArgs = [value: any, comparisonValue: any, key?: string, key2?: string, structure?: any]
+
+export type ComparingAssertion = (...args: ComparingAssertionArgs) => void
 
 export type AssertionItem =
   | Assertion

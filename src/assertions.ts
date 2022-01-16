@@ -60,7 +60,7 @@ export function assertNotMoreThan(input: unknown, num: unknown): void {
   throw Error(`more than ${num}`)
 }
 
-export function assertStringMaxLimit(input: unknown, num: unknown): void {
+export function assertStringMaxLength(input: unknown, num: unknown): void {
   assertString(input)
 
   assertNotMoreThan(input.length, num)
