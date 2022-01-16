@@ -12,9 +12,9 @@ export function validate(...assertionItems: AssertionItem[]): EmitAssertValidati
 
       try {
         if (isArray) {
-          assertion?.(value, value2, structure)
+          assertion?.(value, value2, key, key2, structure)
         } else {
-          ;(assertion as Assertion)?.(value, structure)
+          ;(assertion as Assertion)?.(value, key, structure)
         }
       } catch (error) {
         if (error instanceof Error) {
