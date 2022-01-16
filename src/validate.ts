@@ -7,8 +7,12 @@ export function validate(...assertionItems: AssertionItem[]): EmitAssertValidati
       const assertionItem = assertionItems[index]
       const isArray = Array.isArray(assertionItem)
       const assertion = isArray ? assertionItem[0] : assertionItem
-      const value2 = isArray ? assertionItem[1] : undefined
+      let value2: any = isArray ? assertionItem[1] : undefined
       const key2 = isArray ? assertionItem[2] : undefined
+
+      if (typeof value2 === 'function') {
+        value2 = value2(value, key, structure)
+      }
 
       try {
         if (isArray) {

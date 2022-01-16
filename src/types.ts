@@ -30,7 +30,9 @@ export type ComparingAssertion = (
   structure?: any,
 ) => void
 
-export type AssertionItem = Assertion | [ComparingAssertion, any, string?]
+export type AssertionItem =
+  | Assertion
+  | [ComparingAssertion, any | ((value: any, key?: string, structure?: ObjectStructure) => any), string?]
 
 export type EmitAssertValidation = (value: any, key?: string, structure?: any) => ValidationError | undefined
 

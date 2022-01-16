@@ -1,8 +1,9 @@
 /* eslint-disable jest/expect-expect */
-import { assertMatchPattern, assertNumber } from '../src/assertions'
+import { assertMatchPattern, assertNumber, assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
 import { validate, validateIf } from '../src/validate'
+import { only } from '../src/structure-validators'
 
 describe(`${validate.name}`, () => {
   it('returns error', () => {
@@ -17,6 +18,28 @@ describe(`${validate.name}`, () => {
         message: 'is not a number',
       }),
     )
+  })
+
+  it('get comparing value from object', () => {
+    function testComparingAssertion(value: unknown, value2: string) {
+      expect(value2).toBe('qwerty')
+    }
+
+    function getPasswordValue(_?: unknown, __?: string, objStructure?: Record<'password', string>) {
+      return objStructure.password
+    }
+
+    const validateTest = only({
+      password: validate(assertString),
+      user: validate([testComparingAssertion, getPasswordValue, 'password']),
+    })
+
+    expect(
+      validateTest({
+        password: 'qwerty',
+        user: 'vasya',
+      }),
+    ).toBeUndefined()
   })
 
   it('returns error for ComparingAssertion', () => {

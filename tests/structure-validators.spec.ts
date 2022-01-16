@@ -106,7 +106,7 @@ describe(`${requiredOnly.name}`, () => {
     expect(errorTree).toBeUndefined()
   })
 
-  it.only('array in schema', () => {
+  it('array in schema', () => {
     type Text = {
       defaultValue: string
       pattern: string
