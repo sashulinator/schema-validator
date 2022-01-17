@@ -1,25 +1,22 @@
-import { ObjectStructure } from '.'
+import { ComparingAssertion, ObjectStructure } from '.'
 import { ValidationError } from './errors'
 import { Assertion, AssertionItem, EmitAssertValidation } from './types'
 
 export function validate(...assertionItems: AssertionItem[]): EmitAssertValidation {
-  return function emitAssertValidation(value, key, structure) {
+  return function emitAssertValidation(value, key, objStructure) {
     for (let index = 0; index < assertionItems.length; index += 1) {
       const assertionItem = assertionItems[index]
-      const isArray = Array.isArray(assertionItem)
-      const assertion = isArray ? assertionItem[0] : assertionItem
-      let value2: any = isArray ? assertionItem[1] : undefined
-      const key2 = isArray ? assertionItem[2] : undefined
-
-      if (typeof value2 === 'function') {
-        value2 = value2(value, key, structure)
-      }
+      let assertion: Assertion | ComparingAssertion
+      let value2: unknown
+      let key2: string
 
       try {
-        if (isArray) {
-          assertion?.(value, value2, key, key2, structure)
+        if (Array.isArray(assertionItem)) {
+          ;[assertion, value2, key2] = assertionItem
+          assertion(value, value2, key, key2, objStructure)
         } else {
-          ;(assertion as Assertion)?.(value, key, structure)
+          assertion = assertionItem
+          assertion(value, key, objStructure)
         }
       } catch (error) {
         if (error instanceof Error) {
