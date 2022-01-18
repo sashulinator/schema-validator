@@ -13,6 +13,10 @@ export function validate(...assertionItems: AssertionItem[]): EmitAssertValidati
       try {
         if (Array.isArray(assertionItem)) {
           ;[assertion, value2, key2] = assertionItem
+          // TODO test
+          if (typeof value2 === 'function') {
+            value2 = value2(value, key, objStructure)
+          }
           assertion(value, value2, key, key2, objStructure)
         } else {
           assertion = assertionItem
