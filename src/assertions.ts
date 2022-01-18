@@ -1,4 +1,37 @@
-import { isNumber, isString, isBoolean } from './is'
+import { isEmptyString } from '.'
+import { isNumber, isString, isNil, isBoolean, isNull } from './is'
+
+export function assertNil(input: unknown): input is undefined | null {
+  if (isNil(input)) {
+    return
+  }
+
+  throw Error('is not nil')
+}
+
+export function assertNotNil<T>(input: T | undefined | null): input is T {
+  if (!isNil(input)) {
+    return
+  }
+
+  throw Error('is nil')
+}
+
+export function assertNull(input: unknown): input is null {
+  if (isNull(input)) {
+    return
+  }
+
+  throw Error('is not null')
+}
+
+export function assertNotNull<T>(input: T | null): input is T {
+  if (!isNull(input)) {
+    return
+  }
+
+  throw Error('is null')
+}
 
 export function assertNumber(input: unknown): asserts input is number {
   if (isNumber(input)) {
@@ -16,6 +49,22 @@ export function assertString(input: unknown): asserts input is string {
   throw Error('is not a string')
 }
 
+export function assertEmptyString(input: unknown): asserts input is '' {
+  if (isEmptyString(input)) {
+    return
+  }
+
+  throw Error('is not a string')
+}
+
+export function assertNotEmptyString<T>(input: T | ''): asserts input is T {
+  if (!isEmptyString(input)) {
+    return
+  }
+
+  throw Error('is an empty string')
+}
+
 export function assertBoolean(input: unknown): asserts input is boolean {
   if (isBoolean(input)) {
     return
@@ -26,6 +75,12 @@ export function assertBoolean(input: unknown): asserts input is boolean {
 
 export function assertNotUndefined<T>(input: unknown | undefined): asserts input is T {
   if (typeof input === 'undefined') {
+    throw Error('cannot be undefined')
+  }
+}
+
+export function assertUndefined(input: undefined): asserts input is undefined {
+  if (typeof input !== 'undefined') {
     throw Error('cannot be undefined')
   }
 }
