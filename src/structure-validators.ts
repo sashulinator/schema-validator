@@ -43,6 +43,8 @@ export function createStructureValidator(
   }
 }
 
+export const wrap = createStructureValidator(({ errorTree }) => errorTree)
+
 export const notEmpty = createStructureValidator(({ errorTree, structure, key }) => {
   const isEmpty = Array.isArray(structure) ? structure.length === 0 : Object.keys(structure).length === 0
 
