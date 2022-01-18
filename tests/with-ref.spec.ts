@@ -1,37 +1,40 @@
 import expectMatchError from './expect-match-error'
 import {
-  assertBoolean,
   assertMatchPattern,
   assertRegExp,
   assertStringifiedNumber,
   assertStringMaxLength,
-  compareIfWith,
-  isNotEmptyString,
+  withRef,
   only,
   validate,
-  validateIf,
+  or,
+  assertUndefined,
 } from '../src'
 
-describe(`${compareIfWith.name}`, () => {
+describe(`${withRef.name}`, () => {
+  // prettier-ignore
   const textSchema = only({
-    maxlength: validateIf(isNotEmptyString)(assertStringifiedNumber),
-    pattern: validateIf(isNotEmptyString)(assertRegExp),
-    defaultValue: validateIf(isNotEmptyString)(
-      compareIfWith(isNotEmptyString)('pattern', assertMatchPattern),
-      compareIfWith(isNotEmptyString)('maxlength', assertStringMaxLength),
+    maxlength: validate(assertStringifiedNumber),
+    pattern: validate(assertRegExp),
+    defaultValue: or(
+      validate(assertUndefined),
+      validate(
+        withRef('pattern', assertMatchPattern),
+        withRef('maxlength', assertStringMaxLength)
+      )
     ),
     hints: [
       validate(
-        compareIfWith(isNotEmptyString)('pattern', assertMatchPattern),
-        compareIfWith(isNotEmptyString)('maxlength', assertStringMaxLength),
-      ),
+        withRef('pattern', assertMatchPattern),
+        withRef('maxlength', assertStringMaxLength)
+      )
     ],
   })
 
   it('no error', () => {
     const errorTree = textSchema({
       defaultValue: 'testDefaultValue',
-      maxlength: '',
+      maxlength: '77',
       pattern: '',
       hints: ['true', '77'],
     })
