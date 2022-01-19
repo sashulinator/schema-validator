@@ -1,4 +1,4 @@
-import { ComparingAssertion, ObjectStructure } from '.'
+import { ComparingAssertion } from '.'
 import { ValidationError } from './errors'
 import { Assertion, AssertionItem, EmitAssertValidation } from './types'
 
@@ -37,19 +37,5 @@ export function validate(...assertionItems: AssertionItem[]): EmitAssertValidati
     }
 
     return undefined
-  }
-}
-
-export function validateIf(
-  cbOrBoolean: ((value: any, key?: string, structure?: ObjectStructure) => boolean) | boolean,
-) {
-  return (...assertionItems: AssertionItem[]): EmitAssertValidation => {
-    return function emitAssertValidation(value, key, structure) {
-      const cbResult = typeof cbOrBoolean === 'function' && cbOrBoolean(value, key, structure)
-
-      if (cbResult || cbOrBoolean === true) {
-        return validate(...assertionItems)(value, key, structure)
-      }
-    }
   }
 }

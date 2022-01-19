@@ -1,16 +1,9 @@
 /* eslint-disable jest/expect-expect */
-import {
-  assertBoolean,
-  assertMatchPattern,
-  assertRegExp,
-  assertString,
-  assertStringifiedNumber,
-} from '../src/assertions'
+import { assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
-import { validate, validateIf } from '../src/validate'
+import { validate } from '../src/validate'
 import { notEmpty, only, requiredOnly } from '../src/structure-validators'
-import { isNotEmptyString } from '../src/is'
 
 describe(`${only.name}`, () => {
   it('nessted properties are reachable', () => {
@@ -71,88 +64,13 @@ describe(`${requiredOnly.name}`, () => {
       },
     })
   })
-
-  it('no excessive keys in ErrorTree', () => {
-    const errorTree = only({
-      user: {
-        name: validateIf(true)(assertString),
-        test: validateIf(true)(assertString),
-      },
-    })({
-      user: {
-        name: true,
-        test: '77',
-      },
-    })
-
-    // @ts-ignore
-    expect(errorTree.test).toBeUndefined()
-  })
-
-  it('ErrorTree = undefined', () => {
-    const errorTree = only({
-      user: {
-        name: validateIf(true)(assertString),
-        test: validateIf(true)(assertString),
-      },
-    })({
-      user: {
-        name: 'name',
-        test: 'test',
-      },
-    })
-
-    expect(errorTree).toBeUndefined()
-  })
-
-  it('array in schema', () => {
-    type Text = {
-      defaultValue: string
-      pattern: string
-      hints: string[]
-    }
-
-    function assertMatchPatternFromStructure(v: unknown, key?: string, obj?: Text) {
-      expect(obj).toMatchObject({
-        defaultValue: 'testDefaultValue',
-        pattern: 'test',
-        hints: ['test'],
-      })
-
-      if (obj?.pattern) {
-        assertMatchPattern(v, obj.pattern)
-      }
-    }
-
-    const textSchema = {
-      testNesting: {
-        anotherOne: {
-          defaultValue: validateIf(isNotEmptyString)(assertMatchPatternFromStructure),
-          pattern: validateIf(isNotEmptyString)(assertRegExp),
-          hints: [validateIf(isNotEmptyString)(assertMatchPatternFromStructure)],
-        },
-      },
-    }
-
-    const errorTree = only(textSchema)({
-      testNesting: {
-        anotherOne: {
-          defaultValue: 'testDefaultValue',
-          pattern: 'test',
-          hints: ['test'],
-        },
-      },
-    })
-
-    expect(errorTree).toBeUndefined()
-  })
 })
 
 describe(`${notEmpty.name}`, () => {
   it('no error', () => {
     const errorTree = notEmpty({
       user: {
-        name: validateIf(true)(assertString),
+        name: validate(assertString),
       },
     })({
       user: {
@@ -166,7 +84,7 @@ describe(`${notEmpty.name}`, () => {
   it('error with object', () => {
     const errorTree = notEmpty({
       user: {
-        name: validateIf(true)(assertString),
+        name: validate(assertString),
       },
     })({}, 'testObject')
 
@@ -180,7 +98,7 @@ describe(`${notEmpty.name}`, () => {
   it('error with array', () => {
     const errorTree = notEmpty([
       {
-        name: validateIf(true)(assertString),
+        name: validate(assertString),
       },
     ])([], 'testArray')
 
