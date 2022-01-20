@@ -6,7 +6,7 @@ import {
   assertStringMaxLength,
   withRef,
   only,
-  validate,
+  primitive,
   or,
   assertUndefined,
 } from '../src'
@@ -14,17 +14,17 @@ import {
 describe(`${withRef.name}`, () => {
   // prettier-ignore
   const textSchema = only({
-    maxlength: validate(assertStringifiedNumber),
-    pattern: validate(assertRegExp),
+    maxlength: primitive(assertStringifiedNumber),
+    pattern: primitive(assertRegExp),
     defaultValue: or(
-      validate(assertUndefined),
-      validate(
+      primitive(assertUndefined),
+      primitive(
         withRef('pattern', assertMatchPattern),
         withRef('maxlength', assertStringMaxLength)
       )
     ),
     hints: [
-      validate(
+      primitive(
         withRef('pattern', assertMatchPattern),
         withRef('maxlength', assertStringMaxLength)
       )

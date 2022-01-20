@@ -2,14 +2,14 @@
 import { assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
-import { validate } from '../src/validate'
+import { primitive } from '../src/primitive'
 import { notEmpty, only, requiredOnly } from '../src/structure-validators'
 
 describe(`${only.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        name: validate(assertString),
+        name: primitive(assertString),
       },
     }
 
@@ -31,7 +31,7 @@ describe(`${requiredOnly.name}`, () => {
   it('nessted properties are reachable', () => {
     const schema = {
       user: {
-        name: validate(assertString),
+        name: primitive(assertString),
       },
     }
 
@@ -51,7 +51,7 @@ describe(`${requiredOnly.name}`, () => {
   it('structure got passed as a third argument', () => {
     const schema = {
       user: {
-        name: validate(assertString, (value: unknown, key: string, structure?: unknown) => {
+        name: primitive(assertString, (value: unknown, key: string, structure?: unknown) => {
           expect(structure).toEqual({ name: 'string', test: 77 })
         }),
       },
@@ -70,7 +70,7 @@ describe(`${notEmpty.name}`, () => {
   it('no error', () => {
     const errorTree = notEmpty({
       user: {
-        name: validate(assertString),
+        name: primitive(assertString),
       },
     })({
       user: {
@@ -84,7 +84,7 @@ describe(`${notEmpty.name}`, () => {
   it('error with object', () => {
     const errorTree = notEmpty({
       user: {
-        name: validate(assertString),
+        name: primitive(assertString),
       },
     })({}, 'testObject')
 
@@ -98,7 +98,7 @@ describe(`${notEmpty.name}`, () => {
   it('error with array', () => {
     const errorTree = notEmpty([
       {
-        name: validate(assertString),
+        name: primitive(assertString),
       },
     ])([], 'testArray')
 

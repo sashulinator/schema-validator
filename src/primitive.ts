@@ -2,7 +2,7 @@ import { ComparingAssertion } from '.'
 import { ValidationError } from './errors'
 import { Assertion, AssertionItem, EmitAssertValidation } from './types'
 
-export function validate(...assertionItems: AssertionItem[]): EmitAssertValidation {
+export function primitive(...assertionItems: AssertionItem[]): EmitAssertValidation {
   return function emitAssertValidation(value, key, objStructure) {
     for (let index = 0; index < assertionItems.length; index += 1) {
       const assertionItem = assertionItems[index]

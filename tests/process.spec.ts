@@ -3,13 +3,13 @@ import { assertString } from '../src/assertions'
 import { process } from '../src/process'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
-import { validate } from '../src/validate'
+import { primitive } from '../src/primitive'
 
 describe(`${process.name}`, () => {
   it('return errorTree', () => {
     const schema = {
       user: {
-        username: validate(assertString),
+        username: primitive(assertString),
       },
     }
 
@@ -31,7 +31,7 @@ describe(`${process.name}`, () => {
     const schema = {
       users: [
         {
-          username: validate(assertString),
+          username: primitive(assertString),
         },
       ],
     }

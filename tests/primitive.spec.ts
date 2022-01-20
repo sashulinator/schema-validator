@@ -2,12 +2,12 @@
 import { assertMatchPattern, assertNumber, assertString } from '../src/assertions'
 import { ValidationError } from '../src/errors'
 import expectMatchError from './expect-match-error'
-import { validate } from '../src/validate'
+import { primitive } from '../src/primitive'
 import { only } from '../src'
 
-describe(`${validate.name}`, () => {
+describe(`${primitive.name}`, () => {
   it('returns error', () => {
-    const emitValidation = validate(assertNumber)
+    const emitValidation = primitive(assertNumber)
 
     return expectMatchError(
       () => emitValidation('string', 'test'),
@@ -30,8 +30,8 @@ describe(`${validate.name}`, () => {
     }
 
     const validateTest = only({
-      password: validate(assertString),
-      user: validate([testComparingAssertion, getPasswordValue, 'password']),
+      password: primitive(assertString),
+      user: primitive([testComparingAssertion, getPasswordValue, 'password']),
     })
 
     expect(
@@ -43,7 +43,7 @@ describe(`${validate.name}`, () => {
   })
 
   it('returns error for ComparingAssertion', () => {
-    const emitValidation = validate([assertMatchPattern, /test/, 'pattern'])
+    const emitValidation = primitive([assertMatchPattern, /test/, 'pattern'])
 
     return expectMatchError(
       () => emitValidation('string', 'test'),

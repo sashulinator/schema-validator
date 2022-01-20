@@ -1,4 +1,4 @@
-import { validate, required, or, ValidationError, assertString, assertStringifiedNumber } from '../src'
+import { primitive, required, or, ValidationError, assertString, assertStringifiedNumber } from '../src'
 import expectMatchError from './expect-match-error'
 
 describe(`${or.name}`, () => {
@@ -6,17 +6,17 @@ describe(`${or.name}`, () => {
     const schema = or(
       required({
         user: {
-          name: validate(assertString),
+          name: primitive(assertString),
         },
       }),
       required({
         user: {
-          username: validate(assertString),
+          username: primitive(assertString),
         },
       }),
       required({
         user: {
-          email: validate(assertString),
+          email: primitive(assertString),
         },
       }),
     )
@@ -39,12 +39,12 @@ describe(`${or.name}`, () => {
     const schema = or(
       {
         user: {
-          name: validate(assertString),
+          name: primitive(assertString),
         },
       },
       {
         user: {
-          name: validate(assertStringifiedNumber),
+          name: primitive(assertStringifiedNumber),
         },
       },
     )
@@ -71,17 +71,17 @@ describe(`${or.name}`, () => {
     const schema = or(
       required({
         user: {
-          name: validate(assertString),
+          name: primitive(assertString),
         },
       }),
       required({
         user: {
-          username: validate(assertString),
+          username: primitive(assertString),
         },
       }),
       {
         user: {
-          email: validate(assertString),
+          email: primitive(assertString),
         },
       },
     )
