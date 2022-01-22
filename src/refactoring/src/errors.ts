@@ -2,7 +2,7 @@
 interface BaseErrorProps {
   code: string
   message: string
-  errors?: { [inputNameFromCollectableError: string]: CollectableError } | CollectableError
+  errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
 }
 
 export class BaseError extends Error {
@@ -10,7 +10,7 @@ export class BaseError extends Error {
 
   public readonly _message: string
 
-  public readonly _errors?: { [inputNameFromCollectableError: string]: CollectableError } | CollectableError
+  public readonly _errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
   // depending on a context on a client side
   // example: you try to create a user and receive { errorCode: CONFLICT }
   // so you can show the message "Such user already exists"
@@ -26,7 +26,7 @@ export class BaseError extends Error {
   }
 }
 
-export interface CollectableErrorProps {
+export interface ValidationErrorProps {
   code: string
   message: string
   inputName: string
@@ -35,7 +35,7 @@ export interface CollectableErrorProps {
   input2?: unknown
 }
 
-export class CollectableError extends BaseError {
+export class ValidationError extends BaseError {
   // can be a field name in a validated object
   _inputName: string
 
@@ -48,7 +48,7 @@ export class CollectableError extends BaseError {
   // input that we somehow compared with ValidationError['input']
   _input2?: unknown
 
-  constructor(props: CollectableErrorProps) {
+  constructor(props: ValidationErrorProps) {
     super({ ...props })
 
     this._inputName = props.inputName
@@ -66,5 +66,3 @@ export class CollectableError extends BaseError {
     }
   }
 }
-
-export class ValidationError extends CollectableError {}
