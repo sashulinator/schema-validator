@@ -19,7 +19,7 @@ export const processFactory: ProcessFactory = (schema, input, additional) => {
   return processObject(schema, input, additional)
 }
 
-const processObject: Process<ObjectStructureSchema> = (schema, input, additional) => {
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional) => {
   if (!isObject(input)) {
     return {
       unusedObjectKeys: [],
@@ -59,7 +59,7 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
   }
 }
 
-const processArray: Process<ArrayStructureSchema> = (schema, input, additional) => {
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional) => {
   const localErrorTree: Record<string, unknown> = {}
 
   if (!Array.isArray(input)) {

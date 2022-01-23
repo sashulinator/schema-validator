@@ -1,5 +1,5 @@
 import { withRef, only, withValue } from '../../src/refactoring'
-import { basicBlockSchema, validCredentials, invalidBlock, emailSchema, invalidEmail } from './schemas'
+import { basicBlockSchema, invalidBlock, emailSchema, invalidEmail } from './schemas'
 
 describe(`${withRef.name}`, () => {
   it('basic', () => {

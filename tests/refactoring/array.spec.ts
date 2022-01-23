@@ -1,5 +1,5 @@
-import { createStructureValidator, only } from '../../src/refactoring'
-import { credentialsSchema, invalidCredentials, validCredentials, arrayBlockSchema, invalidArrayBlock } from './schemas'
+import { only } from '../../src/refactoring'
+import { arrayBlockSchema, invalidArrayBlock } from './schemas'
 
 describe('schemas with array', () => {
   it('basic', () => {

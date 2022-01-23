@@ -3,16 +3,20 @@ import { processFactory } from './process'
 import { removeEmpty } from './remove-empty'
 import { Additional, EmitStructureValidation, ErrorTree, ProcessResult, Schema } from './types'
 
-type StructureValidatorCbParams = ProcessResult & {
+type StructureValidatorCbParams<Type> = ProcessResult & {
   input: unknown
   inputName?: string
-  schema: Schema
+  schema: Schema<Type>
 }
 
 export type EmitStructureValidator = (input: unknown, additional: Additional) => ErrorTree
 
-export function createStructureValidator(cb: (processResult: StructureValidatorCbParams) => ErrorTree) {
-  return <SC extends Schema>(schema: SC): SC & EmitStructureValidation => {
+export function createStructureValidator(
+  cb: <InputType>(processResult: StructureValidatorCbParams<InputType>) => ErrorTree,
+) {
+  return function test<InputType, SC extends Schema<InputType> = Schema<InputType>>(
+    schema: SC,
+  ): SC & EmitStructureValidation {
     const emitStructureValidator: EmitStructureValidator = (input, additional) => {
       const processResult = processFactory(schema, input, additional)
 
@@ -45,5 +49,9 @@ export const only = createStructureValidator(({ errorTree, unusedObjectKeys, inp
     errorTree = { ...excessiveKeysError, ...errorTree }
   }
 
+  return errorTree
+})
+
+export const wrap = createStructureValidator(({ errorTree, unusedObjectKeys, inputName }) => {
   return errorTree
 })

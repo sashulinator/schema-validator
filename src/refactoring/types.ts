@@ -2,14 +2,16 @@ import { ValidationError } from './errors'
 
 // Common
 
-export type Schema = StructureSchema | EmitAssertion
+export type Schema<Type> = Type extends Record<string, any>
+  ? ObjectStructureSchema<Type>
+  : Type extends unknown[]
+  ? ArrayStructureSchema<Type[number]>
+  : EmitAssertion
 
-export type StructureSchema = ArrayStructureSchema | ObjectStructureSchema
+export type ArrayStructureSchema<Type> = Schema<Type>[]
 
-export type ArrayStructureSchema = (Schema | EmitAssertion)[]
-
-export type ObjectStructureSchema = {
-  [fieldName: string]: Schema | EmitAssertion
+export type ObjectStructureSchema<Type> = {
+  [Property in keyof Type]: Schema<Type[Property]>
 }
 
 export type Additional = {
@@ -27,7 +29,7 @@ export type Assertion = (input: unknown, additional?: Additional) => void
 
 export type ErrorTree = Record<string, unknown> | ValidationError
 
-export type EmitAssertion = (input: unknown, additional?: Additional) => ValidationError
+export type EmitAssertion = (input: unknown, additional?: Additional) => ErrorTree
 
 // Process
 
@@ -37,9 +39,13 @@ export type ProcessResult = {
   unusedSchemaKeys: string[]
 }
 
-export type ProcessFactory = (schema: Schema, input: unknown, additional?: Additional) => ProcessResult
+export type ProcessFactory = <InputType>(
+  schema: Schema<InputType>,
+  input: unknown,
+  additional?: Additional,
+) => ProcessResult
 
-export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, additional?: Additional) => ProcessResult
+export type Process<InputType> = (schema: Schema<InputType>, input: unknown, additional?: Additional) => ProcessResult
 
 // StructureValidator
 

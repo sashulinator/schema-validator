@@ -70,7 +70,7 @@ describe(`${createStructureValidator.name}`, () => {
       return errorTree
     })
 
-    const validator = testStructureValidator(credentialsSchema)
+    const validator = testStructureValidator<{ username: string }>(credentialsSchema)
 
     const error = validator.username(12)
 
