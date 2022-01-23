@@ -65,4 +65,21 @@ describe(`${createStructureValidator.name}`, () => {
     const validator = testStructureValidator(credentialsSchema)
     validator({ password: 'password' }, { inputName: 'testInputName' })
   })
+
+  it('returns also object schema', () => {
+    const testStructureValidator = createStructureValidator(({ errorTree }) => {
+      return errorTree
+    })
+
+    const validator = testStructureValidator(credentialsSchema)
+
+    const error = validator.username(12)
+
+    expect({ ...error }).toEqual({
+      _code: 'assertString',
+      _input: 12,
+      _inputName: undefined,
+      _message: 'is not a string',
+    })
+  })
 })

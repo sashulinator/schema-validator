@@ -25,11 +25,11 @@ export type Additional = {
 
 export type Primitive = (...assertions: Assertion[]) => EmitAssertion
 
-export type Assertion = (input: unknown, additional: Additional) => void
+export type Assertion = (input: unknown, additional?: Additional) => void
 
 export type ErrorTree = Record<string, unknown> | ValidationError
 
-export type EmitAssertion = (input: unknown, additional: Additional) => ValidationError
+export type EmitAssertion = (input: unknown, additional?: Additional) => ValidationError
 
 // Process
 
@@ -39,9 +39,9 @@ export type ProcessResult = {
   unusedSchemaKeys: string[]
 }
 
-export type ProcessFactory = (schema: Schema, input: unknown, additional: Additional) => ProcessResult
+export type ProcessFactory = (schema: Schema, input: unknown, additional?: Additional) => ProcessResult
 
-export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, additional: Additional) => ProcessResult
+export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, additional?: Additional) => ProcessResult
 
 // StructureValidator
 
