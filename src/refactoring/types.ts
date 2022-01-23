@@ -52,3 +52,8 @@ export type EmitStructureValidation = (value: unknown, additional?: Additional) 
 export type WithAsserion = (input: unknown, input2?: unknown, additional?: Additional) => void
 
 export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, additional?: Additional) => void
+export type WithValue = (
+  input2: unknown,
+  assertion: WithAsserion,
+  name?: string,
+) => (input: unknown, additional?: Additional) => void

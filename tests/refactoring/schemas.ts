@@ -1,4 +1,4 @@
-import { assertString, primitive, assertMatchPattern, withRef, assertRegExp } from '../../src/refactoring'
+import { assertString, primitive, assertMatchPattern, withRef, assertRegExp, withValue } from '../../src/refactoring'
 
 export const credentialsSchema = {
   username: primitive(assertString),
@@ -23,4 +23,14 @@ export const basicBlockSchema = {
 export const invalidBlock = {
   pattern: /^test$/,
   defaultValue: 'notvalid',
+}
+
+//
+
+export const emailSchema = {
+  email: primitive(withValue(/@.*\.*./, assertMatchPattern, 'emailPattern')),
+}
+
+export const invalidEmail = {
+  email: 'notvalidemail',
 }
