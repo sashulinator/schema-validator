@@ -36,17 +36,17 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
   const unusedSchemaKeys = []
 
   for (let index = 0; index < schemaEntries.length; index += 1) {
-    const [objKey, schemaValue] = schemaEntries[index]
-    const objinput = input?.[objKey]
+    const [inputName, schemaValue] = schemaEntries[index]
+    const objInput = input?.[inputName]
 
-    unusedObjectKeys = unusedObjectKeys.filter((inputName) => inputName !== objKey)
+    unusedObjectKeys = unusedObjectKeys.filter((objKey) => objKey !== inputName)
 
-    if (objinput === undefined) {
-      unusedSchemaKeys.push(objKey)
+    if (objInput === undefined) {
+      unusedSchemaKeys.push(inputName)
     }
 
-    const { errorTree } = processFactory(schemaValue, objinput, additional)
-    localErrorTree[objKey] = errorTree
+    const { errorTree } = processFactory(schemaValue, objInput, { ...additional, inputName })
+    localErrorTree[inputName] = errorTree
   }
 
   return {

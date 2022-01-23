@@ -9,3 +9,8 @@ export const invalidCredentials = {
   username: 1223,
   password: 134234,
 }
+
+export const validCredentials = {
+  username: 'username',
+  password: 'password',
+}
