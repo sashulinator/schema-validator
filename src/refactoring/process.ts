@@ -1,6 +1,6 @@
 import { ValidationError } from './errors'
 import { isObject } from './is'
-import { ErrorTree, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, structure, additional) => {
   if (typeof schema === 'function') {
@@ -30,7 +30,7 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
     }
   }
 
-  const localErrorTree: Record<string, ErrorTree> = {}
+  const localErrorTree: Record<string, unknown> = {}
   const schemaEntries = Object.entries(schema)
   let unusedObjectKeys = Object.keys(input)
   const unusedSchemaKeys = []

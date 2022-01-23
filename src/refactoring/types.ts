@@ -27,7 +27,7 @@ export type Primitive = (...assertions: Assertion[]) => EmitAssertion
 
 export type Assertion = (input: unknown, additional: Additional) => void
 
-export type ErrorTree<T extends unknown = unknown> = Record<string, ValidationError> | ValidationError | unknown | T
+export type ErrorTree = Record<string, unknown> | ValidationError
 
 export type EmitAssertion = (input: unknown, additional: Additional) => ValidationError
 
