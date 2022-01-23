@@ -1,5 +1,4 @@
-/* eslint-disable jest/expect-expect */
-import { createStructureValidator } from '../../src/refactoring'
+import { createStructureValidator, only } from '../../src/refactoring'
 import { credentialsSchema, invalidCredentials, validCredentials } from './schemas'
 
 describe(`${createStructureValidator.name}`, () => {
@@ -80,6 +79,33 @@ describe(`${createStructureValidator.name}`, () => {
       _input: 12,
       _inputName: undefined,
       _message: 'is not a string',
+    })
+  })
+})
+
+// ONLY
+
+describe(`${only.name}`, () => {
+  it('basic', () => {
+    const onlySchema = only(credentialsSchema)
+
+    const errorTree = onlySchema({ testEscessiveKey: 'testEscessiveValue' })
+
+    expect(errorTree).toEqual({
+      _code: 'excessiveKeys',
+      _input: ['testEscessiveKey'],
+      _inputName: undefined,
+      _message: 'some keys are excessive',
+      password: {
+        _code: 'assertString',
+        _inputName: 'password',
+        _message: 'is not a string',
+      },
+      username: {
+        _code: 'assertString',
+        _inputName: 'username',
+        _message: 'is not a string',
+      },
     })
   })
 })
