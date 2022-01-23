@@ -2,9 +2,9 @@ import { ValidationError } from './errors'
 import { isObject } from './is'
 import { ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export const processFactory: ProcessFactory = (schema, structure, additional) => {
+export const processFactory: ProcessFactory = (schema, input, additional) => {
   if (typeof schema === 'function') {
-    const errorTree = schema(structure, additional)
+    const errorTree = schema(input, additional)
 
     return {
       errorTree,
@@ -13,7 +13,7 @@ export const processFactory: ProcessFactory = (schema, structure, additional) =>
     }
   }
 
-  return processObject(schema, structure, additional)
+  return processObject(schema, input, additional)
 }
 
 const processObject: Process<ObjectStructureSchema> = (schema, input, additional) => {
@@ -45,7 +45,7 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
       unusedSchemaKeys.push(inputName)
     }
 
-    const { errorTree } = processFactory(schemaValue, objInput, { ...additional, inputName })
+    const { errorTree } = processFactory(schemaValue, objInput, { ...additional, inputName, inputObject: input })
     localErrorTree[inputName] = errorTree
   }
 

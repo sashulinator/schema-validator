@@ -46,3 +46,9 @@ export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, a
 // StructureValidator
 
 export type EmitStructureValidation = (value: unknown, additional?: Additional) => ErrorTree
+
+// With
+
+export type WithAsserion = (input: unknown, input2?: unknown, additional?: Additional) => void
+
+export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, additional?: Additional) => void

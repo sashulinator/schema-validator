@@ -9,10 +9,13 @@ export const primitive: Primitive = (...assertionItems) => {
       try {
         assertion(input, additional)
       } catch (error) {
+        if (error instanceof ValidationError) {
+          return error
+        }
         if (error instanceof Error) {
           return new ValidationError({
             inputName: additional?.inputName,
-            input,
+            input: input?.toString(),
             code: assertion?.name,
             message: error.message,
           })
