@@ -11,7 +11,7 @@ export const primitive: Primitive = (...assertionItems) => {
       } catch (error) {
         if (error instanceof Error) {
           return new ValidationError({
-            inputName: additional.inputName,
+            inputName: additional?.inputName,
             input,
             code: assertion?.name,
             message: error.message,

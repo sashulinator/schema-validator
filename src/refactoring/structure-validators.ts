@@ -1,10 +1,11 @@
+import { ValidationError } from './errors'
 import { processFactory } from './process'
 import { removeEmpty } from './remove-empty'
 import { Additional, EmitStructureValidation, ErrorTree, ProcessResult, Schema } from './types'
 
 type StructureValidatorCbParams = ProcessResult & {
   input: unknown
-  inputName: string
+  inputName?: string
   schema: Schema
 }
 
@@ -24,17 +25,25 @@ export function createStructureValidator(cb: (processResult: StructureValidatorC
       })
     }
 
-    const schemaKeys = Object.keys(schema)
+    Object.entries(schema).forEach(([schemaKey, schemaValue]) => {
+      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
+    })
 
-    for (let index = 0; index < schemaKeys.length; index += 1) {
-      const key = schemaKeys[index]
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      Object.defineProperty(emitStructureValidator, key, { value: schema[key], writable: true, enumerable: true })
-    }
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    return emitStructureValidator
+    return emitStructureValidator as SC & EmitStructureValidation
   }
 }
+
+export const only = createStructureValidator(({ errorTree, unusedObjectKeys, inputName }) => {
+  if (unusedObjectKeys.length) {
+    const excessiveKeysError = new ValidationError({
+      inputName,
+      input: unusedObjectKeys,
+      code: 'excessiveKeys',
+      message: 'some keys are excessive',
+    })
+
+    errorTree = { ...excessiveKeysError, ...errorTree }
+  }
+
+  return errorTree
+})

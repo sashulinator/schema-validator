@@ -15,10 +15,10 @@ export type ObjectStructureSchema = {
 }
 
 export type Additional = {
-  inputName: string | undefined
-  inputObject: Record<string, unknown> | undefined
-  initialInput: unknown | undefined
-  payload: unknown
+  inputName?: string | undefined
+  inputObject?: Record<string, unknown> | undefined
+  initialInput?: unknown | undefined
+  payload?: unknown
 }
 
 // Primitive
@@ -45,4 +45,4 @@ export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, a
 
 // StructureValidator
 
-export type EmitStructureValidation = (value: unknown, key?: string, structure?: unknown) => ErrorTree
+export type EmitStructureValidation = (value: unknown, additional?: Additional) => ErrorTree
