@@ -1,6 +1,6 @@
 import { ValidationError } from './errors'
 import { isObject } from './is'
-import { ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, additional) => {
   if (typeof schema === 'function') {
@@ -11,6 +11,9 @@ export const processFactory: ProcessFactory = (schema, input, additional) => {
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
     }
+  }
+  if (Array.isArray(schema)) {
+    return processArray(schema, input, additional)
   }
 
   return processObject(schema, input, additional)
@@ -23,7 +26,7 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
       unusedSchemaKeys: [],
       errorTree: new ValidationError({
         input,
-        message: 'schema expects object',
+        message: 'schema expects an object',
         inputName: additional.inputName,
         code: 'schemaExpectsObject',
       }),
@@ -53,5 +56,38 @@ const processObject: Process<ObjectStructureSchema> = (schema, input, additional
     unusedObjectKeys,
     unusedSchemaKeys,
     errorTree: localErrorTree,
+  }
+}
+
+const processArray: Process<ArrayStructureSchema> = (schema, input, additional) => {
+  const localErrorTree: Record<string, unknown> = {}
+
+  if (!Array.isArray(input)) {
+    return {
+      unusedObjectKeys: [],
+      unusedSchemaKeys: [],
+      errorTree: new ValidationError({
+        input,
+        message: 'schema expects an array',
+        inputName: additional.inputName,
+        code: 'schemaExpectsArray',
+      }),
+    }
+  }
+
+  if (schema.length > 1) {
+    throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
+  }
+
+  for (let index = 0; index < input.length; index += 1) {
+    const inputName = index.toString()
+    const { errorTree } = processFactory(schema[0], input?.[index], { ...additional, inputName })
+    localErrorTree[inputName] = errorTree
+  }
+
+  return {
+    errorTree: localErrorTree,
+    unusedObjectKeys: [],
+    unusedSchemaKeys: [],
   }
 }

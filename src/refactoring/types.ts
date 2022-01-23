@@ -4,11 +4,9 @@ import { ValidationError } from './errors'
 
 export type Schema = StructureSchema | EmitAssertion
 
-export type StructureSchema =
-  // | ArrayStructureSchema
-  ObjectStructureSchema
+export type StructureSchema = ArrayStructureSchema | ObjectStructureSchema
 
-// export type ArrayStructureSchema = (Schema | EmitAssertion)[]
+export type ArrayStructureSchema = (Schema | EmitAssertion)[]
 
 export type ObjectStructureSchema = {
   [fieldName: string]: Schema | EmitAssertion

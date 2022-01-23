@@ -25,7 +25,7 @@ export const invalidBlock = {
   defaultValue: 'notvalid',
 }
 
-//
+// email
 
 export const emailSchema = {
   email: primitive(withValue(/@.*\.*./, assertMatchPattern, 'emailPattern')),
@@ -33,4 +33,21 @@ export const emailSchema = {
 
 export const invalidEmail = {
   email: 'notvalidemail',
+}
+
+// array
+// prettier-ignore
+export const arrayBlockSchema = {
+  ...basicBlockSchema,
+  hints: [
+    primitive(
+      withRef('pattern', assertMatchPattern)
+    )
+  ],
+}
+
+export const invalidArrayBlock = {
+  pattern: /^test$/,
+  defaultValue: 'notvalid',
+  hints: ['test', 'notvalid', 1234],
 }

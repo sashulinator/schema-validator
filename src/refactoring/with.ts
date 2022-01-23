@@ -1,6 +1,5 @@
-import { Additional } from '.'
 import { ValidationError } from './errors'
-import { WithRef, WithAsserion, WithValue } from './types'
+import { WithRef, WithAsserion, WithValue, Additional } from './types'
 
 const handleAssertion = (
   assertion: WithAsserion,
