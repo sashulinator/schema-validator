@@ -42,3 +42,7 @@ export type ProcessResult = {
 export type ProcessFactory = (schema: Schema, input: unknown, additional: Additional) => ProcessResult
 
 export type Process<SC extends StructureSchema> = (schema: SC, input: unknown, additional: Additional) => ProcessResult
+
+// StructureValidator
+
+export type EmitStructureValidation = (value: unknown, key?: string, structure?: unknown) => ErrorTree
