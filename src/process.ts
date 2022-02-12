@@ -1,41 +1,15 @@
-/* eslint-disable no-else-return */
-import {
-  ArrayStructure,
-  ArrayStructureSchema,
-  ErrorTree,
-  ObjectStructure,
-  ObjectStructureSchema,
-  Schema,
-  Structure,
-  StructureSchema,
-} from './types'
+import { and } from './and'
+import { ValidationError } from './errors'
+import { isObject } from './is'
+import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export type ProcessResult = {
-  errorTree: ErrorTree
-  unusedObjectKeys: string[]
-  unusedSchemaKeys: string[]
-}
-
-type Process<SC extends StructureSchema, ST extends Structure> = (schema: SC, structure: ST) => ProcessResult
-
-// we always keep previous object structure
-// because we dont want to have
-// an array as third argument in assertions
-let parentObjectStructure: Structure
-
-export function processOrEmit(
-  schema: Schema,
-  structure: Structure,
-  key?: string,
-  parentStructure?: Structure,
-): ProcessResult {
+export const processFactory: ProcessFactory = (schema, input, additional) => {
   if (typeof schema === 'function') {
-    let errorTree
-
-    if (Array.isArray(parentStructure)) {
-      errorTree = schema(structure, key, parentObjectStructure)
-    } else {
-      errorTree = schema(structure, key, parentStructure)
+    let errorTree: any
+    try {
+      errorTree = schema(input, additional)
+    } catch (e) {
+      errorTree = and(schema)(input, additional)
     }
 
     return {
@@ -43,77 +17,83 @@ export function processOrEmit(
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
     }
-  } else if (structure === undefined) {
+  }
+  if (Array.isArray(schema)) {
+    return processArray(schema, input, additional)
+  }
+
+  return processObject(schema, input, additional)
+}
+
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional) => {
+  if (!isObject(input)) {
     return {
-      errorTree: undefined,
       unusedObjectKeys: [],
       unusedSchemaKeys: [],
+      errorTree: new ValidationError({
+        input,
+        message: 'schema expects an object',
+        inputName: additional.inputName,
+        code: 'schemaExpectsObject',
+      }),
     }
-  } else {
-    if (!Array.isArray(structure)) {
-      parentObjectStructure = structure
-    }
-    return process(schema, structure)
-  }
-}
-
-export function removeErrorTreeIfEmpty(errorTree: ErrorTree): ErrorTree {
-  return Object.values(errorTree).find(Boolean) ? errorTree : undefined
-}
-
-const processArray: Process<ArrayStructureSchema, ArrayStructure> = (schema, arrayStructure) => {
-  const localErrorTree: Record<string, any> = {}
-
-  if (schema.length > 1) {
-    throw Error(
-      'Schema Error: Array in a schema cannot have length more than 1. Maybe you want to export functions "or" or "and"',
-    )
   }
 
-  for (let index = 0; index < arrayStructure.length; index += 1) {
-    const key = index.toString()
-    const { errorTree } = processOrEmit(schema[0], arrayStructure?.[index], key, arrayStructure)
-    localErrorTree[key] = errorTree
-  }
-
-  return {
-    errorTree: removeErrorTreeIfEmpty(localErrorTree),
-    unusedObjectKeys: [],
-    unusedSchemaKeys: [],
-  }
-}
-
-const processObject: Process<ObjectStructureSchema, ObjectStructure> = (schema, objectStructure) => {
-  const localErrorTree: ErrorTree = {}
+  let localErrorTree: any
   const schemaEntries = Object.entries(schema)
-  let unusedObjectKeys = Object.keys(objectStructure)
+  let unusedObjectKeys = Object.keys(input)
   const unusedSchemaKeys = []
 
   for (let index = 0; index < schemaEntries.length; index += 1) {
-    const [objKey, schemaValue] = schemaEntries[index]
-    const objValue = objectStructure?.[objKey]
+    const [inputName, schemaValue] = schemaEntries[index]
+    const objInput = input?.[inputName]
 
-    unusedObjectKeys = unusedObjectKeys.filter((key) => key !== objKey)
+    unusedObjectKeys = unusedObjectKeys.filter((objKey) => objKey !== inputName)
 
-    if (objValue === undefined) {
-      unusedSchemaKeys.push(objKey)
+    if (objInput === undefined) {
+      unusedSchemaKeys.push(inputName)
     }
 
-    const { errorTree } = processOrEmit(schemaValue, objValue, objKey, objectStructure)
-    localErrorTree[objKey] = errorTree
+    const { errorTree } = processFactory(schemaValue, objInput, { ...additional, inputName, inputObject: input })
+    localErrorTree = additional.handleErrors(localErrorTree, errorTree)
   }
 
   return {
     unusedObjectKeys,
     unusedSchemaKeys,
-    errorTree: removeErrorTreeIfEmpty(localErrorTree),
+    errorTree: localErrorTree,
   }
 }
 
-export const process: Process<StructureSchema, Structure> = (schema, structure) => {
-  if (Array.isArray(structure)) {
-    return processArray(schema as ArrayStructureSchema, structure)
-  } else {
-    return processObject(schema as ObjectStructureSchema, structure)
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional) => {
+  let localErrorTree: any
+
+  if (!Array.isArray(input)) {
+    return {
+      unusedObjectKeys: [],
+      unusedSchemaKeys: [],
+      errorTree: new ValidationError({
+        input,
+        message: 'schema expects an array',
+        inputName: additional.inputName,
+        code: 'schemaExpectsArray',
+      }),
+    }
+  }
+
+  if (schema.length > 1) {
+    throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
+  }
+
+  for (let index = 0; index < input.length; index += 1) {
+    const inputName = index.toString()
+    const { errorTree } = processFactory(schema[0], input?.[index], { ...additional, inputName })
+    localErrorTree = additional.handleErrors(localErrorTree, errorTree)
+  }
+
+  return {
+    errorTree: localErrorTree,
+    unusedObjectKeys: [],
+    unusedSchemaKeys: [],
   }
 }

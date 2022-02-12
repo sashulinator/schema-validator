@@ -1,7 +1,7 @@
 import { ValidationError } from './errors'
 import { Primitive } from './types'
 
-export const primitive: Primitive = (...assertionItems) => {
+export const and: Primitive = (...assertionItems) => {
   return function emitAssertion(input, additional) {
     for (let index = 0; index < assertionItems.length; index += 1) {
       const assertion = assertionItems[index]

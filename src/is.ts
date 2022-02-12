@@ -67,3 +67,7 @@ export function isBoolean(input: unknown): input is boolean {
 export function isNotBoolean<T>(input: boolean | T): input is T {
   return !isBoolean(input)
 }
+
+export function isObject(input: unknown): input is Record<string, unknown> {
+  return typeof input === 'object' && !Array.isArray(input) && input !== null
+}
