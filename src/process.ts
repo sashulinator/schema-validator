@@ -6,6 +6,7 @@ import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } 
 export const processFactory: ProcessFactory = (schema, input, additional) => {
   if (typeof schema === 'function') {
     let errorTree: any
+
     try {
       errorTree = schema(input, additional)
     } catch (e) {

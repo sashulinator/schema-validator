@@ -15,6 +15,7 @@ describe('basic tests', () => {
     test: ssv1.only({
       testAgain: and(assertNotEmptyString, assertString),
     }),
+    test1: assertString,
   })
 
   it('simple valid', () => {
@@ -64,20 +65,23 @@ describe('basic tests', () => {
     ])
   })
 
-  it('as property', () => {
+  it.only('as property', () => {
     const errors = validateTest3({
       test: {
         testAgain: '',
       },
     })
 
-    console.log('errors', errors)
-
     expect(errors.map(errorToObject)).toStrictEqual([
       {
         _code: 'assertNotEmptyString',
-        _inputName: 'test',
+        _inputName: 'testAgain',
         _message: 'is an empty string',
+      },
+      {
+        _code: 'assertString',
+        _inputName: 'test1',
+        _message: 'is not a string',
       },
     ])
   })
