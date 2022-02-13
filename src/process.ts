@@ -16,9 +16,9 @@ export const processFactory: ProcessFactory = (schema, input, additional) => {
 
     return collectedErrors
   }
+
   if (Array.isArray(schema)) {
-    // return processArray(schema, input, additional)
-    return
+    return processArray(schema, input, additional)
   }
 
   return processObject(schema, input, additional)

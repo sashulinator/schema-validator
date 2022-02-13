@@ -10,13 +10,16 @@ type StructureValidatorCbParams<Type> = {
 
 export type EmitStructureValidator = (input: unknown, additional?: Additional) => ErrorTree
 
-export function createStructureValidator(
-  cb: <InputType>(processResult: StructureValidatorCbParams<InputType>) => ErrorTree,
+export function createStructureValidator<TErrors>(
+  cb: <InputType>(processResult: StructureValidatorCbParams<InputType>) => TErrors,
 ) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
-  ): TSchema & EmitStructureValidation {
-    const emitStructureValidator = (input: unknown, preAdditional: Additional): ReturnType<EmitStructureValidation> => {
+  ): TSchema & EmitStructureValidation<TErrors> {
+    const emitStructureValidator = (
+      input: unknown,
+      preAdditional: Additional,
+    ): ReturnType<EmitStructureValidation<TErrors>> => {
       const additional = { handleErrors: this.handleErrors, ...preAdditional }
       const errors = processFactory(schema, input, additional)
 
@@ -32,6 +35,6 @@ export function createStructureValidator(
       Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
     })
 
-    return emitStructureValidator as TSchema & EmitStructureValidation
+    return emitStructureValidator as TSchema & EmitStructureValidation<TErrors>
   }
 }

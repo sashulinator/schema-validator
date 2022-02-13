@@ -46,7 +46,7 @@ export type Process<InputType> = (schema: Schema<InputType>, input: unknown, add
 
 // StructureValidator
 
-export type EmitStructureValidation = (value: unknown, additional?: Additional) => ErrorTree
+export type EmitStructureValidation<TErrors> = (value: unknown, additional?: Additional) => TErrors
 
 // With
 

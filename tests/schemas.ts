@@ -17,3 +17,5 @@ const handleErrorsIntoArray = (
 export const ssv1 = new SchemaStructureValidator({
   handleErrors: handleErrorsIntoArray,
 })
+
+const val = ssv1.wrap({ gog: 'sd' })
