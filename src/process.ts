@@ -1,3 +1,4 @@
+import { CollectedErrors } from '.'
 import { and } from './and'
 import { ValidationError } from './errors'
 import { isObject } from './is'
@@ -5,22 +6,19 @@ import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } 
 
 export const processFactory: ProcessFactory = (schema, input, additional) => {
   if (typeof schema === 'function') {
-    let errorTree: any
+    let collectedErrors: CollectedErrors
 
     try {
-      errorTree = schema(input, additional)
+      collectedErrors = schema(input, additional)
     } catch (e) {
-      errorTree = and(schema)(input, additional)
+      collectedErrors = and(schema)(input, additional)
     }
 
-    return {
-      errorTree,
-      unusedObjectKeys: [],
-      unusedSchemaKeys: [],
-    }
+    return collectedErrors
   }
   if (Array.isArray(schema)) {
-    return processArray(schema, input, additional)
+    // return processArray(schema, input, additional)
+    return
   }
 
   return processObject(schema, input, additional)
@@ -28,58 +26,38 @@ export const processFactory: ProcessFactory = (schema, input, additional) => {
 
 const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional) => {
   if (!isObject(input)) {
-    return {
-      unusedObjectKeys: [],
-      unusedSchemaKeys: [],
-      errorTree: new ValidationError({
-        input,
-        message: 'schema expects an object',
-        inputName: additional.inputName,
-        code: 'schemaExpectsObject',
-      }),
-    }
+    return new ValidationError({
+      input,
+      message: 'schema expects an object',
+      inputName: additional.inputName,
+      code: 'schemaExpectsObject',
+    })
   }
 
-  let localErrorTree: any
+  let collectedErrors: CollectedErrors
   const schemaEntries = Object.entries(schema)
-  let unusedObjectKeys = Object.keys(input)
-  const unusedSchemaKeys = []
 
   for (let index = 0; index < schemaEntries.length; index += 1) {
     const [inputName, schemaValue] = schemaEntries[index]
     const objInput = input?.[inputName]
 
-    unusedObjectKeys = unusedObjectKeys.filter((objKey) => objKey !== inputName)
-
-    if (objInput === undefined) {
-      unusedSchemaKeys.push(inputName)
-    }
-
-    const { errorTree } = processFactory(schemaValue, objInput, { ...additional, inputName, inputObject: input })
-    localErrorTree = additional.handleErrors(localErrorTree, errorTree)
+    const errors = processFactory(schemaValue, objInput, { ...additional, inputName, inputObject: input })
+    collectedErrors = additional.handleErrors(collectedErrors, errors)
   }
 
-  return {
-    unusedObjectKeys,
-    unusedSchemaKeys,
-    errorTree: localErrorTree,
-  }
+  return collectedErrors
 }
 
 const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional) => {
-  let localErrorTree: any
+  let collectedErrors: CollectedErrors
 
   if (!Array.isArray(input)) {
-    return {
-      unusedObjectKeys: [],
-      unusedSchemaKeys: [],
-      errorTree: new ValidationError({
-        input,
-        message: 'schema expects an array',
-        inputName: additional.inputName,
-        code: 'schemaExpectsArray',
-      }),
-    }
+    return new ValidationError({
+      input,
+      message: 'schema expects an array',
+      inputName: additional.inputName,
+      code: 'schemaExpectsArray',
+    })
   }
 
   if (schema.length > 1) {
@@ -88,13 +66,9 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, add
 
   for (let index = 0; index < input.length; index += 1) {
     const inputName = index.toString()
-    const { errorTree } = processFactory(schema[0], input?.[index], { ...additional, inputName })
-    localErrorTree = additional.handleErrors(localErrorTree, errorTree)
+    const errors = processFactory(schema[0], input?.[index], { ...additional, inputName })
+    collectedErrors = additional.handleErrors(collectedErrors, errors)
   }
 
-  return {
-    errorTree: localErrorTree,
-    unusedObjectKeys: [],
-    unusedSchemaKeys: [],
-  }
+  return collectedErrors
 }

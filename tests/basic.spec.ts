@@ -65,7 +65,7 @@ describe('basic tests', () => {
     ])
   })
 
-  it.only('as property', () => {
+  it('as property', () => {
     const errors = validateTest3({
       test: {
         testAgain: '',

@@ -2,6 +2,8 @@ import { ValidationError } from './errors'
 
 // Common
 
+export type CollectedErrors = any
+
 export type Schema<Type> = Type extends Record<string, any>
   ? ObjectStructureSchema<Type>
   : Type extends unknown[]
@@ -34,19 +36,13 @@ export type EmitAssertion = (input: unknown, additional?: Additional) => ErrorTr
 
 // Process
 
-export type ProcessResult = {
-  errorTree: ErrorTree
-  unusedObjectKeys: string[]
-  unusedSchemaKeys: string[]
-}
-
 export type ProcessFactory = <InputType>(
   schema: Schema<InputType>,
   input: unknown,
   additional?: Additional,
-) => ProcessResult
+) => CollectedErrors
 
-export type Process<InputType> = (schema: Schema<InputType>, input: unknown, additional?: Additional) => ProcessResult
+export type Process<InputType> = (schema: Schema<InputType>, input: unknown, additional?: Additional) => CollectedErrors
 
 // StructureValidator
 

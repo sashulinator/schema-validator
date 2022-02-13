@@ -9,23 +9,23 @@ export class SchemaStructureValidator<THandleErrors extends (errors: any, valida
   }
 
   public wrap = createStructureValidator(
-    ({ errorTree }): ReturnType<THandleErrors> => {
-      return this.handleErrors(errorTree)
+    ({ errors }): ReturnType<THandleErrors> => {
+      return errors
     },
   )
 
-  public only = createStructureValidator(({ errorTree, unusedObjectKeys, inputName }) => {
-    if (unusedObjectKeys.length) {
-      const excessiveKeysError = new ValidationError({
-        inputName,
-        input: unusedObjectKeys,
-        code: 'excessiveKeys',
-        message: 'some keys are excessive',
-      })
+  public only = createStructureValidator(({ errors }) => {
+    // if (unusedObjectKeys.length) {
+    //   const excessiveKeysError = new ValidationError({
+    //     inputName,
+    //     input: unusedObjectKeys,
+    //     code: 'excessiveKeys',
+    //     message: 'some keys are excessive',
+    //   })
 
-      errorTree = this.handleErrors(errorTree, excessiveKeysError)
-    }
+    //   errorTree = this.handleErrors(errorTree, excessiveKeysError)
+    // }
 
-    return errorTree
+    return errors
   })
 }
