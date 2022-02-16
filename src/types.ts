@@ -36,6 +36,8 @@ export type EmitAssertion = (input: unknown, additional?: Additional) => ErrorTr
 
 // Process
 
+export type CreateCustomError<TErrors> = (schema: Schema<any>, input: unknown, additional: Additional) => TErrors
+
 export type ProcessFactory = <InputType>(
   schema: Schema<InputType>,
   input: unknown,
