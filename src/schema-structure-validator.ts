@@ -1,5 +1,6 @@
 import { ValidationError } from './errors'
 import { createStructureValidator } from './create-structure-validator'
+import { isObject } from '.'
 
 export class SchemaStructureValidator<THandleErrors extends (errors: any, validationError?: ValidationError) => any> {
   private readonly handleErrors: THandleErrors
@@ -11,23 +12,26 @@ export class SchemaStructureValidator<THandleErrors extends (errors: any, valida
   public wrap = createStructureValidator((): ReturnType<THandleErrors> => undefined)
 
   public only = createStructureValidator((schema, input: any, additional) => {
-    const schemaEntries = Object.entries(schema)
-    const unusedSchemaKeys = []
+    if (isObject(input)) {
+      const schemaEntries = Object.entries(schema)
+      let inputKeys = Object.keys(input)
 
-    for (let index = 0; index < schemaEntries.length; index += 1) {
-      const [objKey] = schemaEntries[index]
-      const objValue = input?.[objKey]
+      for (let index = 0; index < schemaEntries.length; index += 1) {
+        const [schemaKey] = schemaEntries[index]
 
-      if (objValue === undefined) {
-        unusedSchemaKeys.push(objKey)
+        inputKeys = inputKeys.filter((inputKey) => inputKey !== schemaKey)
+      }
+
+      if (inputKeys.length) {
+        return new ValidationError({
+          inputName: additional.inputName,
+          input: inputKeys,
+          code: 'excessiveKeys',
+          message: 'some keys are excessive',
+        })
       }
     }
 
-    return new ValidationError({
-      inputName: additional.inputName,
-      input: unusedSchemaKeys,
-      code: 'requiredKeys',
-      message: 'some keys are required',
-    })
+    return undefined
   })
 }

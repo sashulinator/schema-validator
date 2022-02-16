@@ -65,7 +65,7 @@ describe('basic tests', () => {
     ])
   })
 
-  it('as property', () => {
+  it('object', () => {
     const errors = validateTest3({
       test: {
         testAgain: '',
@@ -82,6 +82,25 @@ describe('basic tests', () => {
         _code: 'assertString',
         _inputName: 'test1',
         _message: 'is not a string',
+      },
+    ])
+  })
+
+  it('only', () => {
+    const errors = validateTest3({
+      test: {
+        testAgain: 'string',
+        excessiveKey: '',
+      },
+      test1: 'string',
+    })
+
+    expect(errors.map(errorToObject)).toStrictEqual([
+      {
+        _code: 'excessiveKeys',
+        _input: ['excessiveKey'],
+        _inputName: 'test',
+        _message: 'some keys are excessive',
       },
     ])
   })
