@@ -11,7 +11,7 @@ export function createStructureValidator<TErrors>(cb: CreateCustomError<TErrors>
       preAdditional: Additional,
     ): ReturnType<EmitStructureValidation<TErrors>> => {
       const additional = { handleErrors: this.handleErrors, ...preAdditional }
-      return processFactory(schema, input, additional)
+      return processFactory(schema, input, additional, cb)
     }
 
     Object.entries(schema).forEach(([schemaKey, schemaValue]) => {

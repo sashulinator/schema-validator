@@ -8,24 +8,26 @@ export class SchemaStructureValidator<THandleErrors extends (errors: any, valida
     this.handleErrors = handleErrors
   }
 
-  public wrap = createStructureValidator(
-    ({ errors }): ReturnType<THandleErrors> => {
-      return errors
-    },
-  )
+  public wrap = createStructureValidator((): ReturnType<THandleErrors> => undefined)
 
-  public only = createStructureValidator(({ errors }) => {
-    // if (unusedObjectKeys.length) {
-    //   const excessiveKeysError = new ValidationError({
-    //     inputName,
-    //     input: unusedObjectKeys,
-    //     code: 'excessiveKeys',
-    //     message: 'some keys are excessive',
-    //   })
+  public only = createStructureValidator((schema, input: any, additional) => {
+    const schemaEntries = Object.entries(schema)
+    const unusedSchemaKeys = []
 
-    //   errorTree = this.handleErrors(errorTree, excessiveKeysError)
-    // }
+    for (let index = 0; index < schemaEntries.length; index += 1) {
+      const [objKey] = schemaEntries[index]
+      const objValue = input?.[objKey]
 
-    return errors
+      if (objValue === undefined) {
+        unusedSchemaKeys.push(objKey)
+      }
+    }
+
+    return new ValidationError({
+      inputName: additional.inputName,
+      input: unusedSchemaKeys,
+      code: 'requiredKeys',
+      message: 'some keys are required',
+    })
   })
 }

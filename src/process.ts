@@ -4,7 +4,7 @@ import { ValidationError } from './errors'
 import { isObject } from './is'
 import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export const processFactory: ProcessFactory = (schema, input, additional) => {
+export const processFactory: ProcessFactory = (schema, input, additional, cb) => {
   if (typeof schema === 'function') {
     let collectedErrors: CollectedErrors
 
@@ -18,13 +18,13 @@ export const processFactory: ProcessFactory = (schema, input, additional) => {
   }
 
   if (Array.isArray(schema)) {
-    return processArray(schema, input, additional)
+    return processArray(schema, input, additional, cb)
   }
 
-  return processObject(schema, input, additional)
+  return processObject(schema, input, additional, cb)
 }
 
-const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional) => {
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional, cb) => {
   if (!isObject(input)) {
     return new ValidationError({
       input,
@@ -37,6 +37,9 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
   let collectedErrors: CollectedErrors
   const schemaEntries = Object.entries(schema)
 
+  const customError = cb(schema, input, additional)
+  collectedErrors = additional.handleErrors(collectedErrors, customError)
+
   for (let index = 0; index < schemaEntries.length; index += 1) {
     const [inputName, schemaValue] = schemaEntries[index]
     const objInput = input?.[inputName]
@@ -48,7 +51,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
   return collectedErrors
 }
 
-const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional) => {
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional, cb) => {
   let collectedErrors: CollectedErrors
 
   if (!Array.isArray(input)) {
@@ -63,6 +66,9 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, add
   if (schema.length > 1) {
     throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
   }
+
+  const customError = cb(schema, input, additional)
+  collectedErrors = additional.handleErrors(collectedErrors, customError)
 
   for (let index = 0; index < input.length; index += 1) {
     const inputName = index.toString()

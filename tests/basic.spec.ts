@@ -1,4 +1,4 @@
-import { assertString, assertUndefined, and, assertNotEmptyString } from '../src'
+import { assertString, and, assertNotEmptyString } from '../src'
 import { ssv1 } from './schemas'
 import { errorToObject } from './utils'
 

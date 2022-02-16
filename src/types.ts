@@ -42,9 +42,15 @@ export type ProcessFactory = <InputType>(
   schema: Schema<InputType>,
   input: unknown,
   additional?: Additional,
+  cb?: CreateCustomError<any>,
 ) => CollectedErrors
 
-export type Process<InputType> = (schema: Schema<InputType>, input: unknown, additional?: Additional) => CollectedErrors
+export type Process<InputType> = (
+  schema: Schema<InputType>,
+  input: unknown,
+  additional?: Additional,
+  cb?: CreateCustomError<any>,
+) => CollectedErrors
 
 // StructureValidator
 
