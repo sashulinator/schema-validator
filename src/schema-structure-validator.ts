@@ -8,23 +8,25 @@ export class SchemaStructureValidator<
 > {
   private readonly handleErrors: THandleErrors
 
-  readonly custom: Record<
+  custom: Record<
     keyof TCreateCustomErrors,
     <TSchema extends Schema<any>>(schema: TSchema) => TSchema & EmitStructureValidation<ReturnType<THandleErrors>>
   >
 
   constructor({ handleErrors, custom }: { handleErrors: THandleErrors; custom?: TCreateCustomErrors }) {
     this.handleErrors = handleErrors
+    this.createCustomeValidationEmitter(custom)
+  }
 
-    if (custom) {
-      this.custom = {} as Record<keyof TCreateCustomErrors, EmitStructureValidation<any>>
-      const customEntries = Object.entries(custom)
+  private createCustomeValidationEmitter(custom: TCreateCustomErrors) {
+    if (!custom) return
 
-      for (let index = 0; index < customEntries.length; index += 1) {
-        const [key, value] = customEntries[index] as [keyof TCreateCustomErrors, CreateCustomError<any>]
+    this.custom = {} as Record<keyof TCreateCustomErrors, EmitStructureValidation<any>>
+    const customEntries = Object.entries(custom)
 
-        this.custom[key] = createStructureValidator(this.handleErrors, value)
-      }
+    for (let index = 0; index < customEntries.length; index += 1) {
+      const [key, value] = customEntries[index] as [keyof TCreateCustomErrors, CreateCustomError<any>]
+      this.custom[key] = createStructureValidator(this.handleErrors, value)
     }
   }
 
