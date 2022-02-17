@@ -1,4 +1,4 @@
-import { Additional, createStructureValidator, isObject, Schema } from '../src'
+import { Meta, createStructureValidator, isObject, Schema } from '../src'
 import { ValidationError } from '../src/errors'
 import { SchemaStructureValidator } from '../src/schema-structure-validator'
 import { createErrorTree } from './helpers'
@@ -23,14 +23,14 @@ export const ssv1 = new SchemaStructureValidator({
 const handleErrorsIntoObject = (
   errors: Record<string, unknown> = {},
   validationErrorOrErrors: Record<string, unknown> | ValidationError,
-  additional?: Additional,
+  meta?: Meta,
 ): Record<string, unknown> => {
-  if (additional.path === '') {
+  if (meta.path === '') {
     return Object.assign(errors, validationErrorOrErrors)
   }
 
   if (validationErrorOrErrors instanceof ValidationError) {
-    createErrorTree(errors, additional.path, validationErrorOrErrors)
+    createErrorTree(errors, meta.path, validationErrorOrErrors)
   } else if (isObject(validationErrorOrErrors)) {
     errors = Object.assign(errors, validationErrorOrErrors)
   }

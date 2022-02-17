@@ -4,32 +4,32 @@ import { ValidationError } from './errors'
 import { isObject } from './is'
 import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export const processFactory: ProcessFactory = (schema, input, additional, cb) => {
+export const processFactory: ProcessFactory = (schema, input, meta, cb) => {
   if (typeof schema === 'function') {
     let collectedErrors: CollectedErrors
 
     try {
-      collectedErrors = schema(input, additional)
+      collectedErrors = schema(input, meta)
     } catch (e) {
-      collectedErrors = and(schema)(input, additional)
+      collectedErrors = and(schema)(input, meta)
     }
 
     return collectedErrors
   }
 
   if (Array.isArray(schema)) {
-    return processArray(schema, input, additional, cb)
+    return processArray(schema, input, meta, cb)
   }
 
-  return processObject(schema, input, additional, cb)
+  return processObject(schema, input, meta, cb)
 }
 
-const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, additional, cb) => {
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta, cb) => {
   if (!isObject(input)) {
     return new ValidationError({
       input,
       message: 'schema expects an object',
-      inputName: additional.inputName,
+      inputName: meta.inputName,
       code: 'schemaExpectsObject',
     })
   }
@@ -40,28 +40,28 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
   for (let index = 0; index < schemaEntries.length; index += 1) {
     const [inputName, schemaValue] = schemaEntries[index]
     const objInput = input?.[inputName]
-    const parentPath = additional.path ? `${additional.path}.` : ''
+    const parentPath = meta.path ? `${meta.path}.` : ''
     const path = `${parentPath}${inputName}`
-    const newAdditional = { ...additional, inputName, inputObject: input, path }
+    const newMeta = { ...meta, inputName, inputObject: input, path }
 
-    const errors = processFactory(schemaValue, objInput, newAdditional)
-    collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
+    const errors = processFactory(schemaValue, objInput, newMeta)
+    collectedErrors = meta.handleErrors(collectedErrors, errors, newMeta)
   }
 
-  const customError = cb?.(schema, input, additional)
-  collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
+  const customError = cb?.(schema, input, meta)
+  collectedErrors = meta.handleErrors(collectedErrors, customError, meta)
 
   return collectedErrors
 }
 
-const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, additional, cb) => {
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta, cb) => {
   let collectedErrors: CollectedErrors
 
   if (!Array.isArray(input)) {
     return new ValidationError({
       input,
       message: 'schema expects an array',
-      inputName: additional.inputName,
+      inputName: meta.inputName,
       code: 'schemaExpectsArray',
     })
   }
@@ -72,15 +72,15 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, add
 
   for (let index = 0; index < input.length; index += 1) {
     const inputName = index.toString()
-    const parentPath = additional.path ? `${additional.path}.` : ''
+    const parentPath = meta.path ? `${meta.path}.` : ''
     const path = `${parentPath}${inputName}`
-    const newAdditional = { ...additional, inputName, path }
-    const errors = processFactory(schema[0], input?.[index], newAdditional)
-    collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
+    const newMeta = { ...meta, inputName, path }
+    const errors = processFactory(schema[0], input?.[index], newMeta)
+    collectedErrors = meta.handleErrors(collectedErrors, errors, newMeta)
   }
 
-  const customError = cb?.(schema, input, additional)
-  collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
+  const customError = cb?.(schema, input, meta)
+  collectedErrors = meta.handleErrors(collectedErrors, customError, meta)
 
   return collectedErrors
 }

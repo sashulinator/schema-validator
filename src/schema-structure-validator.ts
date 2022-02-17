@@ -37,7 +37,7 @@ export class SchemaStructureValidator<
   public only = <TSchema extends Schema<any>>(
     gschema: TSchema,
   ): TSchema & EmitStructureValidation<ReturnType<THandleErrors>> => {
-    return createStructureValidator(this.handleErrors, (schema, input, additional) => {
+    return createStructureValidator(this.handleErrors, (schema, input, meta) => {
       if (isObject(input)) {
         const schemaEntries = Object.entries(schema)
         let inputKeys = Object.keys(input)
@@ -50,7 +50,7 @@ export class SchemaStructureValidator<
 
         if (inputKeys.length) {
           return new ValidationError({
-            inputName: additional.inputName,
+            inputName: meta.inputName,
             input: inputKeys,
             code: 'excessiveKeys',
             message: 'some keys are excessive',

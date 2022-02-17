@@ -16,54 +16,54 @@ export type ObjectStructureSchema<Type> = {
   [Property in keyof Type]: Schema<Type[Property]>
 }
 
-export type Additional = {
+export type Meta = {
   inputName?: string | undefined
   inputObject?: Record<string, unknown> | undefined
   initialInput?: unknown | undefined
   payload?: unknown
   path: string
-  handleErrors: (errors: any, validationError: ValidationError, additional: Additional) => any
+  handleErrors: (errors: any, validationError: ValidationError, meta: Meta) => any
 }
 
 // Primitive
 
 export type Primitive = (...assertions: Assertion[]) => EmitAssertion
 
-export type Assertion = (input: unknown, additional?: Additional) => void
+export type Assertion = (input: unknown, meta?: Meta) => void
 
 export type ErrorTree = any
 
-export type EmitAssertion = (input: unknown, additional?: Additional) => ErrorTree
+export type EmitAssertion = (input: unknown, meta?: Meta) => ErrorTree
 
 // Process
 
-export type CreateCustomError<TErrors = any> = (schema: Schema<any>, input: unknown, additional: Additional) => TErrors
+export type CreateCustomError<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
 
 export type ProcessFactory = <InputType>(
   schema: Schema<InputType>,
   input: any,
-  additional?: Additional,
+  meta?: Meta,
   cb?: CreateCustomError<any>,
 ) => CollectedErrors
 
 export type Process<InputType> = (
   schema: Schema<InputType>,
   input: unknown,
-  additional?: Additional,
+  meta?: Meta,
   cb?: CreateCustomError<any>,
 ) => CollectedErrors
 
 // StructureValidator
 
-export type EmitStructureValidation<TErrors> = (value: unknown, additional?: Additional) => TErrors
+export type EmitStructureValidation<TErrors> = (value: unknown, meta?: Meta) => TErrors
 
 // With
 
-export type WithAsserion = (input: unknown, input2?: unknown, additional?: Additional) => void
+export type WithAsserion = (input: unknown, input2?: unknown, meta?: Meta) => void
 
-export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, additional?: Additional) => void
+export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, meta?: Meta) => void
 export type WithValue = (
   input2: unknown,
   assertion: WithAsserion,
   name?: string,
-) => (input: unknown, additional?: Additional) => void
+) => (input: unknown, meta?: Meta) => void
