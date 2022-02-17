@@ -37,16 +37,19 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
   let collectedErrors: CollectedErrors
   const schemaEntries = Object.entries(schema)
 
-  const customError = cb(schema, input, additional)
-  collectedErrors = additional.handleErrors(collectedErrors, customError)
-
   for (let index = 0; index < schemaEntries.length; index += 1) {
     const [inputName, schemaValue] = schemaEntries[index]
     const objInput = input?.[inputName]
+    const parentPath = additional.path ? `${additional.path}.` : ''
+    const path = `${parentPath}${inputName}`
+    const newAdditional = { ...additional, inputName, inputObject: input, path }
 
-    const errors = processFactory(schemaValue, objInput, { ...additional, inputName, inputObject: input })
-    collectedErrors = additional.handleErrors(collectedErrors, errors)
+    const errors = processFactory(schemaValue, objInput, newAdditional)
+    collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
   }
+
+  const customError = cb(schema, input, additional)
+  collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
 
   return collectedErrors
 }
@@ -67,14 +70,17 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, add
     throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
   }
 
-  const customError = cb(schema, input, additional)
-  collectedErrors = additional.handleErrors(collectedErrors, customError)
-
   for (let index = 0; index < input.length; index += 1) {
     const inputName = index.toString()
-    const errors = processFactory(schema[0], input?.[index], { ...additional, inputName })
-    collectedErrors = additional.handleErrors(collectedErrors, errors)
+    const parentPath = additional.path ? `${additional.path}.` : ''
+    const path = `${parentPath}${inputName}`
+    const newAdditional = { ...additional, inputName, path }
+    const errors = processFactory(schema[0], input?.[index], newAdditional)
+    collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
   }
+
+  const customError = cb(schema, input, additional)
+  collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
 
   return collectedErrors
 }

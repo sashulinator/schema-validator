@@ -1,5 +1,5 @@
 import { assertString, and, assertNotEmptyString } from '../src'
-import { ssv1 } from './schemas'
+import { ssv1, ssv2 } from './schemas'
 import { errorToObject } from './utils'
 
 describe('basic tests', () => {
@@ -16,6 +16,17 @@ describe('basic tests', () => {
       testAgain: and(assertNotEmptyString, assertString),
     }),
     test1: assertString,
+  })
+
+  const validateTest4 = ssv2.wrap({
+    user: ssv2.only({
+      postcode: and(assertNotEmptyString, assertString),
+      coordinates: ssv2.only({
+        longitude: and(assertNotEmptyString, assertString),
+        latitude: and(assertNotEmptyString, assertString),
+      }),
+    }),
+    password: assertString,
   })
 
   it('simple valid', () => {
@@ -103,5 +114,43 @@ describe('basic tests', () => {
         _message: 'some keys are excessive',
       },
     ])
+  })
+
+  it('handleErrorsIntoObject', () => {
+    const errors = validateTest4({
+      user: {
+        postcode: 42,
+        coordinates: {
+          longitude: 42,
+          latitude: 42,
+        },
+      },
+      password: 34,
+    })
+
+    expect(errors).toStrictEqual({
+      password: {
+        _code: 'assertString',
+        _input: '34',
+        _inputName: 'password',
+        _message: 'is not a string',
+      },
+      user: {
+        coordinates: {
+          latitude: {
+            _code: 'assertString',
+            _input: '42',
+            _inputName: 'latitude',
+            _message: 'is not a string',
+          },
+          longitude: {
+            _code: 'assertString',
+            _input: '42',
+            _inputName: 'longitude',
+            _message: 'is not a string',
+          },
+        },
+      },
+    })
   })
 })

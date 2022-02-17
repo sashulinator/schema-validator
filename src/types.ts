@@ -21,7 +21,8 @@ export type Additional = {
   inputObject?: Record<string, unknown> | undefined
   initialInput?: unknown | undefined
   payload?: unknown
-  handleErrors: (errors: any, validationError: ValidationError) => any
+  path: string
+  handleErrors: (errors: any, validationError: ValidationError, additional: Additional) => any
 }
 
 // Primitive

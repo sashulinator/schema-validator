@@ -10,7 +10,7 @@ export function createStructureValidator<TErrors>(cb: CreateCustomError<TErrors>
       input: unknown,
       preAdditional: Additional,
     ): ReturnType<EmitStructureValidation<TErrors>> => {
-      const additional = { handleErrors: this.handleErrors, ...preAdditional }
+      const additional = { path: '', handleErrors: this.handleErrors, ...preAdditional }
       return processFactory(schema, input, additional, cb)
     }
 
