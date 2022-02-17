@@ -29,6 +29,10 @@ describe('basic tests', () => {
     password: assertString,
   })
 
+  const validateTest5 = ssv2.custom.validateSmth({
+    test: and(assertNotEmptyString, assertString),
+  })
+
   it('simple valid', () => {
     const errors = validateTest({
       test: 'string',
@@ -114,6 +118,27 @@ describe('basic tests', () => {
         _message: 'some keys are excessive',
       },
     ])
+  })
+
+  it('customValidator', () => {
+    const errors = validateTest5({
+      test: {
+        test: '',
+      },
+    })
+
+    expect(errors).toStrictEqual({
+      _code: 'testCode',
+      _input: 'testInput',
+      _inputName: 'testSmth',
+      _message: 'testMessage',
+      test: {
+        _code: 'assertString',
+        _input: '[object Object]',
+        _inputName: 'test',
+        _message: 'is not a string',
+      },
+    })
   })
 
   it('handleErrorsIntoObject', () => {

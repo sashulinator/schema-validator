@@ -2,7 +2,10 @@ import { CreateCustomError } from '.'
 import { processFactory } from './process'
 import { Additional, EmitStructureValidation, Schema } from './types'
 
-export function createStructureValidator<TErrors>(cb: CreateCustomError<TErrors>) {
+export function createStructureValidator<TErrors>(
+  handleErrors: CreateCustomError<TErrors>,
+  cb: CreateCustomError<TErrors>,
+) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
   ): TSchema & EmitStructureValidation<TErrors> {
@@ -10,7 +13,7 @@ export function createStructureValidator<TErrors>(cb: CreateCustomError<TErrors>
       input: unknown,
       preAdditional: Additional,
     ): ReturnType<EmitStructureValidation<TErrors>> => {
-      const additional = { path: '', handleErrors: this.handleErrors, ...preAdditional }
+      const additional = { path: '', handleErrors, ...preAdditional }
       return processFactory(schema, input, additional, cb)
     }
 
