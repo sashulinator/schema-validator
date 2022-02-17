@@ -4,7 +4,7 @@ import { Additional, EmitStructureValidation, Schema } from './types'
 
 export function createStructureValidator<TErrors>(
   handleErrors: CreateCustomError<TErrors>,
-  cb: CreateCustomError<TErrors>,
+  cb?: CreateCustomError<TErrors>,
 ) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,

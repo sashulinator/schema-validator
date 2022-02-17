@@ -48,7 +48,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
   }
 
-  const customError = cb(schema, input, additional)
+  const customError = cb?.(schema, input, additional)
   collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
 
   return collectedErrors
@@ -79,7 +79,7 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, add
     collectedErrors = additional.handleErrors(collectedErrors, errors, newAdditional)
   }
 
-  const customError = cb(schema, input, additional)
+  const customError = cb?.(schema, input, additional)
   collectedErrors = additional.handleErrors(collectedErrors, customError, additional)
 
   return collectedErrors

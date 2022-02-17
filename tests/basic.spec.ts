@@ -33,6 +33,12 @@ describe('basic tests', () => {
     test: and(assertNotEmptyString, assertString),
   })
 
+  const validateTest6 = ssv2.only([
+    {
+      test: and(assertNotEmptyString, assertString),
+    },
+  ])
+
   it('simple valid', () => {
     const errors = validateTest({
       test: 'string',
@@ -99,6 +105,21 @@ describe('basic tests', () => {
         _message: 'is not a string',
       },
     ])
+  })
+
+  it('array', () => {
+    const errors = validateTest6([{ test: 23 }])
+
+    expect(errors).toStrictEqual({
+      '0': {
+        test: {
+          _code: 'assertString',
+          _input: 23,
+          _inputName: 'test',
+          _message: 'is not a string',
+        },
+      },
+    })
   })
 
   it('only', () => {

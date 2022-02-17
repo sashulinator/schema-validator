@@ -31,7 +31,7 @@ export class SchemaStructureValidator<
   public wrap = <TSchema extends Schema<any>>(
     schema: TSchema,
   ): TSchema & EmitStructureValidation<ReturnType<THandleErrors>> => {
-    return createStructureValidator(this.handleErrors, () => undefined)(schema)
+    return createStructureValidator(this.handleErrors)(schema)
   }
 
   public only = <TSchema extends Schema<any>>(
