@@ -39,13 +39,13 @@ describe('basic tests', () => {
 
   it('simple invalid', () => {
     const errors1 = validateTest({
-      test: 12,
+      test: 42,
     })
 
     expect(errors1.map(errorToObject)).toStrictEqual([
       {
         _code: 'assertString',
-        _input: '12',
+        _input: 42,
         _inputName: 'test',
         _message: 'is not a string',
       },
@@ -131,7 +131,7 @@ describe('basic tests', () => {
     expect(errors).toStrictEqual({
       password: {
         _code: 'assertString',
-        _input: '34',
+        _input: 34,
         _inputName: 'password',
         _message: 'is not a string',
       },
@@ -139,13 +139,13 @@ describe('basic tests', () => {
         coordinates: {
           latitude: {
             _code: 'assertString',
-            _input: '42',
+            _input: 42,
             _inputName: 'latitude',
             _message: 'is not a string',
           },
           longitude: {
             _code: 'assertString',
-            _input: '42',
+            _input: 42,
             _inputName: 'longitude',
             _message: 'is not a string',
           },

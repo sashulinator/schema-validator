@@ -1,3 +1,4 @@
+import { isPrimitive } from '.'
 import { ValidationError } from './errors'
 import { Primitive } from './types'
 
@@ -15,7 +16,7 @@ export const and: Primitive = (...assertionItems) => {
         if (error instanceof Error) {
           return new ValidationError({
             inputName: additional?.inputName,
-            input: input?.toString(),
+            input: isPrimitive(input) ? input : input?.toString(),
             code: assertion?.name,
             message: error.message,
           })
