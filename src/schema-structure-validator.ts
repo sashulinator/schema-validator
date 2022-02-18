@@ -1,6 +1,15 @@
 import { ValidationError } from './errors'
 import { createStructureValidator } from './create-structure-validator'
-import { isObject, EmitStructureValidation, CreateCustomError, Schema, processFactory, Meta, isEmpty } from '.'
+import {
+  isObject,
+  EmitStructureValidation,
+  CreateCustomError,
+  Schema,
+  processFactory,
+  Meta,
+  isEmpty,
+  addPropertiesToFunction,
+} from '.'
 
 export class SchemaStructureValidator<
   THandleErrors extends (errors: any, validationError?: ValidationError) => any,
@@ -52,12 +61,12 @@ export class SchemaStructureValidator<
       }
     }
 
-    Object.entries(schema1).forEach(([schemaKey, schemaValue]) => {
-      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
-    })
-    Object.entries(schema2).forEach(([schemaKey, schemaValue]) => {
-      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
-    })
+    if (isObject(schema1)) {
+      addPropertiesToFunction(schema1, emitStructureValidator)
+    }
+    if (isObject(schema2)) {
+      addPropertiesToFunction(schema2, emitStructureValidator)
+    }
 
     return emitStructureValidator as TSchema1 & TSchema2 & EmitStructureValidation<ReturnType<THandleErrors>>
   }
