@@ -75,3 +75,17 @@ export function isObject(input: unknown): input is Record<string, unknown> {
 export function isPrimitive(input: unknown): input is boolean | number | string | undefined | null {
   return isBoolean(input) || isNumber(input) || isString(input) || isNil(input)
 }
+
+export function isEmpty(input: unknown): boolean {
+  if (Array.isArray(input)) {
+    return !input.length
+  }
+  if (isObject(input)) {
+    return !Object.keys(input).length
+  }
+  if (isString(input)) {
+    return !input.length
+  }
+
+  return false
+}

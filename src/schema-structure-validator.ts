@@ -1,6 +1,6 @@
 import { ValidationError } from './errors'
 import { createStructureValidator } from './create-structure-validator'
-import { isObject, EmitStructureValidation, CreateCustomError, Schema } from '.'
+import { isObject, EmitStructureValidation, CreateCustomError, Schema, processFactory, Meta, isEmpty } from '.'
 
 export class SchemaStructureValidator<
   THandleErrors extends (errors: any, validationError?: ValidationError) => any,
@@ -34,6 +34,32 @@ export class SchemaStructureValidator<
     schema: TSchema,
   ): TSchema & EmitStructureValidation<ReturnType<THandleErrors>> => {
     return createStructureValidator(this.handleErrors)(schema)
+  }
+
+  public or = <TSchema1 extends Schema<any>, TSchema2 extends Schema<any>>(
+    schema1: TSchema1,
+    schema2: TSchema2,
+  ): TSchema1 & TSchema2 & EmitStructureValidation<ReturnType<THandleErrors>> => {
+    const emitStructureValidator = (input: unknown, meta: Meta) => {
+      const newMeta = { path: '', handleErrors: this.handleErrors, ...meta }
+      const errors1 = processFactory(schema1, input, newMeta)
+      const errors2 = processFactory(schema2, input, newMeta)
+      const isErrors1Exists = errors1 !== undefined && !isEmpty(errors1)
+      const isErrors2Exists = errors2 !== undefined && !isEmpty(errors2)
+
+      if (isErrors1Exists && isErrors2Exists) {
+        return errors1
+      }
+    }
+
+    Object.entries(schema1).forEach(([schemaKey, schemaValue]) => {
+      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
+    })
+    Object.entries(schema2).forEach(([schemaKey, schemaValue]) => {
+      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
+    })
+
+    return emitStructureValidator as TSchema1 & TSchema2 & EmitStructureValidation<ReturnType<THandleErrors>>
   }
 
   public only = <TSchema extends Schema<any>>(
