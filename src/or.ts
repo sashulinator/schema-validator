@@ -1,20 +1,20 @@
-import { processOrEmit } from './process'
-import { ErrorTree, Schema, Structure } from './types'
+import { and } from '.'
+import { Primitive } from './types'
 
-export function or(...schemas: Schema[]) {
-  return function emitOr(structure: Structure, key?: string, parentStructure?: Structure): ErrorTree {
-    const localErrorTree: Record<string, any> = {}
+export const or: Primitive = (...assertionItems) => {
+  return function emitAssertion(input, meta) {
+    let localErrors: any
 
-    for (let index = 0; index < schemas.length; index += 1) {
-      const schema = schemas[index]
+    for (let index = 0; index < assertionItems.length; index += 1) {
+      const assertion = assertionItems[index]
 
-      const { errorTree } = processOrEmit(schema, structure, key, parentStructure)
+      const error = and(assertion)(input, meta)
 
-      localErrorTree[index.toString()] = errorTree
+      if (error) {
+        localErrors = meta.handleErrors(localErrors, error, meta)
+      }
     }
 
-    const errorValues = Object.values(localErrorTree)
-
-    return errorValues.every(Boolean) ? errorValues.reduce((acc, error) => ({ ...acc, ...error }), {}) : undefined
+    return localErrors
   }
 }

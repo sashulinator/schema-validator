@@ -2,7 +2,7 @@
 interface BaseErrorProps {
   code: string
   message: string
-  errors?: { [keyFromCollectableError: string]: CollectableError } | CollectableError
+  errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
 }
 
 export class BaseError extends Error {
@@ -10,7 +10,7 @@ export class BaseError extends Error {
 
   public readonly _message: string
 
-  public readonly _errors?: { [keyFromCollectableError: string]: CollectableError } | CollectableError
+  public readonly _errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
   // depending on a context on a client side
   // example: you try to create a user and receive { errorCode: CONFLICT }
   // so you can show the message "Such user already exists"
@@ -26,45 +26,43 @@ export class BaseError extends Error {
   }
 }
 
-export interface CollectableErrorProps {
+export interface ValidationErrorProps {
   code: string
   message: string
-  key: string
-  value?: unknown
-  key2?: string
-  value2?: unknown
+  inputName: string
+  input?: unknown
+  inputName2?: string
+  input2?: unknown
 }
 
-export class CollectableError extends BaseError {
+export class ValidationError extends BaseError {
   // can be a field name in a validated object
-  _key: string
+  _inputName: string
 
-  // can be a field value in a validated object
-  _value?: unknown
+  // can be a field input in a validated object
+  _input?: unknown
 
   // can be a pattern name (email, uuid), a measuring system (kg, m) or a limit name (card/phone number limit)
-  _key2?: string
+  _inputName2?: string
 
-  // value that we somehow compared with ValidationError['value']
-  _value2?: unknown
+  // input that we somehow compared with ValidationError['input']
+  _input2?: unknown
 
-  constructor(props: CollectableErrorProps) {
+  constructor(props: ValidationErrorProps) {
     super({ ...props })
 
-    this._key = props.key
+    this._inputName = props.inputName
 
-    if (props.value) {
-      this._value = props.value
+    if (props.input) {
+      this._input = props.input
     }
 
-    if (props.key2) {
-      this._key2 = props.key2
+    if (props.inputName2) {
+      this._inputName2 = props.inputName2
     }
 
-    if (props.value2) {
-      this._value2 = props.value2
+    if (props.input2) {
+      this._input2 = props.input2
     }
   }
 }
-
-export class ValidationError extends CollectableError {}

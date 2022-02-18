@@ -42,11 +42,9 @@ export function assertNumber(input: unknown): asserts input is number {
 }
 
 export function assertString(input: unknown): asserts input is string {
-  if (isString(input)) {
-    return
+  if (!isString(input)) {
+    throw Error('is not a string')
   }
-
-  throw Error('is not a string')
 }
 
 export function assertEmptyString(input: unknown): asserts input is '' {
@@ -58,11 +56,9 @@ export function assertEmptyString(input: unknown): asserts input is '' {
 }
 
 export function assertNotEmptyString<T>(input: T | ''): asserts input is T {
-  if (!isEmptyString(input)) {
-    return
+  if (input === '') {
+    throw Error('is an empty string')
   }
-
-  throw Error('is an empty string')
 }
 
 export function assertBoolean(input: unknown): asserts input is boolean {
@@ -79,7 +75,7 @@ export function assertNotUndefined<T>(input: unknown | undefined): asserts input
   }
 }
 
-export function assertUndefined(input: undefined): asserts input is undefined {
+export function assertUndefined(input: unknown): asserts input is undefined {
   if (typeof input !== 'undefined') {
     throw Error('cannot be undefined')
   }

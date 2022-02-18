@@ -1,35 +1,69 @@
-// "Structure" means Object | Array
-
 import { ValidationError } from './errors'
 
-export type Schema = StructureSchema | EmitAssertValidation | EmitStructureValidation
+// Common
 
-export type StructureSchema = ArrayStructureSchema | ObjectStructureSchema
+export type CollectedErrors = any
 
-export type ArrayStructureSchema = (Schema | EmitAssertValidation | EmitStructureValidation)[]
+export type Schema<Type> = Type extends Record<string, any>
+  ? ObjectStructureSchema<Type>
+  : Type extends unknown[]
+  ? ArrayStructureSchema<Type[number]>
+  : EmitAssertion
 
-export type ObjectStructureSchema = {
-  [fieldName: string | number]: Schema | EmitAssertValidation | EmitStructureValidation
+export type ArrayStructureSchema<Type> = Schema<Type>[]
+
+export type ObjectStructureSchema<Type> = {
+  [Property in keyof Type]: Schema<Type[Property]>
 }
 
-export type Structure = ArrayStructure | ObjectStructure
+export type Meta = {
+  inputName?: string | undefined
+  inputObject?: Record<string, unknown> | undefined
+  initialInput?: unknown | undefined
+  payload?: unknown
+  path: string
+  handleErrors: (errors: any, validationError: ValidationError, meta: Meta) => any
+}
 
-export type ArrayStructure = any[]
+// Primitive
 
-export type ObjectStructure = Record<string, any>
+export type Primitive = (...assertions: Assertion[]) => EmitAssertion
 
-export type ErrorTree = Record<string, ValidationError> | ValidationError | undefined | Record<string, any>
+export type Assertion = (input: unknown, meta?: Meta) => void
 
-export type Assertion = (value: any, key?: string, structure?: any) => void
+export type ErrorTree = any
 
-export type ComparingAssertionArgs = [value: any, comparisonValue: any, key?: string, key2?: string, structure?: any]
+export type EmitAssertion = (input: unknown, meta?: Meta) => ErrorTree
 
-export type ComparingAssertion = (...args: ComparingAssertionArgs) => void
+// Process
 
-export type AssertionItem =
-  | Assertion
-  | [ComparingAssertion, any | ((value: any, key?: string, structure?: ObjectStructure) => any), string?]
+export type CreateCustomError<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
 
-export type EmitAssertValidation = (value: any, key?: string, structure?: any) => ValidationError | undefined
+export type ProcessFactory = <InputType>(
+  schema: Schema<InputType>,
+  input: any,
+  meta?: Meta,
+  cb?: CreateCustomError<any>,
+) => CollectedErrors
 
-export type EmitStructureValidation = (input: Structure, key?: string, structure?: any) => ErrorTree
+export type Process<InputType> = (
+  schema: Schema<InputType>,
+  input: unknown,
+  meta?: Meta,
+  cb?: CreateCustomError<any>,
+) => CollectedErrors
+
+// StructureValidator
+
+export type EmitStructureValidation<TErrors> = (value: unknown, meta?: Meta) => TErrors
+
+// With
+
+export type WithAsserion = (input: unknown, input2?: unknown, meta?: Meta) => void
+
+export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, meta?: Meta) => void
+export type WithValue = (
+  input2: unknown,
+  assertion: WithAsserion,
+  name?: string,
+) => (input: unknown, meta?: Meta) => void
