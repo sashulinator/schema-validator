@@ -1,5 +1,5 @@
 import { ValidationError } from './errors'
-import { createStructureValidator } from './create-structure-validator'
+import { createStructureValidator } from './helpers'
 import {
   isObject,
   EmitStructureValidation,
@@ -12,7 +12,7 @@ import {
 } from '.'
 
 export class SchemaStructureValidator<
-  THandleErrors extends (errors: any, validationError?: ValidationError) => any,
+  THandleErrors extends (errors: any, validationError: ValidationError | undefined, meta: Meta) => any,
   TCreateCustomErrors extends Record<string, CreateCustomError<ValidationError>>
 > {
   private readonly handleErrors: THandleErrors
