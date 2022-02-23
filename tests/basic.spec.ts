@@ -200,7 +200,7 @@ describe('basic tests', () => {
     })
   })
 
-  it('access to nested object', () => {
+  it('access to the nested object', () => {
     const errors = validateTest4.user.coordinates({
       longitude: /longtitude/,
       latitude: /latitude/,
@@ -219,6 +219,17 @@ describe('basic tests', () => {
         _inputName: 'latitude',
         _input: '/latitude/',
       },
+    })
+  })
+
+  it('access to the field', () => {
+    const error = validateTest4.user.coordinates.latitude(/latitude/)
+
+    expect(errorToObject(error)).toStrictEqual({
+      _code: 'assertString',
+      _input: '/latitude/',
+      _inputName: undefined,
+      _message: 'is not a string',
     })
   })
 })
