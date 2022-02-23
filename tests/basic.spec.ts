@@ -1,41 +1,41 @@
-import { assertString, and, assertNotEmptyString } from '../src'
+import { string, and, notEmptyString } from '../src'
 import { ssv1, ssv2 } from './schemas'
 import { errorToObject } from './utils'
 
 describe('basic tests', () => {
   const validateTest = ssv1.wrap({
-    test: assertString,
+    test: string,
   })
 
   const validateTest2 = ssv1.wrap({
-    test: and(assertNotEmptyString, assertString),
+    test: and(notEmptyString, string),
   })
 
   const validateTest3 = ssv1.wrap({
     test: ssv1.only({
-      testAgain: and(assertNotEmptyString, assertString),
+      testAgain: and(notEmptyString, string),
     }),
-    test1: assertString,
+    test1: string,
   })
 
   const validateTest4 = ssv2.wrap({
     user: ssv2.only({
-      postcode: and(assertNotEmptyString, assertString),
+      postcode: and(notEmptyString, string),
       coordinates: ssv2.only({
-        longitude: and(assertNotEmptyString, assertString),
-        latitude: and(assertNotEmptyString, assertString),
+        longitude: and(notEmptyString, string),
+        latitude: and(notEmptyString, string),
       }),
     }),
-    password: assertString,
+    password: string,
   })
 
   const validateTest5 = ssv2.custom.validateSmth({
-    test: and(assertNotEmptyString, assertString),
+    test: and(notEmptyString, string),
   })
 
   const validateTest6 = ssv2.only([
     {
-      test: and(assertNotEmptyString, assertString),
+      test: and(notEmptyString, string),
     },
   ])
 

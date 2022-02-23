@@ -1,4 +1,4 @@
-import { assertMatchPattern, assertRegExp, assertString, withRef, withValue } from '../src'
+import { assertMatchPattern, assertRegExp, withRef, withValue } from '../src'
 import { ssv2 } from './schemas'
 
 describe('with', () => {
