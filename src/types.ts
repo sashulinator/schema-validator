@@ -8,7 +8,7 @@ export type Schema<Type> = Type extends Record<string, any>
   ? ObjectStructureSchema<Type>
   : Type extends unknown[]
   ? ArrayStructureSchema<Type[number]>
-  : EmitAssertion
+  : EmitAssertion | Assertion | WithAssertion
 
 export type ArrayStructureSchema<Type> = Schema<Type>[]
 
@@ -27,13 +27,13 @@ export type Meta = {
 
 // Primitive
 
-export type Primitive = (...assertions: Assertion[]) => EmitAssertion
+export type SchemaCollector = (...assertions: Assertion[]) => (input: unknown, meta?: Meta) => ErrorTree
 
 export type Assertion = (input: unknown, meta?: Meta) => void
 
 export type ErrorTree = any
 
-export type EmitAssertion = (input: unknown, meta?: Meta) => ErrorTree
+export type EmitAssertion = (assertion: Assertion, input: unknown, meta?: Meta) => ErrorTree
 
 // Process
 
@@ -46,8 +46,8 @@ export type ProcessFactory = <InputType>(
   cb?: CreateCustomError<any>,
 ) => CollectedErrors
 
-export type Process<Schema> = (
-  schema: Schema,
+export type Process<TSchema> = (
+  schema: TSchema,
   input: unknown,
   meta?: Meta,
   cb?: CreateCustomError<any>,
@@ -59,11 +59,11 @@ export type EmitStructureValidation<TErrors> = (value: unknown, meta?: Meta) => 
 
 // With
 
-export type WithAsserion = (input: unknown, input2?: unknown, meta?: Meta) => void
+export type WithAssertion = (input: unknown, input2?: unknown, meta?: Meta) => void
 
-export type WithRef = (refName: string, assertion: WithAsserion) => (input: unknown, meta?: Meta) => void
+export type WithRef = (refName: string, assertion: WithAssertion) => (input: unknown, meta?: Meta) => void
 export type WithValue = (
   input2: unknown,
-  assertion: WithAsserion,
+  assertion: WithAssertion,
   name?: string,
 ) => (input: unknown, meta?: Meta) => void

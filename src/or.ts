@@ -1,20 +1,22 @@
-import { and } from '.'
-import { Primitive } from './types'
+import { processFactory } from '.'
+import { SchemaCollector } from './types'
 
-export const or: Primitive = (...assertionItems) => {
-  return function emitAssertion(input, meta) {
-    let localErrors: any
+export const or: SchemaCollector = (...schemas) => {
+  return function emitSchemaCollector(input, meta) {
+    let localErrors: any[]
 
-    for (let index = 0; index < assertionItems.length; index += 1) {
-      const assertion = assertionItems[index]
+    for (let index = 0; index < schemas.length; index += 1) {
+      const schema = schemas[index]
 
-      const error = and(assertion)(input, meta)
+      const error = processFactory(schema, input, meta)
 
       if (error) {
-        localErrors = meta.handleErrors(localErrors, error, meta)
+        localErrors.push(error)
       }
     }
 
-    return localErrors
+    if (localErrors.length === schemas.length) {
+      return localErrors[0]
+    }
   }
 }

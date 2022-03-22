@@ -1,8 +1,8 @@
-import { CollectedErrors } from '.'
-import { and } from './and'
+import { CollectedErrors, EmitAssertion, WithAssertion } from '.'
+import { emitAssertion } from './emit-assertion'
 import { ValidationError } from './errors'
 import { isObject } from './is'
-import { ArrayStructureSchema, EmitAssertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ArrayStructureSchema, Assertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta, cb) => {
   if (typeof schema === 'function') {
@@ -20,13 +20,13 @@ export const processFactory: ProcessFactory = (schema, input, meta, cb) => {
   throw Error('Schema must be a function, array or object!')
 }
 
-const processFunction: Process<EmitAssertion> = (schema, input, meta, cb) => {
+const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn, input, meta, cb) => {
   let collectedErrors: CollectedErrors
 
   try {
-    collectedErrors = schema(input, meta)
+    collectedErrors = fn(input as any, meta)
   } catch (e) {
-    collectedErrors = and(schema)(input, meta)
+    collectedErrors = emitAssertion(fn, input, meta)
   }
 
   return collectedErrors
