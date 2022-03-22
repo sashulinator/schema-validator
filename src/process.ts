@@ -2,26 +2,34 @@ import { CollectedErrors } from '.'
 import { and } from './and'
 import { ValidationError } from './errors'
 import { isObject } from './is'
-import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ArrayStructureSchema, EmitAssertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta, cb) => {
   if (typeof schema === 'function') {
-    let collectedErrors: CollectedErrors
-
-    try {
-      collectedErrors = schema(input, meta)
-    } catch (e) {
-      collectedErrors = and(schema)(input, meta)
-    }
-
-    return collectedErrors
+    return processFunction(schema, input, meta, cb)
   }
 
   if (Array.isArray(schema)) {
     return processArray(schema, input, meta, cb)
   }
 
-  return processObject(schema, input, meta, cb)
+  if (isObject(schema)) {
+    return processObject(schema, input, meta, cb)
+  }
+
+  throw Error('Schema must be a function, array or object!')
+}
+
+const processFunction: Process<EmitAssertion> = (schema, input, meta, cb) => {
+  let collectedErrors: CollectedErrors
+
+  try {
+    collectedErrors = schema(input, meta)
+  } catch (e) {
+    collectedErrors = and(schema)(input, meta)
+  }
+
+  return collectedErrors
 }
 
 const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta, cb) => {

@@ -46,8 +46,8 @@ export type ProcessFactory = <InputType>(
   cb?: CreateCustomError<any>,
 ) => CollectedErrors
 
-export type Process<InputType> = (
-  schema: Schema<InputType>,
+export type Process<Schema> = (
+  schema: Schema,
   input: unknown,
   meta?: Meta,
   cb?: CreateCustomError<any>,
