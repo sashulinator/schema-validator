@@ -1,8 +1,8 @@
-import { CreateCustomError } from '.'
+import { ValidateStructure } from '.'
 import { processFactory } from './process'
 import { Meta, EmitStructureValidation, Schema } from './types'
 
-export function createStructureValidator<TErrors>(createCustomError?: CreateCustomError<TErrors>) {
+export function createStructureValidator<TErrors>(validateStructure?: ValidateStructure<TErrors>) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
   ): TSchema & EmitStructureValidation<TErrors> {
@@ -13,7 +13,15 @@ export function createStructureValidator<TErrors>(createCustomError?: CreateCust
 
       const newMeta = { path: '', handleError: this.handleError, ...meta }
 
-      return processFactory(schema, input, newMeta, createCustomError)
+      const structureError = validateStructure?.(schema, input, meta)
+
+      const errors = processFactory(schema, input, newMeta)
+
+      if (errors || structureError) {
+        return this.handleError(errors, structureError, newMeta)
+      }
+
+      return undefined
     }
 
     Object.entries(schema).forEach(([schemaKey, schemaValue]) => {

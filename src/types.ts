@@ -37,21 +37,11 @@ export type EmitAssertion = (assertion: Assertion, input: unknown, meta?: Meta) 
 
 // Process
 
-export type CreateCustomError<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
+export type ValidateStructure<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
 
-export type ProcessFactory = <InputType>(
-  schema: Schema<InputType>,
-  input: any,
-  meta?: Meta,
-  cb?: CreateCustomError<any>,
-) => CollectedErrors
+export type ProcessFactory = <InputType>(schema: Schema<InputType>, input: any, meta?: Meta) => CollectedErrors
 
-export type Process<TSchema> = (
-  schema: TSchema,
-  input: unknown,
-  meta?: Meta,
-  cb?: CreateCustomError<any>,
-) => CollectedErrors
+export type Process<TSchema> = (schema: TSchema, input: unknown, meta?: Meta) => CollectedErrors
 
 // StructureValidator
 

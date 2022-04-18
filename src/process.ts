@@ -4,13 +4,13 @@ import { ValidationError } from './errors'
 import { isObject } from './is'
 import { ArrayStructureSchema, Assertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export const processFactory: ProcessFactory = (schema, input, meta, createCustomError) => {
+export const processFactory: ProcessFactory = (schema, input, meta) => {
   if (typeof schema === 'function') {
-    return processFunction(schema, input, meta, createCustomError)
+    return processFunction(schema, input, meta)
   }
 
   if (Array.isArray(schema)) {
-    return processArray(schema, input, meta, createCustomError)
+    return processArray(schema, input, meta)
   }
 
   if (isObject(schema)) {
@@ -32,12 +32,7 @@ const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn,
   return collectedErrors
 }
 
-const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
-  schema,
-  input,
-  meta,
-  createCustomError,
-) => {
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta) => {
   if (!isObject(input)) {
     return new ValidationError({
       input,
@@ -61,13 +56,10 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
   }
 
-  const customError = createCustomError?.(schema, input, meta)
-  collectedErrors = meta.handleError(collectedErrors, customError, meta)
-
   return collectedErrors
 }
 
-const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta, createCustomError) => {
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta) => {
   let collectedErrors: CollectedErrors
 
   if (!Array.isArray(input)) {
@@ -91,9 +83,6 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     const errors = processFactory(schema[0], input?.[index], newMeta)
     collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
   }
-
-  const customError = createCustomError?.(schema, input, meta)
-  collectedErrors = meta.handleError(collectedErrors, customError, meta)
 
   return collectedErrors
 }
