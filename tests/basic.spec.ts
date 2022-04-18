@@ -7,13 +7,18 @@ const bindedWrap = wrap.bind({
 
 describe('basic', () => {
   it('basic', () => {
-    const validateSomeData = bindedWrap({
+    const validateSomeData = wrap({
       test: string,
     })
 
-    const errors = validateSomeData({
-      test: 1,
-    })
+    const errors = validateSomeData.call(
+      {
+        handleError: handleErrorsIntoObject,
+      },
+      {
+        test: 1,
+      },
+    )
 
     console.log('errors', errors)
   })

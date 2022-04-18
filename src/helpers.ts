@@ -6,8 +6,8 @@ export function createStructureValidator<TErrors>(createCustomError?: CreateCust
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
   ): TSchema & EmitStructureValidation<TErrors> {
-    const emitStructureValidator = (input: unknown, meta: Meta): ReturnType<EmitStructureValidation<TErrors>> => {
-      if (!this.handleError) {
+    function emitStructureValidator(input: unknown, meta: Meta): ReturnType<EmitStructureValidation<TErrors>> {
+      if (!this?.handleError) {
         throw new Error('"handleError" is not provided!')
       }
 
