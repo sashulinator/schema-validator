@@ -53,7 +53,10 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     const newMeta = { ...meta, inputName, inputObject: input, path }
 
     const errors = processFactory(schemaValue, objInput, newMeta)
-    collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+
+    if (errors) {
+      collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+    }
   }
 
   return collectedErrors
@@ -81,7 +84,10 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     const path = `${parentPath}${inputName}`
     const newMeta = { ...meta, inputName, path }
     const errors = processFactory(schema[0], input?.[index], newMeta)
-    collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+
+    if (errors) {
+      collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+    }
   }
 
   return collectedErrors

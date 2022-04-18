@@ -57,3 +57,27 @@ export const only = createStructureValidator((schema, input, meta) => {
 
   return undefined
 })
+
+export const required = createStructureValidator((schema, input, meta) => {
+  if (isObject(input)) {
+    const inputEntries = Object.entries(input)
+    let schemaKeys = Object.keys(schema)
+
+    for (let index = 0; index < inputEntries.length; index += 1) {
+      const [inputKey] = inputEntries[index]
+
+      schemaKeys = schemaKeys.filter((schemaKey) => inputKey !== schemaKey)
+    }
+
+    if (schemaKeys.length) {
+      return new ValidationError({
+        inputName: meta?.inputName,
+        input: schemaKeys,
+        code: 'requiredKeys',
+        message: 'some keys are required',
+      })
+    }
+  }
+
+  return undefined
+})
