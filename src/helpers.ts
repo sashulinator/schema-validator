@@ -1,4 +1,4 @@
-import { ValidateStructure } from '.'
+import { isObject, ValidateStructure, ValidationError } from '.'
 import { processFactory } from './process'
 import { Meta, EmitStructureValidation, Schema } from './types'
 
@@ -33,3 +33,27 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
 }
 
 export const wrap = createStructureValidator()
+
+export const only = createStructureValidator((schema, input, meta) => {
+  if (isObject(input)) {
+    const schemaEntries = Object.entries(schema)
+    let inputKeys = Object.keys(input)
+
+    for (let index = 0; index < schemaEntries.length; index += 1) {
+      const [schemaKey] = schemaEntries[index]
+
+      inputKeys = inputKeys.filter((inputKey) => inputKey !== schemaKey)
+    }
+
+    if (inputKeys.length) {
+      return new ValidationError({
+        inputName: meta?.inputName,
+        input: inputKeys,
+        code: 'excessiveKeys',
+        message: 'some keys are excessive',
+      })
+    }
+  }
+
+  return undefined
+})
