@@ -4,23 +4,23 @@ import { ValidationError } from './errors'
 import { isObject } from './is'
 import { ArrayStructureSchema, Assertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
-export const processFactory: ProcessFactory = (schema, input, meta, cb) => {
+export const processFactory: ProcessFactory = (schema, input, meta, createCustomError) => {
   if (typeof schema === 'function') {
-    return processFunction(schema, input, meta, cb)
+    return processFunction(schema, input, meta, createCustomError)
   }
 
   if (Array.isArray(schema)) {
-    return processArray(schema, input, meta, cb)
+    return processArray(schema, input, meta, createCustomError)
   }
 
   if (isObject(schema)) {
-    return processObject(schema, input, meta, cb)
+    return processObject(schema, input, meta)
   }
 
   throw Error('Schema must be a function, array or object!')
 }
 
-const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn, input, meta, cb) => {
+const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn, input, meta) => {
   let collectedErrors: CollectedErrors
 
   try {
@@ -32,7 +32,12 @@ const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn,
   return collectedErrors
 }
 
-const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta, cb) => {
+const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
+  schema,
+  input,
+  meta,
+  createCustomError,
+) => {
   if (!isObject(input)) {
     return new ValidationError({
       input,
@@ -53,16 +58,16 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     const newMeta = { ...meta, inputName, inputObject: input, path }
 
     const errors = processFactory(schemaValue, objInput, newMeta)
-    collectedErrors = meta.handleErrors(collectedErrors, errors, newMeta)
+    collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
   }
 
-  const customError = cb?.(schema, input, meta)
-  collectedErrors = meta.handleErrors(collectedErrors, customError, meta)
+  const customError = createCustomError?.(schema, input, meta)
+  collectedErrors = meta.handleError(collectedErrors, customError, meta)
 
   return collectedErrors
 }
 
-const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta, cb) => {
+const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta, createCustomError) => {
   let collectedErrors: CollectedErrors
 
   if (!Array.isArray(input)) {
@@ -84,11 +89,11 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     const path = `${parentPath}${inputName}`
     const newMeta = { ...meta, inputName, path }
     const errors = processFactory(schema[0], input?.[index], newMeta)
-    collectedErrors = meta.handleErrors(collectedErrors, errors, newMeta)
+    collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
   }
 
-  const customError = cb?.(schema, input, meta)
-  collectedErrors = meta.handleErrors(collectedErrors, customError, meta)
+  const customError = createCustomError?.(schema, input, meta)
+  collectedErrors = meta.handleError(collectedErrors, customError, meta)
 
   return collectedErrors
 }

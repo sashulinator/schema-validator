@@ -22,7 +22,7 @@ export type Meta = {
   initialInput?: unknown | undefined
   payload?: unknown
   path: string
-  handleErrors: (errors: any, validationError: ValidationError, meta: Meta) => any
+  handleError: (errors: any, validationError: ValidationError, meta: Meta) => any
 }
 
 // Primitive

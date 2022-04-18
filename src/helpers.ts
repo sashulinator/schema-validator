@@ -2,16 +2,18 @@ import { CreateCustomError } from '.'
 import { processFactory } from './process'
 import { Meta, EmitStructureValidation, Schema } from './types'
 
-export function createStructureValidator<TErrors>(
-  handleErrors: CreateCustomError<TErrors>,
-  cb?: CreateCustomError<TErrors>,
-) {
+export function createStructureValidator<TErrors>(createCustomError?: CreateCustomError<TErrors>) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
   ): TSchema & EmitStructureValidation<TErrors> {
     const emitStructureValidator = (input: unknown, meta: Meta): ReturnType<EmitStructureValidation<TErrors>> => {
-      const newMeta = { path: '', handleErrors, ...meta }
-      return processFactory(schema, input, newMeta, cb)
+      if (!this.handleError) {
+        throw new Error('"handleError" is not provided!')
+      }
+
+      const newMeta = { path: '', handleError: this.handleError, ...meta }
+
+      return processFactory(schema, input, newMeta, createCustomError)
     }
 
     Object.entries(schema).forEach(([schemaKey, schemaValue]) => {
@@ -21,3 +23,5 @@ export function createStructureValidator<TErrors>(
     return emitStructureValidator as TSchema & EmitStructureValidation<TErrors>
   }
 }
+
+export const wrap = createStructureValidator()

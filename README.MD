@@ -4,7 +4,7 @@
 
 ```ts
 
-const v = new SchemaStructureValidator( handleErrors: ... )
+const v = new SchemaStructureValidator( handleError: ... )
 
 const validateAddress = v.only({
   postcode: string,
