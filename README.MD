@@ -1,61 +1,65 @@
 #SAV - SUPER AWESOME VALIDATOR
 
+## Simple validators
+
+```ts
+const addressValidator = only({
+  street: and(string, notEmptyString),
+  building: and(string, notEmptyString),
+})
+
+const userValidator = only({
+  username: withValue(/^(\w*)$/, matchPattern),
+  password: and(string, notEmptyString),
+  email: withValue(/@.*\.*./, matchPattern, 'email'),
+  fullname: or(string, _undefined),
+  address: addressValidator
+})
+```
+
 ## Simple usage
 
 ```ts
+userValidator.bind({
+  handleError: createAwesomeErrorStructure
+})
 
-const v = new SchemaStructureValidator( handleError: ... )
-
-const validateAddress = v.only({
-  postcode: string,
-  coordinates: v.only({
-    longitude: or(number, and(string, notEmptyString)),
-    latitude: or(number, and(string, notEmptyString)),
-  }),
-}),
-
-const errors = validateAddress({
-  postcode: 446303
-  coordinates: {
-    longitude: /longitude/
+const errors = userValidator({
+  username: 'sashulinator',
+  password: 'p@ssword',
+  email: 'test@test.test',
+  fullname: 'Alexander',
+  address: {
+    street: 'red light',
+    building: 42,
   }
 })
 
 console.log(errors)
-// you can create your own error builder by passing a function "handleErrors"
-// but just as an example:
-//
-// postcode: {
-//   _code: 'assertString',
-//   _input: 446303,
-//   _inputName: 'postcode',
-//   _message: 'is not a string',
+// the errors structure depends on your "createAwesomeErrorStructure" function
+// but it could be something like this:
+// {
+//   address: {
+//     building: {
+//       _code: 'assertString',
+//       _input: 42,
+//       _inputName: 'building',
+//       _message: 'is not a string',
+//     }
+//   }
 // }
-// coordinates: {
-//   latitude: {
-//     _code: 'assertNumber',
-//     _input: undefined,
-//     _inputName: 'latitude',
-//     _message: 'is not a number',
-//   },
-//   longitude: {
-//     _code: 'assertNumber',
-//     _input: 42,
-//     _inputName: 'longitude',
-//     _message: 'is not a number',
-//   },
-// },
-
-// also you can validate the nested properties
-const longitudeError = validateAddress.coordinates.longitude(/longitude/)
-
-console.log(longitudeError)
-
-// longitude: {
-//   _code: 'assertNumber',
-//   _input: 42,
-//   _inputName: 'longitude',
-//   _message: 'is not a number',
-// },
-
+//
+// or
+//
+// [
+//   {
+//       _code: 'assertString',
+//       _input: 1,
+//       _input2: '/^(\\w*)$/',
+//       _inputName: 'building',
+//       _message: 'is not a string',
+//       _path: 'address.building'
+//    }
+// ]
 ```
+
