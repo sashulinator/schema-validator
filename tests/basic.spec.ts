@@ -1,25 +1,40 @@
-import { string, wrap } from '../src'
-import { handleErrorsIntoObject } from './helpers'
-
-const bindedWrap = wrap.bind({
-  handleError: handleErrorsIntoObject,
-})
+import { validateCreateUserData } from './mock-schemas'
 
 describe('basic', () => {
-  it('basic', () => {
-    const validateSomeData = wrap({
-      test: string,
+  it('valid', () => {
+    const errors = validateCreateUserData({
+      username: 'alex',
+      password: 'p@ssword',
+      email: 'hello@test.test',
     })
 
-    const errors = validateSomeData.call(
-      {
-        handleError: handleErrorsIntoObject,
-      },
-      {
-        test: 1,
-      },
-    )
+    expect(errors).toBeUndefined()
+  })
 
-    console.log('errors', errors)
+  it('invalid', () => {
+    const errors = validateCreateUserData({
+      username: 1,
+      password: 1,
+      email: 'hello',
+    })
+
+    expect(errors).toEqual({
+      email: {
+        _code: 'assertMatchPattern',
+        _input: 'hello',
+        _input2: '/@.*\\.*./',
+        _inputName2: 'email',
+        _inputName: 'email',
+        _message: 'does not match the pattern',
+      },
+      password: { _code: 'assertString', _input: 1, _inputName: 'password', _message: 'is not a string' },
+      username: {
+        _code: 'assertMatchPattern',
+        _input: 1,
+        _input2: '/^(\\w*)$/',
+        _inputName: 'username',
+        _message: 'is not a string',
+      },
+    })
   })
 })

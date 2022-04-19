@@ -3,7 +3,7 @@ import { SchemaCollector } from './types'
 
 export const or: SchemaCollector = (...schemas) => {
   return function emitSchemaCollector(input, meta) {
-    let localErrors: any[]
+    const localErrors: any[] = []
 
     for (let index = 0; index < schemas.length; index += 1) {
       const schema = schemas[index]

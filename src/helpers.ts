@@ -10,7 +10,7 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
     const that = this
 
     function emitStructureValidator(input: unknown, meta: Meta): ReturnType<EmitStructureValidation<TErrors>> {
-      const handleError = this?.handleError || that?.handleError
+      const handleError = this?.handleError || that?.handleError || meta?.handleError
       if (!handleError) {
         throw new Error('"handleError" is not provided!')
       }
