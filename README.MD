@@ -4,15 +4,15 @@
 
 ```ts
 const addressValidator = only({
-  street: and(string, notEmptyString),
+  street: string,
   building: and(string, notEmptyString),
 })
 
 const userValidator = only({
-  username: withValue(/^(\w*)$/, matchPattern),
-  email: withValue(/@.*\.*./, matchPattern),
-  password: and(string, notEmptyString),
+  username: and(string, notEmptyString),
   fullname: or(string, _undefined),
+  password: and(string, notEmptyString),
+  email: withValue(/@.*\.*./, matchPattern),
   address: addressValidator
 })
 ```

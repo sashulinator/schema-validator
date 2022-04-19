@@ -1,8 +1,18 @@
-import { and, matchPattern, notEmptyString, only, or, string, withValue, wrap, _undefined } from '../src'
-import { handleErrorsIntoObject } from './helpers'
+import {
+  and,
+  matchPattern,
+  notEmptyString,
+  only,
+  or,
+  string,
+  withValue,
+  wrap,
+  _undefined,
+  buildErrorTree,
+} from '../src'
 
 const wrap1 = wrap.bind({
-  handleError: handleErrorsIntoObject,
+  handleError: buildErrorTree,
 })
 
 export const validateCreateUserData = wrap1(

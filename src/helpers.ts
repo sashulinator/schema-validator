@@ -1,4 +1,4 @@
-import { isObject, ValidateStructure, ValidationError } from '.'
+import { ValidateStructure } from '.'
 import { processFactory } from './process'
 import { Meta, EmitStructureValidation, Schema } from './types'
 
@@ -36,52 +36,24 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
   }
 }
 
-export const wrap = createStructureValidator()
-
-export const only = createStructureValidator((schema, input, meta) => {
-  if (isObject(input)) {
-    const schemaEntries = Object.entries(schema)
-    let inputKeys = Object.keys(input)
-
-    for (let index = 0; index < schemaEntries.length; index += 1) {
-      const [schemaKey] = schemaEntries[index]
-
-      inputKeys = inputKeys.filter((inputKey) => inputKey !== schemaKey)
+export const buildObjectByPath = (
+  obj: Record<string, unknown>,
+  pathString: string,
+  value: any = null,
+): Record<string, unknown> => {
+  let paths = pathString.split('.')
+  let current = obj
+  while (paths.length > 1) {
+    const [head, ...tail] = paths
+    paths = tail
+    if (current[head] === undefined) {
+      current[head] = {}
     }
-
-    if (inputKeys.length) {
-      return new ValidationError({
-        inputName: meta?.inputName,
-        input: inputKeys,
-        code: 'excessiveKeys',
-        message: 'some keys are excessive',
-      })
-    }
+    current = current[head] as Record<string, unknown>
   }
-
-  return undefined
-})
-
-export const required = createStructureValidator((schema, input, meta) => {
-  if (isObject(input)) {
-    const inputEntries = Object.entries(input)
-    let schemaKeys = Object.keys(schema)
-
-    for (let index = 0; index < inputEntries.length; index += 1) {
-      const [inputKey] = inputEntries[index]
-
-      schemaKeys = schemaKeys.filter((schemaKey) => inputKey !== schemaKey)
-    }
-
-    if (schemaKeys.length) {
-      return new ValidationError({
-        inputName: meta?.inputName,
-        input: schemaKeys,
-        code: 'requiredKeys',
-        message: 'some keys are required',
-      })
-    }
+  if (value) {
+    const oldValue = current[paths[0]] as any
+    current[paths[0]] = { ...oldValue, ...value }
   }
-
-  return undefined
-})
+  return obj
+}
