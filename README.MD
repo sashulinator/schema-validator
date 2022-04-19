@@ -10,8 +10,8 @@ const addressValidator = only({
 
 const userValidator = only({
   username: withValue(/^(\w*)$/, matchPattern),
+  email: withValue(/@.*\.*./, matchPattern),
   password: and(string, notEmptyString),
-  email: withValue(/@.*\.*./, matchPattern, 'email'),
   fullname: or(string, _undefined),
   address: addressValidator
 })
@@ -53,12 +53,11 @@ console.log(errors)
 //
 // [
 //   {
+//       _path: 'address.building'
 //       _code: 'assertString',
 //       _input: 1,
-//       _input2: '/^(\\w*)$/',
 //       _inputName: 'building',
 //       _message: 'is not a string',
-//       _path: 'address.building'
 //    }
 // ]
 ```
