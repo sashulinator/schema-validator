@@ -1,29 +1,20 @@
-import { isPrimitive } from '.'
-import { ValidationError } from './errors'
-import { Primitive } from './types'
+import { processFactory } from '.'
+import { SchemaCollector } from './types'
 
-export const and: Primitive = (...assertionItems) => {
-  return function emitAssertion(input, meta) {
-    for (let index = 0; index < assertionItems.length; index += 1) {
-      const assertion = assertionItems[index]
+export const and: SchemaCollector = (...schemas) => {
+  return function emitSchemaCollector(input, meta) {
+    let localErrors: any
 
-      try {
-        assertion(input, meta)
-      } catch (error) {
-        if (error instanceof ValidationError) {
-          return error
-        }
-        if (error instanceof Error) {
-          return new ValidationError({
-            inputName: meta?.inputName,
-            input: isPrimitive(input) ? input : input?.toString(),
-            code: assertion?.name,
-            message: error.message,
-          })
-        }
+    for (let index = 0; index < schemas.length; index += 1) {
+      const schema = schemas[index]
+
+      const error = processFactory(schema, input, meta)
+
+      if (error) {
+        return error
       }
     }
 
-    return undefined
+    return localErrors
   }
 }

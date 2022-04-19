@@ -1,7 +1,7 @@
 import { ValidationError } from './errors'
-import { WithRef, WithAsserion, WithValue, Meta } from './types'
+import { WithRef, WithAssertion, WithValue, Meta } from './types'
 
-const handleAssertion = (assertion: WithAsserion, input: unknown, input2: unknown, meta: Meta, name?: string) => {
+const handleAssertion = (assertion: WithAssertion, input: unknown, input2: unknown, meta: Meta, name?: string) => {
   try {
     assertion(input, input2, meta)
   } catch (error) {
@@ -18,7 +18,7 @@ const handleAssertion = (assertion: WithAsserion, input: unknown, input2: unknow
   }
 }
 
-export const withRef: WithRef = (refName: string, assertion: WithAsserion) => {
+export const withRef: WithRef = (refName: string, assertion: WithAssertion) => {
   return function emitAssertion(input, meta) {
     const input2 = meta?.inputObject[refName]
     handleAssertion(assertion, input, input2, meta, refName)

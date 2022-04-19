@@ -1,6 +1,7 @@
 import { isEmptyString } from '.'
 import { isNumber, isString, isNil, isBoolean, isNull } from './is'
 
+export { assertNil as nil }
 export function assertNil(input: unknown): input is undefined | null {
   if (isNil(input)) {
     return
@@ -9,6 +10,7 @@ export function assertNil(input: unknown): input is undefined | null {
   throw Error('is not nil')
 }
 
+export { assertNotNil as notNil }
 export function assertNotNil<T>(input: T | undefined | null): input is T {
   if (!isNil(input)) {
     return
@@ -17,6 +19,7 @@ export function assertNotNil<T>(input: T | undefined | null): input is T {
   throw Error('is nil')
 }
 
+export { assertNull as _null }
 export function assertNull(input: unknown): input is null {
   if (isNull(input)) {
     return
@@ -25,6 +28,7 @@ export function assertNull(input: unknown): input is null {
   throw Error('is not null')
 }
 
+export { assertNotNull as notNull }
 export function assertNotNull<T>(input: T | null): input is T {
   if (!isNull(input)) {
     return
@@ -33,6 +37,7 @@ export function assertNotNull<T>(input: T | null): input is T {
   throw Error('is null')
 }
 
+export { assertNumber as number }
 export function assertNumber(input: unknown): asserts input is number {
   if (isNumber(input)) {
     return
@@ -41,12 +46,14 @@ export function assertNumber(input: unknown): asserts input is number {
   throw Error('is not a number')
 }
 
+export { assertString as string }
 export function assertString(input: unknown): asserts input is string {
   if (!isString(input)) {
     throw Error('is not a string')
   }
 }
 
+export { assertEmptyString as emptyString }
 export function assertEmptyString(input: unknown): asserts input is '' {
   if (isEmptyString(input)) {
     return
@@ -55,12 +62,14 @@ export function assertEmptyString(input: unknown): asserts input is '' {
   throw Error('is not a string')
 }
 
+export { assertNotEmptyString as notEmptyString }
 export function assertNotEmptyString<T>(input: T | ''): asserts input is T {
   if (input === '') {
     throw Error('is an empty string')
   }
 }
 
+export { assertBoolean as boolean }
 export function assertBoolean(input: unknown): asserts input is boolean {
   if (isBoolean(input)) {
     return
@@ -69,18 +78,21 @@ export function assertBoolean(input: unknown): asserts input is boolean {
   throw Error('is not a boolean')
 }
 
+export { assertNotUndefined as notUndefined }
 export function assertNotUndefined<T>(input: unknown | undefined): asserts input is T {
   if (typeof input === 'undefined') {
     throw Error('cannot be undefined')
   }
 }
 
+export { assertUndefined as _undefined }
 export function assertUndefined(input: unknown): asserts input is undefined {
   if (typeof input !== 'undefined') {
     throw Error('cannot be undefined')
   }
 }
 
+export { assertNotNaN as notNaN }
 export function assertNotNaN(input: unknown): void {
   assertNumber(input)
 
@@ -89,6 +101,7 @@ export function assertNotNaN(input: unknown): void {
   }
 }
 
+export { assertNotMoreThan as notMoreThan }
 export function assertNotMoreThan(input: unknown, num: unknown): void {
   if (!isNumber(input) && !isString(input)) {
     throw Error(`must be a string or number`)
@@ -111,12 +124,14 @@ export function assertNotMoreThan(input: unknown, num: unknown): void {
   throw Error(`more than ${num}`)
 }
 
+export { assertStringMaxLength as stringMaxLength }
 export function assertStringMaxLength(input: unknown, num: unknown): void {
   assertString(input)
 
   assertNotMoreThan(input.length, num)
 }
 
+export { assertStringifiedNumber as stringifiedNumber }
 export function assertStringifiedNumber(input: unknown): void {
   try {
     assertString(input)
@@ -126,6 +141,7 @@ export function assertStringifiedNumber(input: unknown): void {
   }
 }
 
+export { assertRegExp as regExp }
 export function assertRegExp(input: unknown): asserts input is RegExp {
   if (!isString(input) && !(input instanceof RegExp)) {
     throw Error(`is not a regular expression`)
@@ -138,6 +154,7 @@ export function assertRegExp(input: unknown): asserts input is RegExp {
   }
 }
 
+export { assertMatchPattern as matchPattern }
 export function assertMatchPattern(input: unknown, pattern: unknown): void {
   assertString(input)
   assertRegExp(pattern)
