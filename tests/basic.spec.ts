@@ -2,23 +2,25 @@ import { validateCreateUserData } from './mock-schemas'
 
 describe('basic', () => {
   it('valid', () => {
-    const errors = validateCreateUserData({
+    const errorCollection = validateCreateUserData({
       username: 'alex',
       password: 'p@ssword',
       email: 'hello@test.test',
+      test: 'test',
     })
 
-    expect(errors).toBeUndefined()
+    expect(errorCollection).toBeUndefined()
   })
 
   it('invalid', () => {
-    const errors = validateCreateUserData({
+    const errorCollection = validateCreateUserData({
       username: 1,
       password: 1,
       email: 'hello',
+      test: 1,
     })
 
-    expect(errors).toEqual({
+    expect(errorCollection).toEqual({
       email: {
         _code: 'assertMatchPattern',
         _input: 'hello',
@@ -35,6 +37,23 @@ describe('basic', () => {
         _inputName: 'username',
         _message: 'is not a string',
       },
+      test: {
+        _code: 'assertString',
+        _inputName: 'test',
+        _message: 'is not a string',
+        _input: 1,
+      },
+    })
+  })
+
+  it('chain access', () => {
+    const validationError = validateCreateUserData.test(1)
+
+    expect({ ...validationError }).toEqual({
+      _message: 'is not a string',
+      _inputName: 'test',
+      _input: 1,
+      _code: 'assertString',
     })
   })
 })

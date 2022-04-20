@@ -13,7 +13,7 @@ import {
 
 const wrap1 = wrap.bind({
   handleError: buildErrorTree,
-})
+}) as typeof wrap
 
 export const validateCreateUserData = wrap1(
   only<{
@@ -21,10 +21,12 @@ export const validateCreateUserData = wrap1(
     password: string
     email: string
     fullname: string
+    test: string
   }>({
     username: withValue(/^(\w*)$/, matchPattern),
     password: and(string, notEmptyString),
     email: withValue(/@.*\.*./, matchPattern, 'email'),
     fullname: or(string, _undefined),
+    test: string,
   }),
 )

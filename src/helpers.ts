@@ -1,4 +1,5 @@
-import { ValidateStructure } from '.'
+import { Assertion, ValidateStructure } from '.'
+import { emitAssertion } from './emit-assertion'
 import { processFactory } from './process'
 import { Meta, ErrorCollector, Schema } from './types'
 
@@ -8,6 +9,22 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
   ): TSchema & ErrorCollector<TErrors> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
+    const newSchema = {} as any
+
+    Object.entries(schema).forEach(([schemaKey, schemaValue]: [string, Assertion]) => {
+      newSchema[schemaKey] = schemaValue
+
+      if (typeof schemaValue === 'function') {
+        newSchema[schemaKey] = (input: unknown, meta: Meta) =>
+          emitAssertion(schemaValue, input, { ...meta, inputName: schemaKey })
+      }
+
+      Object.defineProperty(emitStructureValidator, schemaKey, {
+        value: newSchema[schemaKey],
+        writable: true,
+        enumerable: true,
+      })
+    })
 
     function emitStructureValidator(input: unknown, meta: Meta): ReturnType<ErrorCollector<TErrors>> {
       const handleError = this?.handleError || that?.handleError || meta?.handleError
@@ -17,9 +34,9 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
 
       const newMeta = { path: '', handleError, ...meta }
 
-      const structureError = validateStructure?.(schema, input, meta)
+      const structureError = validateStructure?.(newSchema, input, meta)
 
-      const errors = processFactory(schema, input, newMeta)
+      const errors = processFactory(newSchema, input, newMeta)
 
       if (errors || structureError) {
         return handleError(errors, structureError, newMeta)
@@ -27,10 +44,6 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
 
       return undefined
     }
-
-    Object.entries(schema).forEach(([schemaKey, schemaValue]) => {
-      Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
-    })
 
     return emitStructureValidator as TSchema & ErrorCollector<TErrors>
   }

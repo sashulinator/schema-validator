@@ -20,13 +20,13 @@ export const processFactory: ProcessFactory = (schema, input, meta) => {
   throw Error('Schema must be a function, array or object!')
 }
 
-const processFunction: Process<ErrorCollector<any> | Assertion> = (assertion, input, meta) => {
+const processFunction: Process<ErrorCollector<any> | Assertion> = (fn, input, meta) => {
   let collectedErrors: ErrorCollection
 
   try {
-    return assertion(input, meta)
+    return fn(input, meta)
   } catch (e) {
-    collectedErrors = emitAssertion(assertion, input, meta)
+    collectedErrors = emitAssertion(fn, input, meta)
   }
 
   return collectedErrors
