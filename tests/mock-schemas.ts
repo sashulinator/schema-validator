@@ -30,3 +30,9 @@ export const validateCreateUserData = wrap1<{
     test: string,
   }),
 )
+
+export const nestedData = wrap1({
+  test: only({
+    test1: or(string, _undefined),
+  }),
+})

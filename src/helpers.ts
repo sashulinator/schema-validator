@@ -15,8 +15,13 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
       newSchema[schemaKey] = schemaValue
 
       if (typeof schemaValue === 'function') {
-        newSchema[schemaKey] = (input: unknown, meta: Meta) =>
-          emitAssertion(schemaValue, input, { ...meta, inputName: schemaKey })
+        newSchema[schemaKey] = (input: unknown, meta: Meta) => {
+          if (emitStructureValidator.name === schemaValue.name) {
+            return emitAssertion(schemaValue.bind(that), input, { ...meta, inputName: schemaKey })
+          }
+
+          return emitAssertion(schemaValue, input, { ...meta, inputName: schemaKey })
+        }
       }
 
       Object.defineProperty(emitStructureValidator, schemaKey, {

@@ -1,4 +1,4 @@
-import { validateCreateUserData } from './mock-schemas'
+import { nestedData, validateCreateUserData } from './mock-schemas'
 
 describe('basic', () => {
   it('valid', () => {
@@ -54,6 +54,19 @@ describe('basic', () => {
       _inputName: 'test',
       _input: 1,
       _code: 'assertString',
+    })
+  })
+
+  it('chain access to structure validator', () => {
+    const validationError = nestedData.test({
+      test3: 'test',
+    })
+
+    expect({ ...validationError }).toEqual({
+      _code: 'excessiveKeys',
+      _input: ['test3'],
+      _inputName: 'test',
+      _message: 'some keys are excessive',
     })
   })
 })
