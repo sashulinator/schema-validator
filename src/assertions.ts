@@ -165,3 +165,15 @@ export function assertMatchPattern(input: unknown, pattern: unknown): void {
     throw new Error('does not match the pattern')
   }
 }
+
+export { assertIgnorePattern as ignorePattern }
+export function assertIgnorePattern(input: unknown, pattern: unknown): void {
+  assertString(input)
+  assertRegExp(pattern)
+
+  const regExp = new RegExp(pattern)
+
+  if (regExp.test(input)) {
+    throw new Error('match the pattern')
+  }
+}
