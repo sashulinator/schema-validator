@@ -1,8 +1,8 @@
-import { CollectedErrors, EmitAssertion, WithAssertion } from '.'
+import { Assertion, ErrorCollection, ErrorCollector } from '.'
 import { emitAssertion } from './emit-assertion'
 import { ValidationError } from './errors'
 import { isObject } from './is'
-import { ArrayStructureSchema, Assertion, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta) => {
   if (typeof schema === 'function') {
@@ -20,13 +20,13 @@ export const processFactory: ProcessFactory = (schema, input, meta) => {
   throw Error('Schema must be a function, array or object!')
 }
 
-const processFunction: Process<Assertion | EmitAssertion | WithAssertion> = (fn, input, meta) => {
-  let collectedErrors: CollectedErrors
+const processFunction: Process<ErrorCollector<any> | Assertion> = (assertion, input, meta) => {
+  let collectedErrors: ErrorCollection
 
   try {
-    collectedErrors = fn(input as any, meta)
+    return assertion(input, meta)
   } catch (e) {
-    collectedErrors = emitAssertion(fn, input, meta)
+    collectedErrors = emitAssertion(assertion, input, meta)
   }
 
   return collectedErrors
@@ -42,7 +42,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     })
   }
 
-  let collectedErrors: CollectedErrors
+  let collectedErrors: ErrorCollection
   const schemaEntries = Object.entries(schema)
 
   for (let index = 0; index < schemaEntries.length; index += 1) {
@@ -63,7 +63,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
 }
 
 const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta) => {
-  let collectedErrors: CollectedErrors
+  let collectedErrors: ErrorCollection
 
   if (!Array.isArray(input)) {
     return new ValidationError({

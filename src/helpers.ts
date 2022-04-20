@@ -1,15 +1,15 @@
 import { ValidateStructure } from '.'
 import { processFactory } from './process'
-import { Meta, EmitStructureValidation, Schema } from './types'
+import { Meta, ErrorCollector, Schema } from './types'
 
 export function createStructureValidator<TErrors>(validateStructure?: ValidateStructure<TErrors>) {
   return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
     schema: TSchema,
-  ): TSchema & EmitStructureValidation<TErrors> {
+  ): TSchema & ErrorCollector<TErrors> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
-    function emitStructureValidator(input: unknown, meta: Meta): ReturnType<EmitStructureValidation<TErrors>> {
+    function emitStructureValidator(input: unknown, meta: Meta): ReturnType<ErrorCollector<TErrors>> {
       const handleError = this?.handleError || that?.handleError || meta?.handleError
       if (!handleError) {
         throw new Error('"handleError" is not provided!')
@@ -32,7 +32,7 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
       Object.defineProperty(emitStructureValidator, schemaKey, { value: schemaValue, writable: true, enumerable: true })
     })
 
-    return emitStructureValidator as TSchema & EmitStructureValidation<TErrors>
+    return emitStructureValidator as TSchema & ErrorCollector<TErrors>
   }
 }
 
