@@ -15,14 +15,14 @@ const wrap1 = wrap.bind({
   handleError: buildErrorTree,
 }) as typeof wrap
 
-export const validateCreateUserData = wrap1(
-  only<{
-    username: string
-    password: string
-    email: string
-    fullname: string
-    test: string
-  }>({
+export const validateCreateUserData = wrap1<{
+  username: string
+  password: string
+  email: string
+  fullname: string
+  test: string
+}>(
+  only({
     username: withValue(/^(\w*)$/, matchPattern),
     password: and(string, notEmptyString),
     email: withValue(/@.*\.*./, matchPattern, 'email'),

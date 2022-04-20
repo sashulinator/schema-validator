@@ -21,15 +21,15 @@ export const processFactory: ProcessFactory = (schema, input, meta) => {
 }
 
 const processFunction: Process<ErrorCollector<any> | Assertion> = (fn, input, meta) => {
-  let collectedErrors: ErrorCollection
+  let errorCollection: ErrorCollection
 
   try {
     return fn(input, meta)
   } catch (e) {
-    collectedErrors = emitAssertion(fn, input, meta)
+    errorCollection = emitAssertion(fn, input, meta)
   }
 
-  return collectedErrors
+  return errorCollection
 }
 
 const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta) => {
@@ -42,7 +42,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     })
   }
 
-  let collectedErrors: ErrorCollection
+  let errorCollection: ErrorCollection
   const schemaEntries = Object.entries(schema)
 
   for (let index = 0; index < schemaEntries.length; index += 1) {
@@ -55,15 +55,15 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
     const errors = processFactory(schemaValue, objInput, newMeta)
 
     if (errors) {
-      collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+      errorCollection = meta.handleError(errorCollection, errors, newMeta)
     }
   }
 
-  return collectedErrors
+  return errorCollection
 }
 
 const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta) => {
-  let collectedErrors: ErrorCollection
+  let errorCollection: ErrorCollection
 
   if (!Array.isArray(input)) {
     return new ValidationError({
@@ -86,9 +86,9 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     const errors = processFactory(schema[0], input?.[index], newMeta)
 
     if (errors) {
-      collectedErrors = meta.handleError(collectedErrors, errors, newMeta)
+      errorCollection = meta.handleError(errorCollection, errors, newMeta)
     }
   }
 
-  return collectedErrors
+  return errorCollection
 }
