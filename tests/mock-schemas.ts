@@ -16,7 +16,12 @@ const wrap1 = wrap.bind({
 })
 
 export const validateCreateUserData = wrap1(
-  only({
+  only<{
+    username: string
+    password: string
+    email: string
+    fullname: string
+  }>({
     username: withValue(/^(\w*)$/, matchPattern),
     password: and(string, notEmptyString),
     email: withValue(/@.*\.*./, matchPattern, 'email'),

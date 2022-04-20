@@ -4,11 +4,11 @@ import { ValidationError } from './errors'
 
 export type CollectedErrors = any
 
-export type Schema<Type> = Type extends unknown[]
+export type Schema<Type> = Type extends Record<string, any>
+  ? ObjectStructureSchema<Type>
+  : Type extends unknown[]
   ? ArrayStructureSchema<Type[number]>
-  : Type extends () => any
-  ? EmitAssertion | Assertion | WithAssertion
-  : ObjectStructureSchema<Type>
+  : EmitAssertion | Assertion | WithAssertion
 
 export type ArrayStructureSchema<Type> = Schema<Type>[]
 
