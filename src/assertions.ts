@@ -11,7 +11,7 @@ export function assertNil(input: unknown): input is undefined | null {
 }
 
 export { assertNotNil as notNil }
-export function assertNotNil<T>(input: T | undefined | null): input is T {
+export function assertNotNil<T>(input: T | undefined | null): asserts input is T {
   if (!isNil(input)) {
     return
   }
@@ -20,7 +20,7 @@ export function assertNotNil<T>(input: T | undefined | null): input is T {
 }
 
 export { assertNull as _null }
-export function assertNull(input: unknown): input is null {
+export function assertNull(input: unknown): asserts input is null {
   if (isNull(input)) {
     return
   }
@@ -29,7 +29,7 @@ export function assertNull(input: unknown): input is null {
 }
 
 export { assertNotNull as notNull }
-export function assertNotNull<T>(input: T | null): input is T {
+export function assertNotNull<T>(input: T | null): asserts input is T {
   if (!isNull(input)) {
     return
   }
@@ -79,7 +79,7 @@ export function assertBoolean(input: unknown): asserts input is boolean {
 }
 
 export { assertNotUndefined as notUndefined }
-export function assertNotUndefined<T>(input: unknown | undefined): asserts input is T {
+export function assertNotUndefined<T>(input: T | undefined): asserts input is T {
   if (typeof input === 'undefined') {
     throw Error('cannot be undefined')
   }
@@ -94,10 +94,8 @@ export function assertUndefined(input: unknown): asserts input is undefined {
 
 export { assertNotNaN as notNaN }
 export function assertNotNaN(input: unknown): void {
-  assertNumber(input)
-
   if (Number.isNaN(input)) {
-    throw Error('is not a number')
+    throw Error('is NaN')
   }
 }
 
@@ -175,5 +173,21 @@ export function assertIgnorePattern(input: unknown, pattern: unknown): void {
 
   if (regExp.test(input)) {
     throw new Error('match the pattern')
+  }
+}
+
+export { assertArray as _array }
+export function assertArray<T>(input: T[] | unknown): asserts input is T[] {
+  if (!Array.isArray(input)) {
+    throw new Error('is not an array')
+  }
+}
+
+export type NotEmptyArray<T> = [T, ...T[]]
+
+export { assertNotEmptyArray as notEmptyArray }
+export function assertNotEmptyArray<T>(input: T[] | unknown): asserts input is NotEmptyArray<T> {
+  if (Array.isArray(input) && input.length === 0) {
+    throw new Error('an empty array')
   }
 }
