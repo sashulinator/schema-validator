@@ -1,6 +1,32 @@
+import { string, buildErrorArray, buildErrorTree, wrap, only, or } from '../src'
 import { nestedData, validateCreateUserData } from './mock-schemas'
 
+const wrap1 = wrap.bind({
+  handleError: buildErrorTree,
+}) as typeof wrap
+
 describe('basic', () => {
+  it('async', async () => {
+    const asyncData = wrap1(
+      only({
+        test: or(async (v) => string(v), string),
+      }),
+    )
+
+    const validationError = await asyncData({
+      test: 1,
+    })
+
+    expect(validationError).toEqual({
+      test: {
+        _code: '',
+        _input: 1,
+        _inputName: 'test',
+        _message: 'is not a string',
+      },
+    })
+  })
+
   it('valid', () => {
     const errorCollection = validateCreateUserData({
       username: 'alex',

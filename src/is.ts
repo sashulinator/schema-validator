@@ -89,3 +89,10 @@ export function isEmpty(input: unknown): boolean {
 
   return false
 }
+
+export default function isPromise<T>(input: unknown): input is Promise<T> {
+  if (input?.constructor?.name === 'AsyncFunction' || input?.constructor?.name === 'Promise') {
+    return true
+  }
+  return false
+}

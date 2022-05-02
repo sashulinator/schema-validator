@@ -1,8 +1,8 @@
-import { Assertion, ErrorCollection, ErrorCollector } from '.'
-import { emitAssertion } from './emit-assertion'
+import { Assertion, ErrorCollection, ErrorCollector, isEmpty } from '.'
+import { catchError } from './catch-error'
 import { ValidationError } from './errors'
-import { isObject } from './is'
-import { ArrayStructureSchema, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import isPromise, { isObject } from './is'
+import { ArrayStructureSchema, Meta, ObjectStructureSchema, Process, ProcessFactory } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta) => {
   if (typeof schema === 'function') {
@@ -20,16 +20,20 @@ export const processFactory: ProcessFactory = (schema, input, meta) => {
   throw Error('Schema must be a function, array or object!')
 }
 
-const processFunction: Process<ErrorCollector<any> | Assertion> = (fn, input, meta) => {
-  let errorCollection: ErrorCollection
-
+export const processFunction: Process<ErrorCollector<any> | Assertion> = (fn, input, meta) => {
   try {
-    return fn(input, meta)
-  } catch (e) {
-    errorCollection = emitAssertion(fn, input, meta)
-  }
+    const result = fn(input, meta)
 
-  return errorCollection
+    if (isPromise(result)) {
+      return fn(input, meta).catch((error: Error) => {
+        return catchError(error, input, meta, fn.name)
+      })
+    }
+
+    return result
+  } catch (error) {
+    return catchError(error, input, meta, fn.name)
+  }
 }
 
 const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (schema, input, meta) => {
@@ -45,6 +49,9 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
   let errorCollection: ErrorCollection
   const schemaEntries = Object.entries(schema)
 
+  const promises: Promise<any>[] = []
+  const metas: Meta[] = []
+
   for (let index = 0; index < schemaEntries.length; index += 1) {
     const [inputName, schemaValue] = schemaEntries[index]
     const objInput = input?.[inputName]
@@ -54,17 +61,30 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
 
     const errors = processFactory(schemaValue, objInput, newMeta)
 
-    if (errors) {
+    if (isPromise(errors)) {
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      promises.push(errors)
+      metas.push(newMeta)
+    } else if (errors) {
       errorCollection = meta.handleError(errorCollection, errors, newMeta)
     }
   }
 
-  return errorCollection
+  if (isEmpty(promises)) {
+    return errorCollection
+  }
+
+  return Promise.all(promises).then((res: any[]): any => {
+    for (let i = 0; i < res.length; i += 1) {
+      const element = res[i]
+      const nmeta = metas[i]
+      errorCollection = nmeta.handleError(errorCollection, element, nmeta)
+    }
+    return errorCollection
+  })
 }
 
 const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, meta) => {
-  let errorCollection: ErrorCollection
-
   if (!Array.isArray(input)) {
     return new ValidationError({
       input,
@@ -78,6 +98,11 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
   }
 
+  let errorCollection: ErrorCollection
+
+  const promises: Promise<any>[] = []
+  const metas: Meta[] = []
+
   for (let index = 0; index < input.length; index += 1) {
     const inputName = index.toString()
     const parentPath = meta.path ? `${meta.path}.` : ''
@@ -85,10 +110,25 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
     const newMeta = { ...meta, inputName, path }
     const errors = processFactory(schema[0], input?.[index], newMeta)
 
-    if (errors) {
+    if (isPromise(errors)) {
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
+      promises.push(errors)
+      metas.push(newMeta)
+    } else if (errors) {
       errorCollection = meta.handleError(errorCollection, errors, newMeta)
     }
   }
 
-  return errorCollection
+  if (isEmpty(promises)) {
+    return errorCollection
+  }
+
+  return Promise.all(promises).then((res: any[]): any => {
+    for (let i = 0; i < res.length; i += 1) {
+      const element = res[i]
+      const nmeta = metas[i]
+      errorCollection = nmeta.handleError(errorCollection, element, nmeta)
+    }
+    return errorCollection
+  })
 }

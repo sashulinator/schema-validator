@@ -1,5 +1,6 @@
 import { Assertion, ValidateStructure } from '.'
 import { emitAssertion } from './emit-assertion'
+import isPromise from './is'
 import { processFactory } from './process'
 import { Meta, ErrorCollector, Schema } from './types'
 
@@ -42,6 +43,13 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
       const structureError = validateStructure?.(newSchema, input, meta)
 
       const errors = processFactory(newSchema, input, newMeta)
+
+      if (isPromise(errors)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return (errors.then((pErrors: any) => {
+          return handleError(pErrors, structureError, newMeta)
+        }) as unknown) as TErrors
+      }
 
       if (errors || structureError) {
         return handleError(errors, structureError, newMeta)
