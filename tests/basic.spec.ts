@@ -1,4 +1,4 @@
-import { string, buildErrorArray, buildErrorTree, wrap, only, or } from '../src'
+import { string, buildErrorTree, wrap, only, or, notUndefined, and } from '../src'
 import { nestedData, validateCreateUserData } from './mock-schemas'
 
 const wrap1 = wrap.bind({
@@ -9,7 +9,7 @@ describe('basic', () => {
   it('async', async () => {
     const asyncData = wrap1(
       only({
-        test: or(async (v) => string(v), string),
+        test: and(async (v) => string(v), notUndefined),
       }),
     )
 
