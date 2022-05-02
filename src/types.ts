@@ -1,5 +1,7 @@
 import { ValidationError } from './errors'
 
+export const ANY_KEY = '[[[[[{{{{{{{ANY_KEY}}}}}}]]]]'
+
 // Common
 
 export type ErrorCollection = any

@@ -9,6 +9,8 @@ import {
   wrap,
   _undefined,
   buildErrorTree,
+  ANY_KEY,
+  number,
 } from '../src'
 
 const wrap1 = wrap.bind({
@@ -34,5 +36,12 @@ export const validateCreateUserData = wrap1<{
 export const nestedData = wrap1({
   test: only({
     test1: or(string, _undefined),
+  }),
+})
+
+export const anyKeyValidator = wrap1({
+  [ANY_KEY]: only({
+    id: string,
+    data: number,
   }),
 })

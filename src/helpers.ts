@@ -5,9 +5,7 @@ import { processFactory } from './process'
 import { Meta, ErrorCollector, Schema } from './types'
 
 export function createStructureValidator<TErrors>(validateStructure?: ValidateStructure<TErrors>) {
-  return function structureValidator<InputType, TSchema extends Schema<InputType> = Schema<InputType>>(
-    schema: TSchema,
-  ): TSchema & ErrorCollector<TErrors> {
+  return function structureValidator<TSchema extends Schema<any>>(schema: TSchema): TSchema & ErrorCollector<TErrors> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
     const newSchema = {} as any
