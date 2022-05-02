@@ -1,11 +1,34 @@
-import { string, buildErrorTree, wrap, only, or, notUndefined, and } from '../src'
-import { nestedData, validateCreateUserData } from './mock-schemas'
+import { string, buildErrorTree, wrap, only, notUndefined, and } from '../src'
+import { nestedData, validateCreateUserData, anyKeyValidator } from './mock-schemas'
 
 const wrap1 = wrap.bind({
   handleError: buildErrorTree,
 }) as typeof wrap
 
 describe('basic', () => {
+  it('any_key valid', async () => {
+    const errors = anyKeyValidator({
+      one: { id: 'one', data: 1 },
+      two: { id: 'two', data: 2 },
+      three: { id: 'three', data: 3 },
+    })
+
+    expect(errors).toEqual(undefined)
+  })
+
+  it('any_key invalid', async () => {
+    const errors = anyKeyValidator({
+      one: { id: 'one', data: '1' },
+      two: { id: 'two', data: '2' },
+      three: { id: 'three', data: 3 },
+    })
+
+    expect(errors).toEqual({
+      one: { data: { _code: 'assertNumber', _input: '1', _inputName: 'data', _message: 'is not a number' } },
+      two: { data: { _code: 'assertNumber', _input: '2', _inputName: 'data', _message: 'is not a number' } },
+    })
+  })
+
   it('async', async () => {
     const asyncData = wrap1(
       only({
@@ -75,7 +98,7 @@ describe('basic', () => {
   it('chain access', () => {
     const validationError = validateCreateUserData.test(1)
 
-    expect({ ...validationError }).toEqual({
+    expect({ ...(validationError as any) }).toEqual({
       _message: 'is not a string',
       _inputName: 'test',
       _input: 1,

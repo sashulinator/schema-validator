@@ -2,7 +2,7 @@ import { Assertion, ErrorCollection, ErrorCollector, isEmpty } from '.'
 import { catchError } from './catch-error'
 import { ValidationError } from './errors'
 import isPromise, { isObject } from './is'
-import { ArrayStructureSchema, Meta, ObjectStructureSchema, Process, ProcessFactory } from './types'
+import { ArrayStructureSchema, Meta, ObjectStructureSchema, Process, ProcessFactory, ANY_KEY } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta) => {
   if (typeof schema === 'function') {
@@ -48,25 +48,52 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
 
   let errorCollection: ErrorCollection
   const schemaEntries = Object.entries(schema)
+  const inputEntries = Object.entries(input)
+
+  const isAnyKey = schemaEntries.some(([schemaKey]) => schemaKey === ANY_KEY)
+
+  if (isAnyKey && schemaEntries.length > 1) {
+    throw new Error('Schema with "ANY_KEY" must contain only one value with this key')
+  }
 
   const promises: Promise<any>[] = []
   const metas: Meta[] = []
 
-  for (let index = 0; index < schemaEntries.length; index += 1) {
-    const [inputName, schemaValue] = schemaEntries[index]
-    const objInput = input?.[inputName]
-    const parentPath = meta.path ? `${meta.path}.` : ''
-    const path = `${parentPath}${inputName}`
-    const newMeta = { ...meta, inputName, inputObject: input, path }
+  if (Object.keys(schema)[0] === ANY_KEY) {
+    for (let index = 0; index < inputEntries.length; index += 1) {
+      const [inputName, objInput] = inputEntries[index]
+      const [, schemaValue] = schemaEntries[0]
+      const parentPath = meta.path ? `${meta.path}.` : ''
+      const path = `${parentPath}${inputName}`
+      const newMeta = { ...meta, inputName, inputObject: input, path }
 
-    const errors = processFactory(schemaValue, objInput, newMeta)
+      const errors = processFactory(schemaValue, objInput, newMeta)
 
-    if (isPromise(errors)) {
-      // eslint-disable-next-line @typescript-eslint/no-loop-func
-      promises.push(errors)
-      metas.push(newMeta)
-    } else if (errors) {
-      errorCollection = meta.handleError(errorCollection, errors, newMeta)
+      if (isPromise(errors)) {
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        promises.push(errors)
+        metas.push(newMeta)
+      } else if (errors) {
+        errorCollection = meta.handleError(errorCollection, errors, newMeta)
+      }
+    }
+  } else {
+    for (let index = 0; index < schemaEntries.length; index += 1) {
+      const [inputName, schemaValue] = schemaEntries[index]
+      const objInput = input?.[inputName]
+      const parentPath = meta.path ? `${meta.path}.` : ''
+      const path = `${parentPath}${inputName}`
+      const newMeta = { ...meta, inputName, inputObject: input, path }
+
+      const errors = processFactory(schemaValue, objInput, newMeta)
+
+      if (isPromise(errors)) {
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
+        promises.push(errors)
+        metas.push(newMeta)
+      } else if (errors) {
+        errorCollection = meta.handleError(errorCollection, errors, newMeta)
+      }
     }
   }
 
