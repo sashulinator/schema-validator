@@ -1,4 +1,4 @@
-import { isEmptyString } from '.'
+import { isEmptyString, Meta } from '.'
 import { isNumber, isString, isNil, isBoolean, isNull } from './is'
 
 export { assertNil as nil }
@@ -88,7 +88,7 @@ export function assertNotUndefined<T>(input: T | undefined): asserts input is T 
 export { assertUndefined as _undefined }
 export function assertUndefined(input: unknown): asserts input is undefined {
   if (typeof input !== 'undefined') {
-    throw Error('cannot be undefined')
+    throw Error('must be undefined')
   }
 }
 
@@ -189,5 +189,12 @@ export { assertNotEmptyArray as notEmptyArray }
 export function assertNotEmptyArray<T>(input: T[] | unknown): asserts input is NotEmptyArray<T> {
   if (Array.isArray(input) && input.length === 0) {
     throw new Error('an empty array')
+  }
+}
+
+export { assertKeyDoesNotExist as keyDoesNotExist }
+export function assertKeyDoesNotExist(input: unknown, meta?: Meta): void {
+  if (meta?.inputName && meta?.inputObject && meta?.inputName in meta?.inputObject) {
+    throw new Error('key exists')
   }
 }
