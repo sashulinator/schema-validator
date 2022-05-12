@@ -78,13 +78,13 @@ export function isPrimitive(input: unknown): input is boolean | number | string 
 
 export function isEmpty(input: unknown): boolean {
   if (Array.isArray(input)) {
-    return !input.length
+    return input.length === 0
   }
   if (isObject(input)) {
-    return !Object.keys(input).length
+    return Object.keys(input).length === 0
   }
   if (isString(input)) {
-    return !input.length
+    return input.length === 0
   }
 
   return false
