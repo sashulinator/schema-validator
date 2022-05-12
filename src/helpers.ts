@@ -1,4 +1,4 @@
-import { Assertion, ValidateStructure } from '.'
+import { Assertion, isObject, ValidateStructure } from '.'
 import { emitAssertion } from './emit-assertion'
 import isPromise from './is'
 import { processFactory } from './process'
@@ -8,27 +8,29 @@ export function createStructureValidator<TErrors>(validateStructure?: ValidateSt
   return function structureValidator<TSchema extends Schema<any>>(schema: TSchema): TSchema & ErrorCollector<TErrors> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
-    const newSchema = {} as any
+    const newSchema = isObject(schema) ? {} : (schema as any)
 
-    Object.entries(schema).forEach(([schemaKey, schemaValue]: [string, Assertion]) => {
-      newSchema[schemaKey] = schemaValue
+    if (isObject(schema)) {
+      Object.entries(schema).forEach(([schemaKey, schemaValue]: [string, Assertion]) => {
+        newSchema[schemaKey] = schemaValue
 
-      if (typeof schemaValue === 'function') {
-        newSchema[schemaKey] = (input: unknown, meta: Meta) => {
-          if (emitStructureValidator.name === schemaValue.name) {
-            return emitAssertion(schemaValue.bind(that), input, { ...meta, inputName: schemaKey })
+        if (typeof schemaValue === 'function') {
+          newSchema[schemaKey] = (input: unknown, meta: Meta) => {
+            if (emitStructureValidator.name === schemaValue.name) {
+              return emitAssertion(schemaValue.bind(that), input, { ...meta, inputName: schemaKey })
+            }
+
+            return emitAssertion(schemaValue, input, { ...meta, inputName: schemaKey })
           }
-
-          return emitAssertion(schemaValue, input, { ...meta, inputName: schemaKey })
         }
-      }
 
-      Object.defineProperty(emitStructureValidator, schemaKey, {
-        value: newSchema[schemaKey],
-        writable: true,
-        enumerable: true,
+        Object.defineProperty(emitStructureValidator, schemaKey, {
+          value: newSchema[schemaKey],
+          writable: true,
+          enumerable: true,
+        })
       })
-    })
+    }
 
     function emitStructureValidator(input: unknown, meta: Meta): ReturnType<ErrorCollector<TErrors>> {
       const handleError = this?.handleError || that?.handleError || meta?.handleError
