@@ -20,16 +20,16 @@ export type ObjectStructureSchema<Type> = {
   [Property in keyof Type]: Schema<Type[Property]>
 }
 
-export type Meta = {
+export type Meta<TError = ErrorCollection> = {
   inputName?: string | undefined
   inputObject?: Record<string, unknown> | undefined
   initialInput?: unknown | undefined
   payload?: unknown
   path: string
-  handleError: (errors: any, validationError: ValidationError, meta: Meta) => any
+  handleError: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
 }
 
-export type ValidateStructure<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
+export type StructureValidator<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
 
 export type Assertion = (input: unknown, meta?: Meta) => void
 

@@ -112,4 +112,14 @@ describe(`${createStructureValidator.name}`, () => {
 
     expect({ ...error }).toEqual({ _code: 'assertString', _input: 1, _inputName: 'id', _message: 'is not a string' })
   })
+
+  it('validate this', async () => {
+    const error: any = schemaValidator.bind({
+      handleError: () => {
+        return 'test'
+      },
+    })({ id: 1 })
+
+    expect(error).toEqual('test')
+  })
 })
