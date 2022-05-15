@@ -20,7 +20,7 @@ export const processFactory: ProcessFactory = (schema, input, meta) => {
   throw Error('Schema must be a function, array or object!')
 }
 
-export const processFunction: Process<ErrorCollector<any> | Assertion> = (fn, input, meta) => {
+export const processFunction: Process<ErrorCollector<ErrorCollection> | Assertion> = (fn, input, meta) => {
   try {
     const result = fn(input, meta)
 

@@ -22,14 +22,16 @@ export const and: LogicalOperator = (...schemas) => {
     }
 
     if (!isEmpty(promises)) {
-      return Promise.all(promises).then((res: any[]): any => {
-        for (let i = 0; i < res.length; i += 1) {
-          const error = res[i]
-          if (error) {
-            return error
+      return Promise.all(promises).then(
+        (res: ErrorCollection[]): ErrorCollection => {
+          for (let i = 0; i < res.length; i += 1) {
+            const error = res[i]
+            if (error) {
+              return error
+            }
           }
-        }
-      })
+        },
+      )
     }
   }
 }
