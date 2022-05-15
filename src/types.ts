@@ -29,7 +29,7 @@ export type Meta<TError = ErrorCollection> = {
   handleError: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
 }
 
-export type StructureValidator<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
+export type StructureAssertion = (schema: Schema<any>, input: unknown, meta: Meta) => void
 
 export type Assertion = (input: unknown, meta?: Meta) => void
 

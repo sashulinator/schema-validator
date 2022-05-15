@@ -1,12 +1,12 @@
 import { ErrorCollection } from '.'
 import isPromise from './is'
 import { processFactory } from './process'
-import { Meta, Schema, StructureValidator } from './types'
+import { Meta, Schema, StructureAssertion } from './types'
 
 export default function createStructureValidatorEmitter<TErrors extends ErrorCollection | undefined>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: Schema<unknown>,
-  structureValidator: StructureValidator<TErrors>,
+  structureValidator: StructureAssertion,
   parentHandleError: Meta<TErrors>['handleError'],
 ) {
   return function structureValidatorEmitter(input: unknown, meta: Meta): TErrors | Promise<TErrors> {
