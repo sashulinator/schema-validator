@@ -1,8 +1,8 @@
 import { processFactory } from '.'
 import isPromise, { isEmpty } from './is'
-import { Meta, SchemaCollector } from './types'
+import { Meta, LogicalOperator } from './types'
 
-export const or: SchemaCollector = (...schemas) => {
+export const or: LogicalOperator = (...schemas) => {
   return function emitSchemaCollector(input, meta) {
     const errorCollection: any[] = []
 

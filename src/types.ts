@@ -32,8 +32,8 @@ export type Meta = {
 export type ValidateStructure<TErrors = any> = (schema: Schema<any>, input: unknown, meta: Meta) => TErrors
 
 export type Assertion = (input: unknown, meta?: Meta) => void
-// functions like "and" and "or"
-export type SchemaCollector = (...schemas: Schema<any>[]) => (input: unknown, meta?: Meta) => ErrorCollection
+
+export type LogicalOperator = (...schemas: Schema<any>[]) => (input: unknown, meta?: Meta) => ErrorCollection
 // DELETE
 export type EmitAssertion = (assertion: Assertion, input: unknown, meta?: Meta) => ErrorCollection
 
