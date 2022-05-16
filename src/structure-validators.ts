@@ -14,7 +14,7 @@ export const only = createStructureValidator((schema, input, meta) => {
     }
 
     if (inputKeys.length) {
-      return new ValidationError({
+      throw new ValidationError({
         inputName: meta?.inputName,
         input: inputKeys,
         code: 'excessiveKeys',
@@ -22,8 +22,6 @@ export const only = createStructureValidator((schema, input, meta) => {
       })
     }
   }
-
-  return undefined
 })
 
 export const required = createStructureValidator((schema, input, meta) => {
@@ -38,7 +36,7 @@ export const required = createStructureValidator((schema, input, meta) => {
     }
 
     if (schemaKeys.length) {
-      return new ValidationError({
+      throw new ValidationError({
         inputName: meta?.inputName,
         input: schemaKeys,
         code: 'requiredKeys',
@@ -46,6 +44,4 @@ export const required = createStructureValidator((schema, input, meta) => {
       })
     }
   }
-
-  return undefined
 })

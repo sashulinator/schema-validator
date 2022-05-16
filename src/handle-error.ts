@@ -1,4 +1,5 @@
-import { buildObjectByPath, isObject, Meta, ValidationError } from '.'
+import { isObject, Meta, ValidationError } from '.'
+import { buildObjectByPath } from './lib/build-object-from-path'
 
 export const buildErrorArray = (
   errors: ValidationError[] = [],
