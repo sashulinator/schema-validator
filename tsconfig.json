@@ -6,7 +6,7 @@
     "noImplicitAny": true,
     "lib": ["ES2015", "ES7", "dom.iterable", "ES6", "dom", "esnext"],
     "outDir": "./dist",
-    "target": "ESNext",
+    "target": "ES2017",
     "sourceMap": false,
     "esModuleInterop": true,
     "moduleResolution": "node"
