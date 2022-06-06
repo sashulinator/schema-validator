@@ -9,7 +9,7 @@ const handleAssertion = (assertion: WithAssertion, input: unknown, input2: unkno
       throw new ValidationError({
         inputName: meta?.inputName,
         input,
-        input2: input2.toString(),
+        input2: input2?.toString(),
         inputName2: name,
         code: assertion?.name,
         message: error.message,

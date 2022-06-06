@@ -24,7 +24,7 @@ export type Meta<TError = ErrorCollection> = {
   inputName?: string | undefined
   inputObject?: Record<string, unknown> | undefined
   initialInput?: unknown | undefined
-  payload?: unknown
+  payload?: any
   path: string
   handleError: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
 }
