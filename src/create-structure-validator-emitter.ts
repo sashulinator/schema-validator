@@ -9,7 +9,7 @@ export default function createStructureValidatorEmitter<TErrors extends ErrorCol
   structureValidator: StructureAssertion,
   parentHandleError: Meta<TErrors>['handleError'],
 ) {
-  return function structureValidatorEmitter(input: unknown, meta: Meta): TErrors | Promise<TErrors> {
+  return function structureValidatorEmitter(input: unknown, meta?: Partial<Meta>): TErrors | Promise<TErrors> {
     const handleError = this?.handleError || meta?.handleError || parentHandleError
 
     if (!handleError) {
