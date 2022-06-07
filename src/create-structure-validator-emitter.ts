@@ -1,5 +1,5 @@
 import { ErrorCollection } from '.'
-import isPromise from './is'
+import { isPromise } from './is'
 import { processFactory } from './process'
 import { Meta, Schema, StructureAssertion } from './types'
 

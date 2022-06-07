@@ -1,4 +1,4 @@
-import { isEmptyString, Meta } from '.'
+import { isEmptyString, isPromise, isStringifiedNumber, Meta } from '.'
 import { isNumber, isString, isNil, isBoolean, isNull } from './is'
 
 export { assertNil as nil }
@@ -131,10 +131,7 @@ export function assertStringMaxLength(input: unknown, num: unknown): void {
 
 export { assertStringifiedNumber as stringifiedNumber }
 export function assertStringifiedNumber(input: unknown): void {
-  try {
-    assertString(input)
-    assertNotNaN(parseInt(input, 10))
-  } catch (e) {
+  if (!isStringifiedNumber(input)) {
     throw Error(`is not a stringified number`)
   }
 }
@@ -196,5 +193,11 @@ export { assertKeyDoesNotExist as keyDoesNotExist }
 export function assertKeyDoesNotExist(input: unknown, meta?: Meta): void {
   if (meta?.inputName && meta?.inputObject && meta?.inputName in meta?.inputObject) {
     throw new Error('key exists')
+  }
+}
+
+export function assertPromise(input: unknown): void {
+  if (!isPromise(input)) {
+    throw Error(`is not a promise`)
   }
 }

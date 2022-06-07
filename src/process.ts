@@ -1,7 +1,7 @@
 import { Assertion, ErrorCollection, ErrorCollector, isEmpty } from '.'
 import { catchError } from './catch-error'
 import { ValidationError } from './errors'
-import isPromise, { isObject } from './is'
+import { isObject, isPromise } from './is'
 import { ArrayStructureSchema, Meta, ObjectStructureSchema, Process, ProcessFactory, ANY_KEY } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta) => {

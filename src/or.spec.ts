@@ -1,4 +1,4 @@
-import isPromise from './is'
+import { isPromise } from './is'
 import { or } from './or'
 
 describe(`${or.name}`, () => {

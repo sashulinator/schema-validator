@@ -33,6 +33,17 @@ export function isNotNumber<T>(input: T | number): input is T {
   return !isNumber(input)
 }
 
+export function isStringifiedNumber(input: unknown): input is `${number}` {
+  if (isString(input)) {
+    return input === parseInt(input, 10).toString()
+  }
+  return false
+}
+
+export function isNotStringifiedNumber<T>(input: T | `${number}`): input is T {
+  return !isStringifiedNumber(input)
+}
+
 export function isZero<T>(input: T | 0): input is T {
   return input === 0
 }
@@ -90,9 +101,9 @@ export function isEmpty(input: unknown): boolean {
   return false
 }
 
-export default function isPromise<T>(input: unknown): input is Promise<T> {
-  if (input?.constructor?.name === 'AsyncFunction' || input?.constructor?.name === 'Promise') {
-    return true
-  }
-  return false
+export function isPromise<T>(input: unknown): input is Promise<T> {
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    !!input && (typeof input === 'object' || typeof input === 'function') && typeof (input as any).then === 'function'
+  )
 }
