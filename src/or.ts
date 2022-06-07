@@ -1,5 +1,5 @@
 import { ErrorCollection, processFactory } from '.'
-import isPromise, { isEmpty } from './is'
+import { isEmpty, isPromise } from './is'
 import { Meta, LogicalOperator } from './types'
 
 export const or: LogicalOperator = (...schemas) => {
