@@ -43,6 +43,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
       message: 'schema expects an object',
       inputName: meta.inputName,
       code: 'schemaExpectsObject',
+      path: meta.path,
     })
   }
 
@@ -118,6 +119,7 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
       message: 'schema expects an array',
       inputName: meta.inputName,
       code: 'schemaExpectsArray',
+      path: meta.path,
     })
   }
 

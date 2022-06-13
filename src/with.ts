@@ -5,6 +5,9 @@ const handleAssertion = (assertion: WithAssertion, input: unknown, input2: unkno
   try {
     assertion(input, input2, meta)
   } catch (error) {
+    if (error instanceof ValidationError) {
+      throw error
+    }
     if (error instanceof Error) {
       throw new ValidationError({
         inputName: meta?.inputName,
@@ -13,6 +16,7 @@ const handleAssertion = (assertion: WithAssertion, input: unknown, input2: unkno
         inputName2: name,
         code: assertion?.name,
         message: error.message,
+        path: meta.path,
       })
     }
   }

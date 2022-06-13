@@ -30,6 +30,7 @@ export interface ValidationErrorProps {
   code: string
   message: string
   inputName: string
+  path: string
   input?: unknown
   inputName2?: string
   input2?: unknown
@@ -48,10 +49,14 @@ export class ValidationError extends BaseError {
   // input that we somehow compared with ValidationError['input']
   _input2?: unknown
 
+  // can be a field input in a validated object
+  _path: string
+
   constructor(props: ValidationErrorProps) {
     super({ ...props })
 
     this._inputName = props.inputName
+    this._path = props.path
 
     if (props.input) {
       this._input = props.input
