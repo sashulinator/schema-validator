@@ -67,7 +67,9 @@ describe(`${createStructureValidator.name}`, () => {
     it('invalid', async () => {
       const error = validator([1])
 
-      expect(error).toEqual({ '0': { _code: 'assertString', _input: 1, _inputName: '0', _message: 'is not a string' } })
+      expect(error).toEqual({
+        '0': { _code: 'assertString', _input: 1, _inputName: '0', _message: 'is not a string', _path: '0' },
+      })
     })
 
     it('complext schema is valid', async () => {
@@ -80,7 +82,7 @@ describe(`${createStructureValidator.name}`, () => {
       const error = schemaValidator({ ...validFields, type: 12 })
 
       expect(error).toEqual({
-        type: { _code: 'assertString', _input: 12, _inputName: 'type', _message: 'is not a string' },
+        type: { _code: 'assertString', _input: 12, _inputName: 'type', _message: 'is not a string', _path: 'type' },
       })
     })
 
@@ -99,6 +101,7 @@ describe(`${createStructureValidator.name}`, () => {
                 _input: 1,
                 _inputName: 'label',
                 _message: 'is not a string',
+                _path: 'comps.someId.props.label',
               },
             },
           },
