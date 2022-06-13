@@ -14,6 +14,7 @@ export const emitAssertion: EmitAssertion = (assertion, input, meta) => {
         input: isPrimitive(input) ? input : input?.toString(),
         code: assertion?.name,
         message: error.message,
+        path: meta.path,
       })
     }
   }

@@ -11,6 +11,7 @@ export function catchError(error: Error, input: unknown, meta: Meta, code?: stri
       input: isPrimitive(input) ? input : input?.toString(),
       code,
       message: error.message,
+      path: meta.path,
     })
   }
 }
