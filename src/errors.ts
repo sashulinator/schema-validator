@@ -1,21 +1,22 @@
 /* eslint-disable max-classes-per-file */
-interface BaseErrorProps {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+interface BaseErrorProps<Errors = any> {
   code: string
   message: string
-  errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
+  errors?: Errors
 }
 
-export class BaseError extends Error {
+export class BaseError<Errors = any> extends Error {
   public readonly _code: string // very handy when you need to translate or to give a more detailed information
 
   public readonly _message: string
 
-  public readonly _errors?: { [inputNameFromCollectableError: string]: ValidationError } | ValidationError
+  public readonly _errors?: any
   // depending on a context on a client side
   // example: you try to create a user and receive { errorCode: CONFLICT }
   // so you can show the message "Such user already exists"
 
-  constructor(props: BaseErrorProps) {
+  constructor(props: BaseErrorProps<Errors>) {
     super(props.message)
     this._code = props.code
     this._message = props.message
@@ -26,16 +27,18 @@ export class BaseError extends Error {
   }
 }
 
-export interface ValidationErrorProps {
+export interface ValidationErrorProps<Errors = any> {
   code: string
   message: string
   inputName: string
   input?: unknown
   inputName2?: string
   input2?: unknown
+  errors?: Errors
 }
 
-export class ValidationError extends BaseError {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export class ValidationError<Errors = any> extends BaseError<Errors> {
   // can be a field name in a validated object
   _inputName: string
 
@@ -48,7 +51,10 @@ export class ValidationError extends BaseError {
   // input that we somehow compared with ValidationError['input']
   _input2?: unknown
 
-  constructor(props: ValidationErrorProps) {
+  // can be a field input in a validated object
+  _path: string
+
+  constructor(props: ValidationErrorProps<Errors>) {
     super({ ...props })
 
     this._inputName = props.inputName
