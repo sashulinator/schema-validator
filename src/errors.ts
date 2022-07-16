@@ -31,6 +31,7 @@ export interface ValidationErrorProps<Errors = any> {
   code: string
   message: string
   inputName: string
+  path: string
   input?: unknown
   inputName2?: string
   input2?: unknown
@@ -58,6 +59,7 @@ export class ValidationError<Errors = any> extends BaseError<Errors> {
     super({ ...props })
 
     this._inputName = props.inputName
+    this._path = props.path
 
     if (props.input) {
       this._input = props.input

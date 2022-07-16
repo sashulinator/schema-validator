@@ -24,9 +24,9 @@ export type Meta<TError = ErrorCollection> = {
   inputName?: string | undefined
   inputObject?: Record<string, unknown> | undefined
   initialInput?: unknown | undefined
-  payload?: unknown
+  payload?: any
   path: string
-  handleError: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
+  handleError?: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
 }
 
 export type StructureAssertion = (schema: Schema<any>, input: unknown, meta: Meta) => void

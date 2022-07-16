@@ -1,7 +1,7 @@
 import { Assertion, ErrorCollection, ErrorCollector, isEmpty } from '.'
 import { catchError } from './catch-error'
 import { ValidationError } from './errors'
-import isPromise, { isObject } from './is'
+import { isObject, isPromise } from './is'
 import { ArrayStructureSchema, Meta, ObjectStructureSchema, Process, ProcessFactory, ANY_KEY } from './types'
 
 export const processFactory: ProcessFactory = (schema, input, meta) => {
@@ -43,6 +43,7 @@ const processObject: Process<ObjectStructureSchema<Record<string, unknown>>> = (
       message: 'schema expects an object',
       inputName: meta.inputName,
       code: 'schemaExpectsObject',
+      path: meta.path,
     })
   }
 
@@ -118,6 +119,7 @@ const processArray: Process<ArrayStructureSchema<unknown>> = (schema, input, met
       message: 'schema expects an array',
       inputName: meta.inputName,
       code: 'schemaExpectsArray',
+      path: meta.path,
     })
   }
 

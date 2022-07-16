@@ -19,6 +19,7 @@ export const only = createStructureValidator((schema, input, meta) => {
         input: inputKeys,
         code: 'excessiveKeys',
         message: 'some keys are excessive',
+        path: meta.path,
       })
     }
   }
@@ -41,6 +42,7 @@ export const required = createStructureValidator((schema, input, meta) => {
         input: schemaKeys,
         code: 'requiredKeys',
         message: 'some keys are required',
+        path: meta.path,
       })
     }
   }

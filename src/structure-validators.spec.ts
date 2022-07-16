@@ -1,8 +1,12 @@
-import { buildErrorTree, string, _undefined } from '.'
+import { buildErrorArray, buildErrorTree, string, _undefined } from '.'
 import { only, wrap } from './structure-validators'
 
 const onlyBind = only.bind({
   handleError: buildErrorTree,
+})
+
+const wrapBindArr = wrap.bind({
+  handleError: buildErrorArray,
 })
 
 describe(`${only.name}`, () => {
@@ -12,7 +16,7 @@ describe(`${only.name}`, () => {
     }),
   })
 
-  it('valid', async () => {
+  it('invalid', async () => {
     const error = nestedData({ test: { test } })
 
     expect(error).toEqual({
@@ -21,6 +25,7 @@ describe(`${only.name}`, () => {
         _message: 'some keys are excessive',
         _inputName: 'test',
         _input: ['test'],
+        _path: 'test',
       },
     })
   })
