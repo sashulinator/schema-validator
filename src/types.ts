@@ -29,7 +29,8 @@ export type Meta<TError = ErrorCollection> = {
   handleError?: (errors: TError, validationError: ValidationError, meta: Meta<TError>) => TError
 }
 
-export type StructureAssertion = (schema: Schema<any>, input: unknown, meta: Meta) => ValidationError
+// TODO throw error, not return!
+export type StructureAssertion = (schema: Schema<any>, input: unknown, meta: Meta) => ValidationError | void
 
 export type Assertion = (input: unknown, meta?: Meta) => void
 

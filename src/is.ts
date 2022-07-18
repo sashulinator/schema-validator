@@ -14,7 +14,7 @@ export function isNotNull<T>(input: T | null): input is T {
   return input !== null
 }
 
-export function isUndefined(input: unknown): input is unknown {
+export function isUndefined(input: unknown): input is undefined {
   return input === undefined
 }
 
