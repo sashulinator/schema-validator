@@ -24,7 +24,15 @@ export const buildErrorTree = (
   }
 
   if (validationErrorOrErrors instanceof ValidationError) {
-    buildObjectByPath(errors, meta.path, validationErrorOrErrors)
+    buildObjectByPath(errors, meta.path, {
+      _code: validationErrorOrErrors.code,
+      _message: validationErrorOrErrors.message,
+      _path: validationErrorOrErrors.path,
+      _input: validationErrorOrErrors.input,
+      _inputName: validationErrorOrErrors.inputName,
+      _input2: validationErrorOrErrors.input2,
+      _inputName2: validationErrorOrErrors.inputName2,
+    })
   } else if (isObject(validationErrorOrErrors)) {
     errors = Object.assign(errors, validationErrorOrErrors)
   }
