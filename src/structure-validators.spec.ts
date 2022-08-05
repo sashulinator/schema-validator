@@ -21,11 +21,11 @@ describe(`${only.name}`, () => {
 
     expect(error).toEqual({
       test: {
-        _code: 'excessiveKeys',
-        _message: 'some keys are excessive',
-        _inputName: 'test',
-        _input: ['test'],
-        _path: 'test',
+        code: 'excessiveKeys',
+        message: 'some keys are excessive',
+        inputName: 'test',
+        input: ['test'],
+        path: 'test',
       },
     })
   })
