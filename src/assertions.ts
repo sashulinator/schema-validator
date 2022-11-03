@@ -2,7 +2,7 @@ import { isEmptyString, isPromise, isStringifiedNumber, Meta } from '.'
 import { isNumber, isString, isNil, isBoolean, isNull } from './is'
 
 export { assertNil as nil }
-export function assertNil(input: unknown): input is undefined | null {
+export function assertNil(input: unknown): input is undefined | null | void {
   if (isNil(input)) {
     return
   }
@@ -11,7 +11,7 @@ export function assertNil(input: unknown): input is undefined | null {
 }
 
 export { assertNotNil as notNil }
-export function assertNotNil<T>(input: T | undefined | null): asserts input is T {
+export function assertNotNil<T>(input: T | undefined | null | void): asserts input is T {
   if (!isNil(input)) {
     return
   }

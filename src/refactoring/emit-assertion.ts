@@ -1,9 +1,9 @@
 import { ValidationError } from './errors/validation'
 import { Scene } from './types'
 
-export function emitAssertion(scene: Scene): void {
+export function emitAssertion(scene: Scene): void | Promise<void> {
   try {
-    scene.assertion(scene.input, scene)
+    return scene.assertion(scene.input, scene)
   } catch (e) {
     if (e instanceof Error) {
       throw new ValidationError({
@@ -13,6 +13,6 @@ export function emitAssertion(scene: Scene): void {
       })
     }
 
-    throw new Error('Error must be an instance of "Error".')
+    throw e
   }
 }
