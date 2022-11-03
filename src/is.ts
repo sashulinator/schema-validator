@@ -1,5 +1,5 @@
 export function isNil(input: unknown): input is undefined | null | void {
-  return input === null && input === undefined
+  return input === null || input === undefined
 }
 
 export function isNotNil<T>(input: T | undefined | null | void): input is T {

@@ -1,14 +1,16 @@
 import { ValidationError } from './errors/validation'
-import { Scene } from './types'
+import { Assertion, Scene } from './types'
 
 export function emitAssertion(scene: Scene): void | Promise<void> {
+  const assertion = scene.schemaItem as Assertion
+
   try {
-    return scene.assertion(scene.input, scene)
+    return assertion(scene.input, scene)
   } catch (e) {
     if (e instanceof Error) {
       throw new ValidationError({
         message: e.message,
-        code: scene.assertion.name,
+        code: assertion.name,
         input: scene.input,
       })
     }

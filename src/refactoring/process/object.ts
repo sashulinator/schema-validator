@@ -44,7 +44,12 @@ export function processObject(scene: Scene): void | Promise<void> {
   function handleIteration(inputName: string, input: unknown, schemaItem: Scene['schemaItem']) {
     const path: string[] = [...scene.path, inputName]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newScene: Scene = { ...scene, input, schemaItem, inputName, inputObject: scene.input as any, path }
-    return process(newScene)
+    scene.inputObject = scene.input as any
+    scene.input = input
+    scene.schemaItem = schemaItem
+    scene.inputName = inputName
+    scene.path = path
+
+    return process(scene)
   }
 }
