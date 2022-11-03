@@ -3,6 +3,8 @@ import { ValidationError } from './errors/validation'
 export interface Scene<ErrorCollection = unknown> {
   path: string[]
   input: unknown
+  inputName?: string
+  inputObject?: Record<string, unknown>
   schemaItem: Assertion | Record<string, unknown> | unknown[]
   errorCollection: ErrorCollection
   assertion: Assertion
