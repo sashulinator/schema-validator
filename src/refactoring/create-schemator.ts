@@ -2,7 +2,6 @@
 import { ValidationError } from './errors/validation'
 import { Scene, Schema } from './types'
 import { process } from './process/process'
-import { isNil } from '..'
 
 type PromiseSchema =
   | Promise<void>[]
@@ -15,41 +14,34 @@ type ValidatorReturn<TSchema, TErrorCollection> = TSchema extends PromiseSchema
   ? Promise<TErrorCollection | undefined>
   : TErrorCollection | undefined
 
-export type Config<TErrorCollection> = {
-  collectError?: Scene<TErrorCollection>['collectError']
-  input?: unknown
-  schema?: Schema
-}
-
 function collectError(error: ValidationError, scene: Scene<ValidationError[]>) {
   scene.errorCollection = scene.errorCollection ? [...scene.errorCollection, error] : [error]
 }
 
-export function createSchemator<TErrorCollection = unknown>(globalConfig?: Config<TErrorCollection>) {
-  return function schemator<STErrorCollection = TErrorCollection>(
-    schema?: Schema,
-    schemaConfig?: Config<STErrorCollection>,
+export function createSchemator<TErrorCollection = ValidationError[]>(createSchematorScene?: Scene<TErrorCollection>) {
+  return function schemator<TSchema extends PromiseSchema | Schema, STErrorCollection = TErrorCollection>(
+    schema?: TSchema,
+    schematorScene?: Scene<STErrorCollection>,
   ) {
-    const config: Config<STErrorCollection> = { ...globalConfig, ...schemaConfig }
     return validator
 
-    function validator(input?: unknown): ValidatorReturn<Schema, STErrorCollection> {
+    function validator(input?: unknown): ValidatorReturn<TSchema, STErrorCollection> {
       const path: string[] = []
-      const scene: Scene<TErrorCollection> = { schema, schemaItem: schema, input, path, collectError, ...config }
+      const scene = {
+        schema,
+        schemaItem: schema,
+        input,
+        path,
+        collectError,
+        ...createSchematorScene,
+        ...schematorScene,
+      } as Scene<STErrorCollection>
 
       if (scene.schema === undefined) {
         throw Error('Schema cannot be undefined.')
       }
 
-      const result = process(scene)
-
-      if (isNil(result)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        return scene.errorCollection as any
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return result.then(() => scene.errorCollection) as any
+      return process(scene) as ValidatorReturn<TSchema, STErrorCollection>
     }
   }
 }

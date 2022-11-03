@@ -3,7 +3,9 @@ import { Scene } from '../types'
 import { processFunction } from './function'
 import { processObject } from './object'
 
-export function process(scene: Scene): void | Promise<void> {
+export function process<TErrorCollection>(
+  scene: Scene<TErrorCollection>,
+): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   if (typeof scene.schemaItem === 'function') {
     return processFunction(scene)
   }

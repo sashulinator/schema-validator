@@ -4,7 +4,9 @@ import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
 import { process } from './process'
 
-export function processObject(scene: Scene): void | Promise<void> {
+export function processObject<TErrorCollection>(
+  scene: Scene<TErrorCollection>,
+): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   if (!isObject(scene.input)) {
     throw new ValidationError({
       message: 'Schema expects an object.',

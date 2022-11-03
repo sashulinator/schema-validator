@@ -1,16 +1,23 @@
-import { isNil } from '../../is'
-import { catchError } from '../catch-error'
 import { emitAssertion } from '../emit-assertion'
+import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
 
-export function processFunction(scene: Scene): void | Promise<void> {
-  try {
-    const result = emitAssertion(scene)
+export function processFunction<TErrorCollection>(
+  scene: Scene<TErrorCollection>,
+): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
+  const result = emitAssertion(scene)
 
-    if (!isNil(result)) {
-      return result.catch((error) => catchError(error, scene))
-    }
-  } catch (error) {
-    catchError(error, scene)
+  if (result === undefined) {
+    return undefined
   }
+
+  if (result instanceof ValidationError) {
+    scene.collectError(result, scene)
+    return scene.errorCollection
+  }
+
+  return result.then((error) => {
+    scene.collectError(error, scene)
+    return scene.errorCollection
+  })
 }
