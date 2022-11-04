@@ -1,3 +1,4 @@
+import { catchError } from '../catch-error'
 import { emitAssertion } from '../emit-assertion'
 import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
@@ -12,12 +13,8 @@ export function processFunction<TErrorCollection>(
   }
 
   if (result instanceof ValidationError) {
-    scene.collectError(result, scene)
-    return scene.errorCollection
+    return catchError(result, scene)
   }
 
-  return result.then((error) => {
-    scene.collectError(error, scene)
-    return scene.errorCollection
-  })
+  return result.then((error) => catchError(error, scene))
 }

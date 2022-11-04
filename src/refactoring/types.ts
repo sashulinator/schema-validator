@@ -8,6 +8,7 @@ export interface Scene<ErrorCollection = unknown> {
   schemaItem: Schema
   schema?: Schema
   errorCollection?: ErrorCollection
+  assertObject: Assertion
   collectError: CollectError
 }
 

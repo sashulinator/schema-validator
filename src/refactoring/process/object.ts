@@ -1,24 +1,15 @@
 import { isObject } from '../../is'
 import { ANY_KEY } from '../../types'
-import { catchError } from '../catch-error'
-import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
+import { processFunction } from './function'
 import { process } from './process'
 
 export function processObject<TErrorCollection>(
   scene: Scene<TErrorCollection>,
 ): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   if (!isObject(scene.input)) {
-    return catchError(
-      new ValidationError({
-        message: 'is not an object',
-        code: processObject.name,
-        input: scene.input,
-        inputName: scene.path[scene.path.length - 1],
-        path: scene.path,
-      }),
-      scene,
-    )
+    scene.schemaItem = scene.assertObject
+    return processFunction(scene)
   }
 
   const schemaEntries = Object.entries(scene.schemaItem)

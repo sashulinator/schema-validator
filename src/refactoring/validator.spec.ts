@@ -13,6 +13,7 @@ describe('validator', () => {
         message: 'is not a string',
         code: 'assertString',
         input: 1,
+        inputName: 'hello',
         path: ['hello'],
       })
     })
@@ -36,6 +37,7 @@ describe('validator', () => {
         message: 'is not a string',
         code: 'assertString',
         input: 1,
+        inputName: 'world',
         path: ['hello', 'world'],
       })
     })
@@ -44,7 +46,7 @@ describe('validator', () => {
       const error = validator(schema, { hello: 1 })
       expect({ ...error[0], message: error[0].message }).toEqual({
         message: 'is not an object',
-        code: 'processObject',
+        code: 'assertObject',
         input: 1,
         inputName: 'hello',
         path: ['hello'],

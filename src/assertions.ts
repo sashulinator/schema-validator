@@ -1,4 +1,4 @@
-import { isEmptyString, isPromise, isStringifiedNumber, Meta } from '.'
+import { isEmptyString, isObject, isPromise, isStringifiedNumber, Meta } from '.'
 import { isNumber, isString, isNil, isBoolean, isNull } from './is'
 
 export { assertNil as nil }
@@ -177,6 +177,13 @@ export { assertArray as _array }
 export function assertArray<T>(input: T[] | unknown): asserts input is T[] {
   if (!Array.isArray(input)) {
     throw new Error('is not an array')
+  }
+}
+
+export { assertObject as object }
+export function assertObject<T extends Record<string, unknown>>(input: T | unknown): asserts input is T {
+  if (!isObject(input)) {
+    throw new Error('is not an object')
   }
 }
 
