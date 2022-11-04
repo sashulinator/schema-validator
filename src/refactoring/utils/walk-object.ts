@@ -12,8 +12,10 @@ export function* walkObject<T>(
   if (isObject(value) && !set.has(value)) {
     set.add(value)
     // eslint-disable-next-line prefer-const, no-restricted-syntax
-    for (let newKey of Object.keys(value)) {
-      yield* walkObject(value[newKey], key, value, [...path, key], set)
+    const keys = Object.keys(value)
+    for (let index = 0; index < keys.length; index += 1) {
+      const newKey = keys[index]
+      yield* walkObject(value[newKey], newKey, value, [...path, key], set)
     }
   }
 }
