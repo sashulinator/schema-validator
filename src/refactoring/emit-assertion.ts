@@ -17,6 +17,7 @@ export function emitAssertion(scene: Scene): Promise<ValidationError | undefined
         message: e.message,
         code: assertion.name,
         input: scene.input,
+        path: scene.path,
       })
     }
 
