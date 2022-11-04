@@ -2,7 +2,7 @@ import { isObject } from '../../is'
 import { ANY_KEY } from '../../types'
 import { Scene } from '../types'
 import { processFunction } from './function'
-import { process } from './process'
+import { iteration } from './iteration'
 
 export function processObject<TErrorCollection>(
   scene: Scene<TErrorCollection>,
@@ -21,7 +21,7 @@ export function processObject<TErrorCollection>(
     for (let index = 0; index < inputEntries.length; index += 1) {
       const [inputName, input] = inputEntries[index]
       const [, schemaItem] = schemaEntries[0]
-      return handleIteration(inputName, input, schemaItem)
+      return iteration(inputName, input, schemaItem, scene)
     }
   } else {
     for (let index = 0; index < schemaEntries.length; index += 1) {
@@ -32,21 +32,7 @@ export function processObject<TErrorCollection>(
         throw new Error('Schema with "ANY_KEY" must contain only one value with this key')
       }
 
-      return handleIteration(inputName, input, schemaItem)
+      return iteration(inputName, input, schemaItem, scene)
     }
-  }
-
-  // Private
-
-  function handleIteration(inputName: string, input: unknown, schemaItem: Scene['schemaItem']) {
-    const path: string[] = [...scene.path, inputName]
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    scene.inputObject = scene.input as any
-    scene.input = input
-    scene.schemaItem = schemaItem
-    scene.inputName = inputName
-    scene.path = path
-
-    return process(scene)
   }
 }
