@@ -1,5 +1,5 @@
 import { string } from '..'
-import { createSchemator } from './create-schemator'
+import { createSchemator } from './schemator'
 
 const schemator = createSchemator()
 
