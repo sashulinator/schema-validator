@@ -1,7 +1,7 @@
 import { ValidationError } from '../errors'
 import { Scene } from './types'
 import { process } from './process/process'
-import { assertObject } from '../assertions'
+import { assertArray, assertObject } from '../assertions'
 
 type PromiseSchema =
   | Promise<void>[]
@@ -23,7 +23,7 @@ export function validator<TSchema, TErrorCollection = ValidationError[]>(
   input: unknown,
   presetScene?: Partial<Scene>,
 ): ValidatorReturn<TSchema, TErrorCollection> {
-  const path: string[] = []
+  const path: (string | number)[] = []
   const scene = {
     schema,
     schemaItem: schema,
@@ -31,6 +31,7 @@ export function validator<TSchema, TErrorCollection = ValidationError[]>(
     path,
     collectError: defaultCollectError,
     assertObject,
+    assertArray,
     ...presetScene,
   } as Scene<TErrorCollection>
 

@@ -6,5 +6,6 @@ export function catchError<TErrorCollection>(
   scene: Scene<TErrorCollection>,
 ): TErrorCollection | Promise<TErrorCollection> {
   scene.collectError(error, scene)
+
   return scene.errorCollection
 }

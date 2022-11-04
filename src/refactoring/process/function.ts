@@ -1,5 +1,5 @@
 import { catchError } from '../catch-error'
-import { emitAssertion } from '../emit-assertion'
+import { emitAssertion } from './emit-assertion'
 import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
 

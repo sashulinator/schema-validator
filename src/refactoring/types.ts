@@ -1,14 +1,15 @@
 import { ValidationError } from './errors/validation'
 
 export interface Scene<ErrorCollection = unknown> {
-  path?: string[]
+  path?: (string | number)[]
   input: unknown
-  inputName?: string
+  inputName?: string | number
   inputObject?: Record<string, unknown>
   schemaItem: Schema
   schema?: Schema
   errorCollection?: ErrorCollection
   assertObject: Assertion
+  assertArray: Assertion
   collectError: CollectError
 }
 

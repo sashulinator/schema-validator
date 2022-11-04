@@ -1,6 +1,6 @@
-import { isNil } from '..'
-import { ValidationError } from './errors/validation'
-import { Assertion, Scene } from './types'
+import { isNil } from '../..'
+import { ValidationError } from '../errors/validation'
+import { Assertion, Scene } from '../types'
 
 export function emitAssertion(scene: Scene): Promise<ValidationError | undefined> | ValidationError | undefined {
   const assertion = scene.schemaItem as Assertion
