@@ -26,14 +26,16 @@ export type Schema = Dictionary<SchemaItem> | SchemaItem[] | Assertion
 
 export type SchemaItem = string | number | RegExp | Dictionary<SchemaItem> | SchemaItem[] | Assertion
 
-// TypeSchema
-
-type ObjectToSchemaItem<O extends Dictionary<unknown>> = {
-  [K in keyof O]: O[K] extends Dictionary<unknown> ? ObjectToSchemaItem<O[K]> : ToSchema<O[K]>
-}
+export type IsPromise<T, E> = T extends PromiseAssertion
+  ? Promise<E>
+  : T extends unknown[]
+  ? IsPromise<ArrayElement<T>, E>
+  : T extends Record<string, infer G>
+  ? IsPromise<G, E>
+  : E
 
 export type ToSchema<T> = T extends Dictionary<unknown>
-  ? ObjectToSchemaItem<T>
+  ? { [K in keyof T]: ToSchema<T[K]> }
   : T extends unknown[]
   ? ToSchema<ArrayElement<T>>[]
   : T extends string
@@ -44,16 +46,10 @@ export type ToSchema<T> = T extends Dictionary<unknown>
   ? Assertion
   : T
 
-// TypeInput
-
-type ObjectToInputItem<O extends Dictionary<SchemaItem>> = {
-  [K in keyof O]: O[K] extends Dictionary<SchemaItem> ? ObjectToInputItem<O[K]> : ToInput<O[K]>
-}
-
-type ToInputItem<T extends SchemaItem> = T extends Dictionary<SchemaItem>
-  ? ObjectToInputItem<T>
+type ToInput<T extends SchemaItem> = T extends Dictionary<SchemaItem>
+  ? { [K in keyof T]: ToInput<T[K]> }
   : T extends SchemaItem[]
-  ? ToInputItem<ArrayElement<T>>[]
+  ? ToInput<ArrayElement<T>>[]
   : T extends Assertion
   ? number | RegExp | string
   : T extends string
@@ -61,8 +57,6 @@ type ToInputItem<T extends SchemaItem> = T extends Dictionary<SchemaItem>
   : T extends number
   ? number
   : unknown
-
-export type ToInput<T extends SchemaItem> = ToInputItem<T>
 
 export type SyncTypeAndSchema<
   A,

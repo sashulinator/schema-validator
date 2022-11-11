@@ -1,5 +1,5 @@
 import { ValidationError } from '../errors'
-import { Scene, Schema } from './types'
+import { Scene, Schema, IsPromise } from './types'
 import { process } from './process/process'
 import { assertArray, assertObject } from '../assertions'
 
@@ -11,7 +11,7 @@ export function validator<TSchema extends Schema, TErrorCollection = ValidationE
   schema: TSchema,
   input: unknown,
   presetScene?: Partial<Scene>,
-): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
+): IsPromise<TSchema, TErrorCollection> {
   const path: (string | number)[] = []
   const scene = {
     schema,
@@ -28,5 +28,6 @@ export function validator<TSchema extends Schema, TErrorCollection = ValidationE
     throw Error('Schema cannot be undefined.')
   }
 
-  return process<TErrorCollection>(scene)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return process(scene) as any
 }
