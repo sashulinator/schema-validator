@@ -25,8 +25,8 @@ export function processArray<TErrorCollection>(
   }
 
   if (results.find(isPromise)) {
-    return Promise.all(results).then(() => scene.errorCollection)
+    return Promise.all(results).then(() => scene.errorCollection.current)
   }
 
-  return scene.errorCollection
+  return scene.errorCollection.current
 }

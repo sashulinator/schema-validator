@@ -1,20 +1,22 @@
 import { catchError } from '../catch-error'
 import { emitAssertion } from './emit-assertion'
-import { ValidationError } from '../errors/validation'
 import { Scene } from '../types'
+import { isPromise } from '../..'
 
 export function processFunction<TErrorCollection>(
   scene: Scene<TErrorCollection>,
 ): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
-  const result = emitAssertion(scene)
+  const newScene = { ...scene }
+  newScene.errorCollection = scene.errorCollection
 
-  if (result === undefined) {
-    return undefined
+  const result = emitAssertion(newScene)
+
+  if (isPromise(result)) {
+    return result.then((error) => {
+      const err = catchError(error, newScene)
+      return err
+    })
   }
 
-  if (result instanceof ValidationError) {
-    return catchError(result, scene)
-  }
-
-  return result.then((error) => catchError(error, scene))
+  return catchError(result, newScene)
 }

@@ -8,7 +8,7 @@ export interface Scene<ErrorCollection = unknown> {
   inputObject?: Record<string, unknown>
   schemaItem: Schema
   schema?: Schema
-  errorCollection?: ErrorCollection
+  errorCollection?: { current: ErrorCollection }
   assertObject: Assertion
   assertArray: Assertion
   collectError: CollectError

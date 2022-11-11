@@ -4,7 +4,7 @@ import { process } from './process/process'
 import { assertArray, assertObject } from '../assertions'
 
 function defaultCollectError(error: ValidationError, scene: Scene<ValidationError[]>) {
-  scene.errorCollection = scene.errorCollection ? [...scene.errorCollection, error] : [error]
+  scene.errorCollection.current = scene.errorCollection.current ? [...scene.errorCollection.current, error] : [error]
 }
 
 export function validator<TSchema extends Schema, TErrorCollection = ValidationError[]>(
@@ -18,6 +18,7 @@ export function validator<TSchema extends Schema, TErrorCollection = ValidationE
     schemaItem: schema,
     input,
     path,
+    errorCollection: { current: undefined },
     collectError: defaultCollectError,
     assertObject,
     assertArray,

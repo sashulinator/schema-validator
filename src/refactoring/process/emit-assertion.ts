@@ -15,16 +15,6 @@ export function emitAssertion(scene: Scene): Promise<ValidationError | undefined
 
     return result
   } catch (e) {
-    if (e instanceof Error) {
-      return new ValidationError({
-        message: e.message,
-        code: assertion.name,
-        input: scene.input,
-        inputName: scene.inputName,
-        path: scene.path,
-      })
-    }
-
-    throw e
+    return e
   }
 }
