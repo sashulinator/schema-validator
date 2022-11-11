@@ -21,8 +21,8 @@ export function process<TErrorCollection>(
 
   if (typeof scene.schemaItem === 'string' || typeof scene.schemaItem === 'number') {
     const value = scene.schemaItem
-    scene.schemaItem = function assertEqual(x: unknown) {
-      scene.assertEqual(x, value)
+    scene.schemaItem = function assertEqual(x: unknown, newScene: Scene) {
+      scene.assertEqual(x, value, newScene)
     }
     return processFunction(scene)
   }

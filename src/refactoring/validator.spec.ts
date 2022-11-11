@@ -128,6 +128,8 @@ describe('validator', () => {
         code: 'assertEqual',
         input: 2,
         inputName: 'hello',
+        relative: 'primitive',
+        relativeName: 'comparing value',
         path: ['hello'],
       })
     })

@@ -15,6 +15,8 @@ export function catchError<TErrorCollection>(
       code: (scene.schemaItem as () => unknown).name,
       input: scene.input,
       inputName: scene.inputName,
+      relative: scene.relative,
+      relativeName: scene.relativeName,
       path: scene.path,
     })
 

@@ -1,5 +1,5 @@
 import { ValidationError } from './errors/validation'
-import { ArrayElement, DeepPartial, DeepRequired, Dictionary, DictionaryElement } from './utils/types'
+import { ArrayElement, DeepPartial, DeepRequired, Dictionary } from './utils/types'
 
 export interface Scene<ErrorCollection = unknown> {
   path?: (string | number)[]
@@ -8,6 +8,8 @@ export interface Scene<ErrorCollection = unknown> {
   inputObject?: Record<string, unknown>
   schemaItem: Schema
   schema?: Schema
+  relative?: unknown
+  relativeName?: string | number
   errorCollection?: { current: ErrorCollection }
   assertObject: Assertion
   assertArray: Assertion

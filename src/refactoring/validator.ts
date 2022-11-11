@@ -7,7 +7,9 @@ function defaultCollectError(error: ValidationError, scene: Scene<ValidationErro
   scene.errorCollection.current = scene.errorCollection.current ? [...scene.errorCollection.current, error] : [error]
 }
 
-function assertEqual(a: unknown, b: unknown) {
+function assertEqual(a: unknown, b: unknown, scene: Scene) {
+  scene.relative = b
+  scene.relativeName = 'comparing value'
   if (a !== b) {
     throw Error('not equal')
   }
