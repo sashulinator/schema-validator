@@ -1,21 +1,22 @@
-import { isObject } from '../..'
+import { isObject } from '../../is'
+import { Key } from '../../types'
+import { Dictionary } from './types'
 
-export function* walkObject<T>(
-  value: Record<string, T> | T,
-  key?: string,
-  object?: Record<string, T>,
-  path: string[] = [],
-  set = new Set(),
-): Generator<{ key: string; path: string[]; value: Record<string, T> | T; object: Record<string, T> }> {
-  yield { value, key, path, object }
+type Callback = (key: Key, value: unknown, path: string[], i: number, data: Dictionary<unknown>) => boolean | void
 
-  if (isObject(value) && !set.has(value)) {
-    set.add(value)
-    // eslint-disable-next-line prefer-const, no-restricted-syntax
-    const keys = Object.keys(value)
-    for (let index = 0; index < keys.length; index += 1) {
-      const newKey = keys[index]
-      yield* walkObject(value[newKey], newKey, value, [...path, key], set)
+export function walk<T>(obj: Dictionary<T>, cb: Callback, path: string[] = [], origObj?: Dictionary<T>) {
+  const entries = Object.entries(obj)
+
+  for (let i = 0; i < entries.length; i++) {
+    const [key, value] = entries[i] as [string, unknown]
+    const newPath = [...path, key]
+
+    if (cb(key, value, newPath, i, origObj || obj)) {
+      break
+    }
+
+    if (isObject(value)) {
+      walk(value, cb, newPath, origObj)
     }
   }
 }

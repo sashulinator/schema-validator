@@ -1,28 +1,17 @@
 import { ValidationError } from '../errors'
-import { Scene } from './types'
+import { Scene, Schema } from './types'
 import { process } from './process/process'
 import { assertArray, assertObject } from '../assertions'
-
-type PromiseSchema =
-  | Promise<void>[]
-  | Record<string, Promise<void>>
-  | Promise<void>
-  | PromiseSchema[]
-  | { [k: string]: PromiseSchema }
-
-type ValidatorReturn<TSchema, TErrorCollection> = TSchema extends PromiseSchema
-  ? Promise<TErrorCollection | undefined>
-  : TErrorCollection | undefined
 
 function defaultCollectError(error: ValidationError, scene: Scene<ValidationError[]>) {
   scene.errorCollection = scene.errorCollection ? [...scene.errorCollection, error] : [error]
 }
 
-export function validator<TSchema, TErrorCollection = ValidationError[]>(
+export function validator<TSchema extends Schema, TErrorCollection = ValidationError[]>(
   schema: TSchema,
   input: unknown,
   presetScene?: Partial<Scene>,
-): ValidatorReturn<TSchema, TErrorCollection> {
+): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   const path: (string | number)[] = []
   const scene = {
     schema,
@@ -39,5 +28,5 @@ export function validator<TSchema, TErrorCollection = ValidationError[]>(
     throw Error('Schema cannot be undefined.')
   }
 
-  return process(scene) as ValidatorReturn<TSchema, TErrorCollection>
+  return process<TErrorCollection>(scene)
 }
