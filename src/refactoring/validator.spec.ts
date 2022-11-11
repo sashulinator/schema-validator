@@ -139,4 +139,29 @@ describe('validator', () => {
       expect(error).toEqual(undefined)
     })
   })
+
+  describe('RegExp', () => {
+    const schema = {
+      hello: /hello/,
+    }
+
+    it('Returns error', async () => {
+      const error = validator(schema, { hello: 'bye' })
+
+      expect({ ...error[0], message: error[0].message }).toEqual({
+        message: 'does not match',
+        code: 'assertWithRegExp',
+        input: 'bye',
+        inputName: 'hello',
+        relative: /hello/,
+        relativeName: 'regular expression',
+        path: ['hello'],
+      })
+    })
+
+    it('pass', async () => {
+      const error = validator(schema, { hello: 'hello' })
+      expect(error).toEqual(undefined)
+    })
+  })
 })

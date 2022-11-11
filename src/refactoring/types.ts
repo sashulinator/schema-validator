@@ -14,6 +14,7 @@ export interface Scene<ErrorCollection = unknown> {
   assertObject: Assertion
   assertArray: Assertion
   assertEqual: Assertion
+  assertWithRegExp: Assertion
   collectError: CollectError
 }
 

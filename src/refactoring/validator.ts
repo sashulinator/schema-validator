@@ -2,6 +2,7 @@ import { ValidationError } from '../errors'
 import { Scene, Schema, IsPromise } from './types'
 import { process } from './process/process'
 import { assertArray, assertObject } from '../assertions'
+import { assertRegExp, assertString } from '..'
 
 function defaultCollectError(error: ValidationError, scene: Scene<ValidationError[]>) {
   scene.errorCollection.current = scene.errorCollection.current ? [...scene.errorCollection.current, error] : [error]
@@ -12,6 +13,16 @@ function assertEqual(a: unknown, b: unknown, scene: Scene) {
   scene.relativeName = 'comparing value'
   if (a !== b) {
     throw Error('not equal')
+  }
+}
+
+function assertWithRegExp(a: unknown, b: unknown, scene: Scene) {
+  assertRegExp(b)
+  assertString(a)
+  scene.relative = b
+  scene.relativeName = 'regular expression'
+  if (!b.test(a)) {
+    throw Error('does not match')
   }
 }
 
@@ -31,6 +42,7 @@ export function validator<TSchema extends Schema, TErrorCollection = ValidationE
     assertObject,
     assertArray,
     assertEqual,
+    assertWithRegExp,
     ...presetScene,
   } as Scene<TErrorCollection>
 
