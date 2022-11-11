@@ -114,4 +114,27 @@ describe('validator', () => {
       expect(error).toEqual(undefined)
     })
   })
+
+  describe('primitive', () => {
+    const schema = {
+      hello: 'primitive',
+    }
+
+    it('Returns error', async () => {
+      const error = validator(schema, { hello: 2 })
+
+      expect({ ...error[0], message: error[0].message }).toEqual({
+        message: 'not equal',
+        code: 'assertEqual',
+        input: 2,
+        inputName: 'hello',
+        path: ['hello'],
+      })
+    })
+
+    it('pass', async () => {
+      const error = validator(schema, { hello: 'primitive' })
+      expect(error).toEqual(undefined)
+    })
+  })
 })

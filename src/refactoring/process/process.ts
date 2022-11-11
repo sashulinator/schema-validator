@@ -19,5 +19,13 @@ export function process<TErrorCollection>(
     return processObject(scene)
   }
 
+  if (typeof scene.schemaItem === 'string' || typeof scene.schemaItem === 'number') {
+    const value = scene.schemaItem
+    scene.schemaItem = function assertEqual(x: unknown) {
+      scene.assertEqual(x, value)
+    }
+    return processFunction(scene)
+  }
+
   throw Error('Schema Error: must be a function, array or object.')
 }

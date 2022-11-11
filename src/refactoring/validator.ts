@@ -7,6 +7,12 @@ function defaultCollectError(error: ValidationError, scene: Scene<ValidationErro
   scene.errorCollection.current = scene.errorCollection.current ? [...scene.errorCollection.current, error] : [error]
 }
 
+function assertEqual(a: unknown, b: unknown) {
+  if (a !== b) {
+    throw Error('not equal')
+  }
+}
+
 export function validator<TSchema extends Schema, TErrorCollection = ValidationError[]>(
   schema: TSchema,
   input: unknown,
@@ -22,6 +28,7 @@ export function validator<TSchema extends Schema, TErrorCollection = ValidationE
     collectError: defaultCollectError,
     assertObject,
     assertArray,
+    assertEqual,
     ...presetScene,
   } as Scene<TErrorCollection>
 
