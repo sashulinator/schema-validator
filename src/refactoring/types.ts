@@ -14,11 +14,11 @@ export interface Scene<ErrorCollection = unknown> {
   collectError: CollectError
 }
 
-export type Assertion = (...args: unknown[]) => Promise<unknown> | unknown
+export type Assertion = (...args: unknown[]) => Promise<void> | void
 
 export type PromiseAssertion = (...args: unknown[]) => Promise<unknown>
 
-export type Validator<E> = (input: unknown, scene?: Scene<E>) => E
+export type Validator<E> = (input: unknown, scene?: Scene<E>) => E | undefined | Promise<E | undefined>
 
 export type CollectError = (error: ValidationError, scene: Scene) => void
 
@@ -30,7 +30,7 @@ export type IsPromise<T, E> = T extends PromiseAssertion
   ? Promise<E>
   : T extends unknown[]
   ? IsPromise<ArrayElement<T>, E>
-  : T extends Record<string, infer G>
+  : T extends { [key: string]: infer G }
   ? IsPromise<G, E>
   : E
 
@@ -58,6 +58,7 @@ type ToInput<T extends SchemaItem> = T extends Dictionary<SchemaItem>
   ? number
   : unknown
 
+// SyncTypeAndSchema<Schema, typeof schema, typeof schema, Schema>
 export type SyncTypeAndSchema<
   A,
   B extends Schema,

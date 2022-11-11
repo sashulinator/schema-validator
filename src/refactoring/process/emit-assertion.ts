@@ -1,16 +1,19 @@
-import { isNil } from '../..'
+import { isPromise } from '../..'
 import { ValidationError } from '../errors/validation'
-import { Assertion, Scene } from '../types'
+import { Scene } from '../types'
 
 export function emitAssertion(scene: Scene): Promise<ValidationError | undefined> | ValidationError | undefined {
-  const assertion = scene.schemaItem as Assertion
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const assertion = scene.schemaItem as (...args: any[]) => undefined | Promise<undefined>
 
   try {
     const result = assertion(scene.input, scene)
 
-    if (!isNil(result)) {
+    if (isPromise(result)) {
       return result.catch((e) => e)
     }
+
+    return result
   } catch (e) {
     if (e instanceof Error) {
       return new ValidationError({
