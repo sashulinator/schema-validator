@@ -30,12 +30,12 @@ export type Schema = Dictionary<SchemaItem> | SchemaItem[] | Assertion
 
 export type SchemaItem = string | number | RegExp | Dictionary<SchemaItem> | SchemaItem[] | Assertion
 
-export type IsPromise<T, E> = T extends PromiseAssertion
+export type IsPromise<T, E> = T extends (...args: unknown[]) => Promise<unknown>
   ? Promise<E>
-  : T extends unknown[]
-  ? IsPromise<ArrayElement<T>, E>
   : T extends { [key: string]: infer G }
   ? IsPromise<G, E>
+  : T extends (...args: unknown[]) => Promise<unknown>[]
+  ? Promise<E>
   : E
 
 export type ToSchema<T> = T extends Dictionary<unknown>

@@ -104,6 +104,10 @@ export function isEmpty(input: unknown): boolean {
 export function isPromise<T>(input: unknown): input is Promise<T> {
   return (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    !!input && (typeof input === 'object' || typeof input === 'function') && typeof (input as any).then === 'function'
+    !!input && (typeof input === 'object' || typeof input === 'function') && typeof (input as any)?.then === 'function'
   )
+}
+
+export function isNotPromise<T>(input: T | Promise<T>): input is T {
+  return !isPromise(input)
 }
