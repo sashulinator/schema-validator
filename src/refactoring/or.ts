@@ -1,14 +1,19 @@
-import { isNotPromise, isNotUndefined, ValidationError } from '..'
+import { isNotPromise, isNotUndefined } from '..'
 import { isPromise } from '../is'
 import { createScene } from './lib/create-scene'
 import { process } from './process/process'
 import { IsPromise, Scene, Schema } from './types'
 
-export function or<Schemas extends Schema[]>(...schemas: Schema[]): IsPromise<Schemas, any> {
-  return function emitOr<E = ValidationError[]>(input: unknown, clientScene?: Partial<Scene>): IsPromise<Schemas, E> {
+export type OmitOr<E, SC extends Schema> = (
+  input: unknown,
+  clientScene?: Partial<Scene<E, SC, SC>>,
+) => IsPromise<SC[], E>
+
+export function or<TErrorCollection, TSchema extends Schema>(...schemas: TSchema[]): OmitOr<TErrorCollection, TSchema> {
+  return function emitOr<E = TErrorCollection[]>(input: unknown, clientScene?: Partial<Scene<E, TSchema, TSchema>>) {
     const results: (Promise<unknown | undefined> | unknown | undefined)[] = []
     const errorCollections: unknown[] = []
-    const scene = createScene({ ...clientScene, input })
+    const scene = createScene({ path: [], ...clientScene, input, schema: schemas, schemaItem: schemas })
 
     for (let index = 0; index < schemas.length; index += 1) {
       const schema = schemas[index]
@@ -29,8 +34,8 @@ export function or<Schemas extends Schema[]>(...schemas: Schema[]): IsPromise<Sc
     if (results.find(isPromise)) {
       return Promise.all(results).then((collections) => {
         collections.forEach((item) => errorCollections.push(item))
-        return finalize(scene, schemas, errorCollections)
-      }) as any
+        return finalize(scene, schemas, errorCollections) as any
+      })
     }
 
     return finalize(scene, schemas, errorCollections) as any
@@ -38,7 +43,7 @@ export function or<Schemas extends Schema[]>(...schemas: Schema[]): IsPromise<Sc
 }
 
 function finalize(
-  scene: Scene,
+  scene: Scene<unknown, Schema, Schema>,
   schemas: Schema[],
   errorCollections: (Promise<unknown | undefined> | unknown | undefined)[],
 ) {

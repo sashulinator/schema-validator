@@ -10,7 +10,7 @@ describe('or', () => {
     }
 
     const promiseSchema = {
-      world: async (x: unknown) => or(string, number)(x),
+      world: (x: unknown) => or(string, number)(x),
       hello: async (x: unknown) => string(x),
     }
 
@@ -31,7 +31,7 @@ describe('or', () => {
       const error = await promise
       expect({ ...error[0], message: error[0].message }).toEqual({
         message: 'is not a string',
-        code: 'assertString',
+        code: 'hello',
         input: [],
         inputName: 'hello',
         path: ['hello'],
