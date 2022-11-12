@@ -4,24 +4,21 @@ import { processFunction } from './function'
 import { iteration } from './iteration'
 
 export function processArray<TErrorCollection>(
-  scene: Scene<TErrorCollection>,
+  scene: Scene<TErrorCollection, Schema, Schema[]>,
 ): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   if (!Array.isArray(scene.input)) {
-    scene.schemaItem = scene.assertArray
-    return processFunction(scene)
+    return processFunction({ ...scene, schemaItem: scene.assertArray })
   }
 
-  const { input: sceneInput, path: scenePath } = scene
-  const sceneSchemaItem = scene.schemaItem as Schema[]
+  const { input, path, schemaItem } = scene
   const results: (Promise<TErrorCollection | undefined> | TErrorCollection | undefined)[] = []
 
-  if (sceneSchemaItem.length > 1) {
+  if (schemaItem.length > 1) {
     throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')
   }
 
-  for (let index = 0; index < sceneInput.length; index += 1) {
-    const input = sceneInput[index]
-    results.push(iteration(index, scenePath, input, sceneSchemaItem[0], scene))
+  for (let index = 0; index < input.length; index += 1) {
+    results.push(iteration(index, path, input[index], schemaItem[0], scene))
   }
 
   if (results.find(isPromise)) {

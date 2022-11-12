@@ -1,9 +1,9 @@
 import { ValidationError } from './errors/validation'
-import { Scene } from './types'
+import { Assertion, Scene, Schema } from './types'
 
 export function catchError<TErrorCollection>(
-  error: ValidationError | undefined,
-  scene: Scene<TErrorCollection>,
+  error: Error | void,
+  scene: Scene<TErrorCollection, Schema, Assertion>,
 ): TErrorCollection | Promise<TErrorCollection> {
   if (error === undefined) {
     return undefined
@@ -12,7 +12,7 @@ export function catchError<TErrorCollection>(
   if (error instanceof Error) {
     const vError = new ValidationError({
       message: error.message,
-      code: (scene.schemaItem as () => unknown).name,
+      code: scene.schemaItem.name,
       input: scene.input,
       inputName: scene.inputName,
       relative: scene.relative,

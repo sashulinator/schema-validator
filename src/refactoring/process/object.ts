@@ -1,19 +1,19 @@
 import { isPromise } from '../..'
 import { isObject } from '../../is'
 import { ANY_KEY } from '../../types'
-import { Scene } from '../types'
+import { Scene, Schema } from '../types'
+import { Dictionary } from '../utils/types'
 import { processFunction } from './function'
 import { iteration } from './iteration'
 
 export function processObject<TErrorCollection>(
-  scene: Scene<TErrorCollection>,
+  scene: Scene<TErrorCollection, Schema, Dictionary<Schema>>,
 ): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
   if (!isObject(scene.input)) {
-    scene.schemaItem = scene.assertObject
-    return processFunction(scene)
+    return processFunction({ ...scene, schemaItem: scene.assertObject })
   }
 
-  scene.inputObject = scene.input as any
+  scene.inputObject = scene.input
 
   const { input: sceneInput, schemaItem: sceneSchemaItem, path: scenePath } = scene
 

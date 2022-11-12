@@ -1,12 +1,14 @@
 import { assertArray, assertObject, assertRegExp, assertString } from '../../assertions'
-import { ValidationError } from '../../errors'
-import { Scene } from '../types'
+import { ValidationError } from '../errors/validation'
 
-function defaultCollectError(error: ValidationError, scene: Scene<ValidationError[]>) {
+import { Scene, Schema } from '../types'
+import { PartialK } from '../utils/types'
+
+function defaultCollectError(error: ValidationError, scene: Scene<ValidationError[], Schema, Schema>) {
   scene.errorCollection.current = scene.errorCollection.current ? [...scene.errorCollection.current, error] : [error]
 }
 
-function assertEqual(a: unknown, b: unknown, scene: Scene) {
+function assertEqual(a: unknown, b: unknown, scene: Scene<unknown, Schema, Schema>) {
   scene.relative = b
   scene.relativeName = 'comparing value'
   if (a !== b) {
@@ -14,7 +16,7 @@ function assertEqual(a: unknown, b: unknown, scene: Scene) {
   }
 }
 
-function assertWithRegExp(a: unknown, b: unknown, scene: Scene) {
+function assertWithRegExp(a: unknown, b: unknown, scene: Scene<unknown, Schema, Schema>) {
   assertRegExp(b)
   assertString(a)
   scene.relative = b
@@ -24,8 +26,13 @@ function assertWithRegExp(a: unknown, b: unknown, scene: Scene) {
   }
 }
 
-export function createScene<S extends Partial<Scene> | undefined>(scene: S): S & Scene {
-  const clone = {
+export function createScene<TErrorCollection, TSchema extends Schema, TSchemaItem extends Schema>(
+  scene: PartialK<
+    Scene<TErrorCollection, TSchema, TSchemaItem>,
+    'assertObject' | 'assertArray' | 'assertEqual' | 'assertWithRegExp' | 'collectError'
+  >,
+): Scene<TErrorCollection, TSchema, TSchemaItem> {
+  const clone: Scene<TErrorCollection, TSchema, TSchemaItem> = {
     errorCollection: { current: undefined },
     collectError: defaultCollectError,
     assertObject,
@@ -33,7 +40,7 @@ export function createScene<S extends Partial<Scene> | undefined>(scene: S): S &
     assertEqual,
     assertWithRegExp,
     ...scene,
-  } as S
+  }
 
-  return clone as S & Scene
+  return clone
 }

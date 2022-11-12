@@ -1,16 +1,16 @@
 import { ValidationError } from './errors/validation'
 import { ArrayElement, DeepPartial, DeepRequired, Dictionary } from './utils/types'
 
-export interface Scene<ErrorCollection = unknown> {
-  path?: (string | number)[]
+export interface Scene<TErrorCollection, TSchema extends Schema, TSchemaItem extends Schema> {
+  schema: TSchema
+  schemaItem: TSchemaItem
+  path: (string | number)[]
   input: unknown
   inputName?: string | number
   inputObject?: Record<string, unknown>
-  schemaItem: Schema
-  schema?: Schema
   relative?: unknown
   relativeName?: string | number
-  errorCollection?: { current: ErrorCollection }
+  errorCollection?: { current: TErrorCollection | undefined }
   assertObject: Assertion
   assertArray: Assertion
   assertEqual: Assertion
@@ -18,17 +18,15 @@ export interface Scene<ErrorCollection = unknown> {
   collectError: CollectError
 }
 
-export type Assertion = (...args: unknown[]) => Promise<void> | void
+export type Assertion = SyncAssertion | AsyncAssertion
 
-export type PromiseAssertion = (...args: unknown[]) => Promise<unknown>
+export type SyncAssertion = (...args: unknown[]) => void
 
-export type Validator<E> = (input: unknown, scene?: Scene<E>) => E | undefined | Promise<E | undefined>
+export type AsyncAssertion = (...args: unknown[]) => Promise<void>
 
-export type CollectError = (error: ValidationError, scene: Scene) => void
+export type CollectError = (error: ValidationError, scene: Scene<unknown, Schema, Schema>) => void
 
-export type Schema = Dictionary<SchemaItem> | SchemaItem[] | Assertion
-
-export type SchemaItem = string | number | RegExp | Dictionary<SchemaItem> | SchemaItem[] | Assertion
+export type Schema = string | number | RegExp | Dictionary<Schema> | Schema[] | SyncAssertion
 
 export type IsPromise<T, E> = T extends (...args: unknown[]) => Promise<unknown>
   ? Promise<E>
@@ -50,9 +48,9 @@ export type ToSchema<T> = T extends Dictionary<unknown>
   ? Assertion
   : T
 
-type ToInput<T extends SchemaItem> = T extends Dictionary<SchemaItem>
+type ToInput<T extends Schema> = T extends Dictionary<Schema>
   ? { [K in keyof T]: ToInput<T[K]> }
-  : T extends SchemaItem[]
+  : T extends Schema[]
   ? ToInput<ArrayElement<T>>[]
   : T extends Assertion
   ? number | RegExp | string

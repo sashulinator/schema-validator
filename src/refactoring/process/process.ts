@@ -1,39 +1,41 @@
 import { isObject } from '../..'
-import { Scene } from '../types'
+import { Scene, Schema } from '../types'
 import { processArray } from './array'
 import { processFunction } from './function'
 import { processObject } from './object'
 
 export function process<TErrorCollection>(
-  scene: Scene<TErrorCollection>,
+  scene: Scene<TErrorCollection, Schema, Schema>,
 ): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
-  if (typeof scene.schemaItem === 'function') {
-    return processFunction(scene)
+  const { schemaItem } = scene
+
+  if (typeof schemaItem === 'function') {
+    return processFunction({ ...scene, schemaItem })
   }
 
-  if ((scene.schemaItem as any) instanceof RegExp) {
-    const value = scene.schemaItem
-    scene.schemaItem = function assertWithRegExp(x: unknown, newScene: Scene) {
+  if (schemaItem instanceof RegExp) {
+    const value = schemaItem
+    const newSchemaItem = function assertWithRegExp(x: unknown, newScene: Scene<unknown, Schema, Schema>) {
       scene.assertWithRegExp(x, value, newScene)
     }
-    return processFunction(scene)
+    return processFunction({ ...scene, schemaItem: newSchemaItem })
   }
 
-  if (typeof scene.schemaItem === 'string' || typeof scene.schemaItem === 'number') {
-    const value = scene.schemaItem
-    scene.schemaItem = function assertEqual(x: unknown, newScene: Scene) {
+  if (typeof schemaItem === 'string' || typeof schemaItem === 'number') {
+    const value = schemaItem
+    const newSchemaItem = function assertEqual(x: unknown, newScene: Scene<unknown, Schema, Schema>) {
       scene.assertEqual(x, value, newScene)
     }
-    return processFunction(scene)
+    return processFunction({ ...scene, schemaItem: newSchemaItem })
   }
 
-  if (Array.isArray(scene.schemaItem)) {
-    return processArray(scene)
+  if (Array.isArray(schemaItem)) {
+    return processArray({ ...scene, schemaItem })
   }
 
-  if (isObject(scene.schemaItem)) {
-    return processObject(scene)
+  if (isObject(schemaItem)) {
+    return processObject({ ...scene, schemaItem })
   }
 
-  throw Error('Schema Error: must be a function, array or object.')
+  throw Error('Schema Error: must be a function, string, number, regExp, array or object.')
 }
