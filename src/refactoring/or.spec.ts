@@ -37,5 +37,33 @@ describe('or', () => {
         path: ['hello'],
       })
     })
+
+    it('primitive number valid', async () => {
+      const error = validator(or('string', 23), 23)
+      expect(error).toEqual(undefined)
+    })
+
+    it('primitive string valid', async () => {
+      const error = validator(or('string', 23), 'string')
+      expect(error).toEqual(undefined)
+    })
+
+    it('primitive string array valid', async () => {
+      const error = validator(or(['string'], [23]), ['string'])
+      expect(error).toEqual(undefined)
+    })
+
+    it('primitive string array error', async () => {
+      const error = validator(or(['string'], [23]), ['oops'])
+      expect({ ...error[0], message: error[0].message }).toEqual({
+        message: 'not equal',
+        code: 'assertEqual',
+        input: 'oops',
+        inputName: 0,
+        path: [0],
+        relative: 'string',
+        relativeName: 'comparing value',
+      })
+    })
   })
 })

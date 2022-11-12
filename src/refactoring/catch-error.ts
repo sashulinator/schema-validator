@@ -21,6 +21,9 @@ export function catchError<TErrorCollection>(
     })
 
     scene.collectError(vError, scene)
+
+    delete scene.relative
+    delete scene.relativeName
   }
 
   return scene.errorCollection.current

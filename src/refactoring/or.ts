@@ -9,8 +9,10 @@ export type OmitOr<E, SC extends Schema> = (
   clientScene?: Partial<Scene<E, SC, SC>>,
 ) => IsPromise<SC[], E>
 
-export function or<TErrorCollection, TSchema extends Schema>(...schemas: TSchema[]): OmitOr<TErrorCollection, TSchema> {
-  return function emitOr<E = TErrorCollection[]>(input: unknown, clientScene?: Partial<Scene<E, TSchema, TSchema>>) {
+export function or<TErrorCollection, TSchemas extends Schema[]>(
+  ...schemas: TSchemas
+): OmitOr<TErrorCollection, TSchemas> {
+  return function emitOr<E = TErrorCollection[]>(input: unknown, clientScene?: Partial<Scene<E, TSchemas, TSchemas>>) {
     const results: (Promise<unknown | undefined> | unknown | undefined)[] = []
     const errorCollections: unknown[] = []
     const scene = createScene({ path: [], ...clientScene, input, schema: schemas, schemaItem: schemas })
