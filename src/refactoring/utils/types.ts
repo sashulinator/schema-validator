@@ -20,3 +20,5 @@ export type PartialK<T, K extends PropertyKey = PropertyKey> = Partial<Pick<T, E
   Omit<T, K> extends infer O
   ? { [P in keyof O]: O[P] }
   : never
+
+export type MaybePromise<T> = Promise<T> | T

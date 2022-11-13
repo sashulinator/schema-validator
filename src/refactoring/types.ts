@@ -1,8 +1,8 @@
 import { ValidationError } from './errors/validation'
-import { ArrayElement, DeepPartial, DeepRequired, Dictionary } from './utils/types'
+import { ArrayElement, DeepPartial, DeepRequired, Dictionary, MaybePromise } from './utils/types'
 
-export interface Scene<TErrorCollection, TSchema extends Schema, TSchemaItem extends Schema> {
-  schema: TSchema
+export interface Scene<TErrorCollection, TSchemaItem extends Schema> {
+  schema: Schema
   schemaItem: TSchemaItem
   path: (string | number)[]
   input: unknown
@@ -13,20 +13,18 @@ export interface Scene<TErrorCollection, TSchema extends Schema, TSchemaItem ext
   errorCollection?: { current: TErrorCollection | undefined }
   assertObject: Assertion
   assertArray: Assertion
-  assertEqual: Assertion
-  assertWithRegExp: Assertion
+  assertEqual: (input: unknown, compareValue: string | number, scene?: Scene<unknown, Schema>) => MaybePromise<void>
+  assertWithRegExp: (input: unknown, regExp: RegExp, scene?: Scene<unknown, Schema>) => MaybePromise<void>
   collectError: CollectError
 }
 
-export type Assertion = SyncAssertion | AsyncAssertion
+export type Assertion = (input: unknown, scene?: Scene<unknown, Schema>) => MaybePromise<void>
 
-export type SyncAssertion = (...args: unknown[]) => void
+export type Fn<R = unknown> = (input: unknown, scene?: Scene<unknown, Schema>) => MaybePromise<R>
 
-export type AsyncAssertion = (...args: unknown[]) => Promise<void>
+export type CollectError = (error: ValidationError, scene: Scene<unknown, Schema>) => void
 
-export type CollectError = (error: ValidationError, scene: Scene<unknown, Schema, Schema>) => void
-
-export type Schema = string | number | RegExp | Dictionary<Schema> | Schema[] | SyncAssertion
+export type Schema = string | number | RegExp | Dictionary<Schema> | Schema[] | Assertion | Fn
 
 export type IsPromise<T, E> = T extends (...args: unknown[]) => Promise<unknown>
   ? Promise<E>

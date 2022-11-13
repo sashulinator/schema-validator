@@ -1,23 +1,21 @@
 import { isPromise } from '../..'
 import { isObject } from '../../is'
 import { ANY_KEY } from '../../types'
+import { createScene } from '../lib/create-scene'
 import { Scene, Schema } from '../types'
-import { Dictionary } from '../utils/types'
+import { Dictionary, MaybePromise } from '../utils/types'
 import { processFunction } from './function'
-import { iteration } from './iteration'
 
-export function processObject<TErrorCollection>(
-  scene: Scene<TErrorCollection, Schema, Dictionary<Schema>>,
-): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
+export function processObject<E>(scene: Scene<E, Dictionary<Schema>>): MaybePromise<Scene<E, Schema>> {
   if (!isObject(scene.input)) {
     return processFunction({ ...scene, schemaItem: scene.assertObject })
   }
 
   scene.inputObject = scene.input
 
-  const { input: sceneInput, schemaItem: sceneSchemaItem, path: scenePath } = scene
+  const { input: sceneInput, schemaItem: sceneSchemaItem, path } = scene
 
-  const results: (Promise<TErrorCollection | undefined> | TErrorCollection | undefined)[] = []
+  const results: MaybePromise<Scene<E, Schema>>[] = []
   const schemaEntries = Object.entries(sceneSchemaItem)
   const inputEntries = Object.entries(sceneInput)
 
@@ -27,7 +25,7 @@ export function processObject<TErrorCollection>(
     for (let index = 0; index < inputEntries.length; index += 1) {
       const [inputName, input] = inputEntries[index]
       const [, schemaItem] = schemaEntries[0]
-      results.push(iteration(inputName, scenePath, input, schemaItem, scene))
+      results.push(createScene({ inputName, path, input, schemaItem, ...scene }))
     }
   } else {
     for (let index = 0; index < schemaEntries.length; index += 1) {
@@ -38,13 +36,13 @@ export function processObject<TErrorCollection>(
         throw new Error('Schema with "ANY_KEY" must contain only one value with this key')
       }
 
-      results.push(iteration(inputName, scenePath, input, schemaItem, scene))
+      results.push(createScene({ inputName, path, input, schemaItem, ...scene }))
     }
   }
 
   if (results.find(isPromise)) {
-    return Promise.all(results).then(() => scene.errorCollection.current)
+    return Promise.all(results).then(() => scene)
   }
 
-  return scene.errorCollection.current
+  return scene
 }

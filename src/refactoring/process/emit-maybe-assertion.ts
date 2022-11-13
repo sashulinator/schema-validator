@@ -1,8 +1,10 @@
 import { isPromise } from '../..'
-import { Assertion, Scene, Schema } from '../types'
+import { Fn, Scene, Schema } from '../types'
+import { MaybePromise } from '../utils/types'
 
-export function emitAssertion(scene: Scene<unknown, Schema, Assertion>): Promise<Error | void> | Error | void {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function emitMaybeAssertion<E>(
+  scene: Scene<E, Fn<Scene<E, Schema> | void>>,
+): MaybePromise<Scene<E, Schema> | Error | void> {
   const assertion = scene.schemaItem
 
   try {

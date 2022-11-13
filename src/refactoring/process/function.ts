@@ -1,22 +1,9 @@
-import { catchError } from '../catch-error'
-import { emitAssertion } from './emit-assertion'
-import { Assertion, Scene, Schema } from '../types'
-import { isPromise } from '../..'
+import { emitMaybeAssertion } from './emit-maybe-assertion'
+import { Fn, Scene, Schema } from '../types'
+import { MaybePromise } from '../utils/types'
+import { handleResult } from '../lib/handle-result'
 
-export function processFunction<TErrorCollection>(
-  scene: Scene<TErrorCollection, Schema, Assertion>,
-): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
-  const newScene = { ...scene }
-  newScene.errorCollection = scene.errorCollection
-
-  const result = emitAssertion(newScene)
-
-  if (isPromise(result)) {
-    return result.then((error) => {
-      const err = catchError<TErrorCollection>(error, newScene)
-      return err
-    })
-  }
-
-  return catchError(result, newScene)
+export function processFunction<E>(scene: Scene<E, Fn<Scene<E, Schema> | void>>): MaybePromise<Scene<E, Schema>> {
+  const result = emitMaybeAssertion(scene)
+  return handleResult(result, scene)
 }

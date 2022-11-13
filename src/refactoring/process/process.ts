@@ -1,12 +1,11 @@
 import { isObject } from '../..'
 import { Scene, Schema } from '../types'
+import { MaybePromise } from '../utils/types'
 import { processArray } from './array'
 import { processFunction } from './function'
 import { processObject } from './object'
 
-export function process<TErrorCollection>(
-  scene: Scene<TErrorCollection, Schema, Schema>,
-): Promise<TErrorCollection | undefined> | TErrorCollection | undefined {
+export function process(scene: Scene<unknown, Schema>): MaybePromise<Scene<unknown, Schema>> {
   const { schemaItem } = scene
 
   if (typeof schemaItem === 'function') {
@@ -15,7 +14,7 @@ export function process<TErrorCollection>(
 
   if (schemaItem instanceof RegExp) {
     const value = schemaItem
-    const newSchemaItem = function assertWithRegExp(x: unknown, newScene: Scene<unknown, Schema, Schema>) {
+    const newSchemaItem = function assertWithRegExp(x: unknown, newScene: Scene<unknown, Schema>) {
       scene.assertWithRegExp(x, value, newScene)
     }
     return processFunction({ ...scene, schemaItem: newSchemaItem })
@@ -23,7 +22,7 @@ export function process<TErrorCollection>(
 
   if (typeof schemaItem === 'string' || typeof schemaItem === 'number') {
     const value = schemaItem
-    const newSchemaItem = function assertEqual(x: unknown, newScene: Scene<unknown, Schema, Schema>) {
+    const newSchemaItem = function assertEqual(x: unknown, newScene: Scene<unknown, Schema>) {
       scene.assertEqual(x, value, newScene)
     }
     return processFunction({ ...scene, schemaItem: newSchemaItem })
