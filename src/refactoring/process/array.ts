@@ -4,15 +4,13 @@ import { createScene } from '../lib/create-scene'
 import { processFunction } from './function'
 import { isPromise } from '../..'
 
-export function processArray<TErrorCollection>(
-  scene: Scene<TErrorCollection, Schema[]>,
-): MaybePromise<Scene<unknown, Schema>> {
+export function processArray<E>(scene: Scene<E, Schema[]>): MaybePromise<Scene<E, Schema>> {
   if (!Array.isArray(scene.input)) {
     return processFunction({ ...scene, schemaItem: scene.assertArray })
   }
 
   const { input, path, schemaItem } = scene
-  const results: MaybePromise<Scene<unknown, Schema>>[] = []
+  const results: MaybePromise<Scene<E, Schema>>[] = []
 
   if (schemaItem.length > 1) {
     throw Error('Schema Error: Array in a schema cannot have length more than 1. Maybe you want to use function "or"')

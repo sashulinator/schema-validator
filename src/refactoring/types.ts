@@ -28,10 +28,14 @@ export type Schema = string | number | RegExp | Dictionary<Schema> | Schema[] | 
 
 export type IsPromise<T, E> = T extends (...args: unknown[]) => Promise<unknown>
   ? Promise<E>
+  : T extends Promise<unknown>
+  ? Promise<E>
   : T extends { [key: string]: infer G }
   ? IsPromise<G, E>
-  : T extends (...args: unknown[]) => Promise<unknown>[]
-  ? Promise<E>
+  : T extends unknown[]
+  ? IsPromise<ArrayElement<T>, E>
+  : T extends unknown
+  ? E
   : E
 
 export type ToSchema<T> = T extends Dictionary<unknown>

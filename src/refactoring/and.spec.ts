@@ -1,4 +1,4 @@
-import { assertPromise, notEmptyString, string, _null } from '..'
+import { assertPromise, string, _null } from '..'
 import { validator } from './validator'
 import { and } from './and'
 
@@ -10,12 +10,14 @@ describe('and', () => {
     }
 
     const promiseSchema = {
-      world: (x: unknown) => and(string, _null)(x),
-      hello: async (x: unknown) => string(x),
+      world: async () => and(string, _null),
+      hello: string,
     }
 
     it('Returns error', async () => {
-      const error = validator(schema, { hello: 23, world: 'sa' })
+      const error = validator(schema, { hello: 23, world: 34 })
+
+      console.log('error', error)
 
       expect({ ...error[0], message: error[0].message }).toEqual({
         message: 'is not a string',
@@ -35,9 +37,9 @@ describe('and', () => {
 
     it.only('Returns promise error', async () => {
       const promise = validator(promiseSchema, { hello: 33, world: 23 })
+      console.log('errors', promise)
       assertPromise(promise)
       const errors = await promise
-      console.log('errors', errors)
 
       expect({ ...errors[0], message: errors[0].message }).toEqual({
         message: 'is not a string',

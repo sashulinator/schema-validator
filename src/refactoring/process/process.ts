@@ -1,15 +1,15 @@
 import { isObject } from '../..'
-import { Scene, Schema } from '../types'
+import { Assertion, Scene, Schema } from '../types'
 import { MaybePromise } from '../utils/types'
 import { processArray } from './array'
 import { processFunction } from './function'
 import { processObject } from './object'
 
-export function process(scene: Scene<unknown, Schema>): MaybePromise<Scene<unknown, Schema>> {
+export function process<E>(scene: Scene<E, Schema>): MaybePromise<Scene<E, Schema>> {
   const { schemaItem } = scene
 
   if (typeof schemaItem === 'function') {
-    return processFunction({ ...scene, schemaItem })
+    return processFunction({ ...scene, schemaItem: schemaItem as Assertion })
   }
 
   if (schemaItem instanceof RegExp) {
